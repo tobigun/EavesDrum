@@ -1,0 +1,11 @@
+preset: 
+  padType: Drum
+  zonesType: Zones2_Piezos
+  curveType: Linear
+  scanTimeUs: 3000
+  maskTimeMs: 30
+  zoneThresholds:
+    - min: 130
+      max: 670
+    - min: 30
+      max: 110

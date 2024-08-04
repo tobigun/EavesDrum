@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "tcrt5000")(type "KiCad")(uri "./kicad-tcrt5000/tcrt5000.pretty")(options "")(descr ""))
+)

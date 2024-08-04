@@ -1,0 +1,45 @@
+---
+BasedOnStyle: WebKit
+IndentWidth: 2
+---
+Language: Cpp
+Standard: Cpp11
+CommentPragmas: '^// Copyright|^// SPDX-License-Identifier'
+# Pointers aligned to the left
+DerivePointerAlignment: false
+PointerAlignment: Left
+AccessModifierOffset: -2
+AllowShortFunctionsOnASingleLine: Inline
+AlwaysBreakTemplateDeclarations: true
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterClass: false
+    AfterControlStatement: false
+    AfterEnum: false
+    AfterFunction: false
+    AfterNamespace: false
+    AfterStruct: false
+    AfterUnion: false
+    AfterExternBlock: true
+    BeforeCatch: false
+    BeforeElse: false
+    SplitEmptyFunction: false
+    SplitEmptyRecord: false
+    SplitEmptyNamespace: false
+SpaceInEmptyBlock: false
+BreakConstructorInitializers: BeforeColon
+CompactNamespaces: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth: 2
+Cpp11BracedListStyle: true
+FixNamespaceComments: true
+IncludeBlocks: Regroup
+IndentCaseLabels: false
+# NamespaceIndentation: All
+# SortIncludes: true
+# SortUsingDeclarations: true
+# SpaceAfterTemplateKeyword: true
+SpacesInAngles: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+UseTab: Never

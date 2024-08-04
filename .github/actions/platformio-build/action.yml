@@ -1,0 +1,62 @@
+name: Build with PlatformIO
+description: Setup Python and PlatformIO and build the given environment
+inputs:
+  command:
+    description: PlatformIO command, i.e. run or test
+    required: true
+  target:
+    description: Target of the PlatformIO run/test command
+    required: false
+  environment:
+    description: Environment of the PlatformIO run/test command
+    required: true
+  save-cache:
+    description: Whether the PlatformIO cache should be saved (or used restored)
+    default: true
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Python PIP Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/pip
+        key: ${{ runner.os }}-pip-platformio
+
+    - name: Install Python (required by PlatformIO)
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Restore PlatformIO Cache
+      id: cache-pio-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          ~/.platformio/.cache
+          ~/.platformio/packages
+          ~/.platformio/platforms
+        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
+        restore-keys: ${{ runner.os }}-platformio-
+
+    - name: Install PlatformIO Core (newest version)
+      shell: bash
+      run: pip install --upgrade platformio
+
+    - name: Run PlatformIO
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.target }}" ]; then
+          TARGET="--target ${{ inputs.target }}"
+        fi
+        pio ${{ inputs.command }} $TARGET --environment ${{ inputs.environment }}
+
+    - name: Store PlatformIO Cache
+      if: inputs.save-cache == 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          ~/.platformio/.cache
+          ~/.platformio/packages
+          ~/.platformio/platforms
+        key: ${{ steps.cache-pio-restore.outputs.cache-primary-key }}

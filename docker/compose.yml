@@ -1,0 +1,11 @@
+# Simple container with PlatformIO installed in it.
+# Can be used to test GitHub actions.
+services:
+  platformio:
+    image: python:3.13-bookworm
+    container_name: platformio
+    tty: true
+    volumes:
+      - ..:/root/workspace
+    working_dir: /root
+    command: /root/workspace/docker/entrypoint.sh

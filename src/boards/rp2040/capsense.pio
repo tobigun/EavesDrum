@@ -1,0 +1,59 @@
+; Copyright (c) 2025 Tobias Gunkel
+; SPDX-License-Identifier: GPL-3.0-or-later
+
+.program capsense
+
+; number cycles to discharge capacitor. Must be large enough to (almost) fully discharge the capacitor.
+; Otherwise we will get inconsistent readings as we start the charging process from different voltage offsets.
+.define DISCHARGE_CYCLES 31
+
+.define DIR_IN  0
+.define DIR_OUT 1
+.define LOW 0
+
+; Inspired by pico_pio_touch and jtouch.
+; Instead of counting the charge cycles in a fixed amount of time, we count the time required for
+; a given number of cycles. This speeds up the measurement to a few microseconds.
+;
+; See:
+; - https://github.com/dani9875/pico_pio_touch_c
+; - https://github.com/AncientJames/jtouch
+start:
+.wrap_target
+    ; initialize result (cycles per charge) to UINT32_MAX
+    mov x, ~NULL
+
+    ; load "oversampling count" param (must be decremented by one)
+    pull
+    mov y, osr
+    jmp y--, initial_charge
+
+initial_charge:
+    set pindirs, DIR_IN  ; changing to input (pull up will raise the level to high)
+initial_charge_loop:
+    jmp pin, sample
+    jmp initial_charge_loop
+
+sample:
+    set pindirs, DIR_OUT
+    set pins, LOW [DISCHARGE_CYCLES] ; discharge for a large enough amount of cycles, to make sure we start at the same volatge every time
+
+charge:
+    set pindirs, DIR_IN  ; changing to input (pull up will raise the level to high)
+charge_loop:
+    jmp pin, charge_complete ; wait until pin gets high 
+    jmp x--, charge_loop
+
+charge_complete:
+    ; repeat charging process as many times as given by "oversampling count" param
+    jmp y--, sample
+
+done:
+    ; move total number of cycles per charge (x) to ISR and push to FIFO
+    mov isr, x 
+    push
+
+    ; discharge for more consistent results at next call. See DISCHARGE_CYCLES
+    set pindirs, DIR_OUT
+    set pins, LOW
+.wrap

@@ -1,0 +1,173 @@
+// Copyright (c) 2025 Tobias Gunkel
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+import { PropsWithChildren } from 'react';
+
+import { styled } from '@mui/material/styles';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
+import MuiAccordionSummary, { AccordionSummaryProps, accordionSummaryClasses } from '@mui/material/AccordionSummary';
+import Stack from '@mui/material/Stack';
+import ToggleButton, { ToggleButtonProps } from '@mui/material/ToggleButton';
+import Typography from '@mui/material/Typography';
+
+import ArrowForwardIcon from '@mui/icons-material/ArrowForwardIosSharp';
+
+import { ConfigDropOverlay, ConfigDropProps } from './file-upload';
+import { useConfig } from '../config/config';
+import { Button, ButtonProps } from '@mui/material';
+
+const CardAccordion = styled((props: AccordionProps) => (
+  <MuiAccordion disableGutters {...props} />
+))(({ theme }) => ({
+  margin: 0,
+  border: `1px solid ${theme.palette.divider}`,
+  '&:not(:last-child)': {
+    borderBottom: 0,
+  },
+  '&::before': {
+    display: 'none',
+  }
+}));
+  
+const UnstyledCardAccordionSummary = (props: AccordionSummaryProps) => (
+  <MuiAccordionSummary expandIcon={<ArrowForwardIcon color='primary' sx={{ fontSize: '0.9rem' }} />} {...props} />
+);
+const CardAccordionSummary = styled(UnstyledCardAccordionSummary)(({ theme }) => ({
+  flexDirection: 'row-reverse',
+  [`.${accordionSummaryClasses.content}`]: {
+    margin: 0,
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
+  [`& .${accordionSummaryClasses.expandIconWrapper}.${accordionSummaryClasses.expanded}`]: {
+    transform: 'rotate(90deg)',
+  },
+  [`& .${accordionSummaryClasses.content}`]: {
+    marginLeft: theme.spacing(1),
+  },
+}));
+  
+export enum CardSize {
+    medium,
+    large
+}
+
+interface CardProps {
+    name: string;
+    size?: CardSize;
+    titleDecorators?: React.ReactNode;
+    edgeDecorators?: React.ReactNode;
+    dropProps?: ConfigDropProps;
+    headerBackground?: string;
+}
+export function Card(props: AccordionProps & CardProps) {
+  return (
+    <CardAccordion
+      defaultExpanded={props.defaultExpanded}
+      expanded={props.expanded}
+      onChange={props.onChange}
+      sx={{ backgroundColor: props.color }}
+    >
+      <Stack direction='row' alignItems='center' sx={{background: props.headerBackground}}>
+        <CardAccordionSummary sx={{ paddingRight: 0 }}>
+          <Stack direction="row" spacing={1} alignItems='center'>
+            <Typography variant="h5">{props.name}</Typography>
+            {props.titleDecorators}
+          </Stack>
+        </CardAccordionSummary>
+        <Stack spacing={1} direction="row" alignItems='center' sx={{ paddingRight: 2 }}>
+          {props.edgeDecorators}
+        </Stack>
+      </Stack>
+      { props.dropProps ?
+        <ConfigDropOverlay dropProps={props.dropProps}>
+          <AccordionDetails>
+            {props.children}
+          </AccordionDetails>
+        </ConfigDropOverlay>
+        :
+        <AccordionDetails>
+          {props.children}
+        </AccordionDetails>
+      }
+    </CardAccordion>
+  );
+}
+
+export function RoleInfoLabel({ padIndex }: { padIndex: number }) {
+  const role = useConfig(config => config.pads[padIndex].role);
+  return (
+    <Typography variant="body1" align='center' paddingX={1} color='secondary'
+      border={1} borderColor='rgb(53, 53, 53)' noWrap
+    >
+      {role}
+    </Typography>
+  );
+}
+
+const panelElementMinHeight = '30px';
+const panelElementPadding = '2px 7px';
+const panelElementFontSize = 13;
+
+const UnstyledPanelButton = (props: ButtonProps) => (
+  <Button size='small' variant='outlined' {...props}></Button>
+);
+export const PanelButton = styled(UnstyledPanelButton)(({ theme }) => ({
+  padding: panelElementPadding,
+  minHeight: panelElementMinHeight,
+  fontSize: theme.typography.pxToRem(panelElementFontSize)
+}));
+
+const UnstyledPanelToggleButton = (props: ToggleButtonProps) => (
+  <ToggleButton size='small' {...props}></ToggleButton>
+);
+export const PanelToggleButton = styled(UnstyledPanelToggleButton, {
+  shouldForwardProp: (prop) => prop !== "selectedColor"
+})<ToggleButtonProps<'button', { selectedColor?: string }>>(
+  ({ theme, selectedColor }) => ({
+    padding: panelElementPadding,
+    minHeight: panelElementMinHeight,
+    color: theme.palette.secondary.dark,
+    border: '1px solid',
+    fontSize: theme.typography.pxToRem(panelElementFontSize),
+    "& > *": { // icon
+      color: theme.palette.secondary.dark,
+    },
+    "&:hover, &.Mui-selected:hover": {
+      borderColor: theme.palette.secondary.light,
+    },
+    "&.Mui-selected": {
+      color: selectedColor ?? theme.palette.secondary.light,
+      borderColor: theme.palette.secondary.light,
+      "& > *": { // icon
+        color: selectedColor ?? theme.palette.secondary.light,
+      },
+    },
+  }));
+
+export const PanelIconToggleButton = styled(PanelToggleButton)({
+  padding: ['0', '0', '0', '0'], // make button (e.g. monitor) same width and height
+  minHeight: panelElementMinHeight,
+  minWidth: '30px'
+});
+  
+export function EntryContainer(props: PropsWithChildren<{ name: string, labelWidth: string }>) {
+  return (
+    <Stack direction='row' flexWrap='wrap'>
+      <DisplayNameLabel name={props.name} labelWidth={props.labelWidth} />
+      { props.children }
+    </Stack>
+  );
+}
+
+function DisplayNameLabel({ name, labelWidth }: { name: string, labelWidth: string }) {
+  return (
+    <Typography minWidth={labelWidth} maxWidth={labelWidth}
+      marginTop={1} variant="body1" noWrap
+    >
+      {name + ':'}
+    </Typography>
+  );
+}
+
