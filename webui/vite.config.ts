@@ -1,3 +1,6 @@
+// Copyright (c) 2025 Tobias Gunkel
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import { defineConfig } from 'vite';
 import { compression } from 'vite-plugin-compression2';
 import svgr from 'vite-plugin-svgr';
@@ -6,6 +9,7 @@ import react from '@vitejs/plugin-react';
 import packageJson from './package.json';
 import { VersionInfo } from './src/version';
 import { simpleGit } from 'simple-git';
+import tsconfigPaths from "vite-tsconfig-paths";
 
 //const websocketProxyUrl = 'ws://192.168.7.1:80/'; // real device
 const websocketProxyUrl = 'ws://127.0.0.1:80/'; // simulation
@@ -33,6 +37,7 @@ export default defineConfig(({ mode }) => {
       false! && visualizer({ open: false, filename: 'bundle-visualization.html' }),
       svgr(),
       react(),
+      tsconfigPaths(),
       compression({
         exclude: /\.(yaml)$/,
         algorithms: ['gzip'],

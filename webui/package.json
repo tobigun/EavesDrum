@@ -25,6 +25,7 @@
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",
     "use-immer": "^0.11.0",
+    "vite-tsconfig-paths": "^5.1.4",
     "yaml": "^2.8.0",
     "zustand": "^5.0.6"
   },

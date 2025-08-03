@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { createContext, PropsWithChildren, useEffect, useState } from 'react';
-import { DrumPadConfig, DrumPadMappings, DrumPadSettings, updateConfig } from '../config/config';
+import { DrumPadConfig, DrumPadMappings, DrumPadSettings, updateConfig } from '@config';
 
 export enum DrumCommand {
   getConfig = "getConfig",

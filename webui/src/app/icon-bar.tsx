@@ -4,14 +4,14 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Popover } from "@mui/material";
 import { ReactNode, useCallback, useContext, useState } from "react";
 import { VersionInfo } from "./version-info";
-import { useConfig } from "../config/config";
+import { useConfig } from "@config";
 
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 import SaveIcon from '@mui/icons-material/SdCard';
 import RestoreIcon from '@mui/icons-material/Undo';
 import UploadFile from '@mui/icons-material/UploadFile';
 import InfoIcon from '@mui/icons-material/InfoOutline';
-import { connection, ConnectionStateContext, DrumCommand } from "../connection/connection";
+import { connection, ConnectionStateContext, DrumCommand } from "@connection";
 
 const iconSize = 'large';
 const iconColor = 'rgb(0, 0, 0)';

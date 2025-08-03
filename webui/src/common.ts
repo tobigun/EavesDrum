@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { ChartEvent } from "chart.js";
-import { PadType } from "./config/config";
+import { PadType } from "./config";
 
 export function isEventInRect(event: ChartEvent, x: number, y: number, width: number, height: number) {
   return (event.x !== null && event.x >= x && event.x <= x + width)

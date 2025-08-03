@@ -3,11 +3,11 @@
 
 import { PropsWithChildren, useCallback, useState } from "react";
 import { parse } from "yaml";
-import { connection, DrumCommand } from "../connection/connection";
+import { connection, DrumCommand } from "@connection";
 import { Alert, Box, Dialog, DialogProps, Snackbar, SnackbarCloseReason, Stack, Typography } from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
 import { useDropzone } from "react-dropzone";
-import { PadRole } from "../config/config";
+import { PadRole } from "@config";
 
 export enum ConfigFilter {
   Settings,

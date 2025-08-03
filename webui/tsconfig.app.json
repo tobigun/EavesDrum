@@ -1,5 +1,13 @@
 {
   "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@config": ["./src/config"],
+      "@connection": ["./src/connection/connection"],
+      "@pages/*": ["./src/pages/*"],
+      "@theme": ["./src/theme"],
+    },
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2022",
     "useDefineForClassFields": true,

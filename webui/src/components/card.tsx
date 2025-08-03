@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForwardIosSharp';
 
 import { ConfigDropOverlay, ConfigDropProps } from './file-upload';
-import { useConfig } from '../config/config';
+import { useConfig } from '@config';
 import { Button, ButtonProps } from '@mui/material';
 
 const CardAccordion = styled((props: AccordionProps) => (

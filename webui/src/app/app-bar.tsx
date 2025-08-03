@@ -5,10 +5,10 @@ import { memo, useCallback, useState } from "react";
 
 import { AppBar as MuiAppBar, Box, Toolbar } from "@mui/material";
 
-import { Tab, Tabs } from "../components/tab";
-import Logo from "../image/logo.svg?react";
+import { Tab, Tabs } from "@components/tab";
+import Logo from "@/image/logo.svg?react";
 import { IconBar } from "./icon-bar";
-import { ConfigUploadDialog } from "../components/file-upload";
+import { ConfigUploadDialog } from "@components/file-upload";
 
 export const AppBar = memo(MyAppBar);
 

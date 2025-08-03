@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { Box, Divider, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, Typography } from "@mui/material";
-import { useConfig } from "../config/config";
-import { StyledTableRow } from "../components/table-row";
+import { useConfig } from "@config";
+import { StyledTableRow } from "@components/table-row";
 import { licenses } from "./licenses";
 
 export function VersionInfo() {

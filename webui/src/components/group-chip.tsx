@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { Chip } from "@mui/material";
-import { groupColors } from "../theme";
+import { groupColors } from "@theme";
 
 export const GroupChip = ({ group }: { group: string }) => (!group || group === '')
   ? null

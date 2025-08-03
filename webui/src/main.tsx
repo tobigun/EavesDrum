@@ -8,7 +8,7 @@ import { theme } from './theme';
 
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
-import { initConfig } from './config/config';
+import { initConfig } from './config';
 import { initConnection } from './connection/connection';
 
 initConnection();
