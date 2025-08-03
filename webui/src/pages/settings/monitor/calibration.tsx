@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { PropsWithChildren, useEffect } from "react";
-import { connection, DrumCommand } from "@connection";
+import { connection, DrumCommand } from "@/connection/connection";
 import { Box, Button, Stack, Step, StepLabel, Stepper, Typography } from "@mui/material";
 import { Monitor } from "./monitor-card";
 import { MuxMonitorInputCheck } from "./signal-graph/mux-monitor-input-check";

@@ -1,7 +1,6 @@
 // Copyright (c) 2025 Tobias Gunkel
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { createContext, PropsWithChildren, useEffect, useState } from 'react';
 import { DrumPadConfig, DrumPadMappings, DrumPadSettings, updateConfig } from '@config';
 
 export enum DrumCommand {
@@ -18,32 +17,6 @@ export enum DrumCommand {
   triggerMonitor = "triggerMonitor",
   getEvents = "getEvents",
   getStats = "getStats"
-}
-
-export const ConnectionStateContext = createContext(false);
-
-export function ConnectionStateProvider({ children }: PropsWithChildren) {
-  const [connected, setConnected] = useState(false);
-
-  useEffect(() => {
-    const onChangeListenerHandle = connection.registerOnChangeListener(connected => {
-      setConnected(connected);
-      if (connected) {
-        connection.sendCommand(DrumCommand.getConfig);
-      }
-    });
-    connection.connect();
-    return () => {
-      connection.disconnect();
-      connection.unregisterListener(onChangeListenerHandle);
-    };
-  }, []);
-
-  return (
-    <ConnectionStateContext.Provider value= { connected } >
-      { children }
-    </ConnectionStateContext.Provider>
-  );
 }
 
 enum ConnectionEventType {
@@ -150,15 +123,15 @@ export class Connection {
     this.sendCommandWithDirtyFlag(DrumCommand.setSettings, { ...values }, true);
   }
 
-  sendSetPadSettingsCommand(padRole: string, values: Partial<DrumPadSettings>) {
-    this.sendSetSettingsCommand({[padRole]: { ...values }});
+  sendSetPadSettingsCommand(padIndex: number, values: Partial<DrumPadSettings>) {
+    this.sendSetSettingsCommand({[padIndex]: { ...values }});
   }
 
   sendSetMappingsCommand(values: any) {
     this.sendCommandWithDirtyFlag(DrumCommand.setMappings, { ...values }, true);
   }
 
-  sendSetPadMappingsCommand(padRole: string, values: Partial<DrumPadMappings>) {
+  sendSetRoleMappingsCommand(padRole: string, values: Partial<DrumPadMappings>) {
     this.sendSetMappingsCommand({[padRole]: { ...values }});
   }
 

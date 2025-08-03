@@ -42,6 +42,8 @@ private:
   void handleStatsRequest(AsyncWebSocketClient* client);
 
   void sendConfig(AsyncWebSocketClient* client);
+  void setMonitorConfig(JsonObject& configNode);
+  void setVersionInfo(JsonObject& configNode);
 
 private:
   DrumKit* drumKit = nullptr;

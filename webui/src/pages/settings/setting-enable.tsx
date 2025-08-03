@@ -5,19 +5,19 @@ import { Switch } from "@mui/material";
 import { updateConfig, useConfig } from "@config";
 import { SettingEntryContainer } from "./setting-entry";
 import { SettingsValueAccessor } from "./settings-pad";
-import { connection } from "@connection";
+import { connection } from "@/connection/connection";
 
-export function SettingEnableEntry({ label, padRole, valueAccessor }: {
+export function SettingEnableEntry({ label, padIndex, valueAccessor }: {
     label: string,
-    padRole: string,
+    padIndex: number,
     valueAccessor: SettingsValueAccessor
   }) {
   const connected = true; // TODO useContext(ConnectionStateContext);
-  const checkedValue = useConfig(config => valueAccessor.getValue(config.settings[padRole]));
+  const checkedValue = useConfig(config => valueAccessor.getValue(config.pads[padIndex].settings));
   
   function onChange(_event: unknown, newEnabled: boolean) {
-    updateConfig(config => valueAccessor.setValue(config.settings[padRole], newEnabled));
-    connection.sendSetPadSettingsCommand(padRole, valueAccessor.setValue({}, newEnabled));
+    updateConfig(config => valueAccessor.setValue(config.pads[padIndex].settings, newEnabled));
+    connection.sendSetPadSettingsCommand(padIndex, valueAccessor.setValue({}, newEnabled));
   }
   
   return (

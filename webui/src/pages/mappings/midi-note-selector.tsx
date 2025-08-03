@@ -5,8 +5,8 @@ import { useContext } from "react";
 
 import { MenuItem, Select, SelectChangeEvent, Stack } from "@mui/material";
 
-import { ConnectionStateContext } from "@connection";
-import { NumberInput } from "@components/number-input";
+import { NumberInput } from "@/components/number-input";
+import { ConnectionStateContext } from "@/connection/connection-state";
 
 export function MidiNoteSelector({ configNote, onNoteChange }: { configNote: number, onNoteChange: (note: number) => void }) {
   const connected = useContext(ConnectionStateContext);

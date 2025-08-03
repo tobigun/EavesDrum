@@ -10,9 +10,9 @@ import Typography from "@mui/material/Typography";
 
 import RecordIcon from '@mui/icons-material/FiberManualRecord';
 
-import { connection, DrumCommand } from '@connection';
+import { connection, DrumCommand } from '@/connection/connection';
 import { getPadSettingsByIndex, PadType, updateConfig, useConfig } from "@config";
-import { Card, CardSize, PanelButton, PanelToggleButton } from "@components/card";
+import { Card, PanelButton, PanelToggleButton } from "@/components/card";
 import { MonitorMessage, MonitorMessageInfo } from "./monitor-message";
 import { LatencyTestWizard } from "./latency-test";
 import { SignalGraph } from "./signal-graph/signal-graph";
@@ -21,6 +21,7 @@ import { CircularProgress } from "@mui/material";
 import { numRecentMessageInfos, RecentHitsGraph } from "./recent-graph";
 import { MonitorMode } from "./monitor-mode";
 import { CalibrationWizard } from "./calibration";
+import { CardSize } from "@/components/component-enums";
 
 const logMonitorMessages = true;
 const backgroundColor = 'rgb(52, 73, 94)';
@@ -29,9 +30,9 @@ export const recordButtonColor = 'rgb(202, 13, 13)';
 export function MonitorCard() {
   const spacing = 1;
 
-  const latencyTestActiveInBackend = useConfig(config => config.latencyTest);
-  const triggeredByAllPads = useConfig(config => config.monitor.triggeredByAllPads);
-  const monitoredPadIndex = useConfig(config => config.monitor.padIndex);
+  const latencyTestActiveInBackend = useConfig(config => config.monitor?.latencyTest ?? false);
+  const triggeredByAllPads = useConfig(config => config.monitor?.triggeredByAllPads ?? false);
+  const monitoredPadIndex = useConfig(config => config.monitor?.padIndex);
   const monitoredPad = monitoredPadIndex !== undefined ? useConfig.getState().pads[monitoredPadIndex] : null;
 
   const [expanded, setExpanded] = useState(false);
@@ -53,7 +54,7 @@ export function MonitorCard() {
 
   const onChangeShowAllHits = useCallback(() => {
     const newValue = !triggeredByAllPads;
-    updateConfig(config => config.monitor.triggeredByAllPads = newValue);
+    updateConfig(config => config.monitor = { ...config.monitor, triggeredByAllPads: newValue });
     connection.sendCommand(DrumCommand.setMonitor, {triggeredByAllPads: newValue});
   }, [triggeredByAllPads]);
 
@@ -117,9 +118,9 @@ export function Monitor({mode = MonitorMode.Default, showHitGraph = true} : {
 }) {
   const [selectedMessageInfo, setSelectedMessageInfo] = useState<MonitorMessageInfo>();
   const [recentMessageInfos, setRecentMessageInfos] = useState<MonitorMessageInfo[]>([]);
-  const monitoredPad = useConfig(config => config.monitor.padIndex);
+  const monitoredPad = useConfig(config => config.monitor?.padIndex);
 
-  const triggeredByAllPadsConfig = useConfig(config => config.monitor.triggeredByAllPads);
+  const triggeredByAllPadsConfig = useConfig(config => config.monitor?.triggeredByAllPads ?? false);
   const triggeredByAllPads = triggeredByAllPadsConfig && mode === MonitorMode.Default;
 
   useEffect(() => {

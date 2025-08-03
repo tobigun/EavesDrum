@@ -12,13 +12,15 @@ import PlayIcon from '@mui/icons-material/PlayArrow';
 
 import { useShallow } from 'zustand/shallow';
 
-import { Config, DrumPadMappings, getPadIndexByRole, getZonesCount, getZonesCountByRole, PadRole, PadType, updateConfig, useConfig } from '@config';
-import { connection, ConnectionStateContext, DrumCommand } from "@connection";
-import { Card, EntryContainer, RoleInfoLabel } from '@components/card';
-import { Masonry } from '@components/masonry';
+import { Config, DrumPadMappings, getPadIndexByRole, getPadZonesCount, getZonesCount, PadRole, PadType, updateConfig, useConfig } from '@config';
+import { connection, DrumCommand } from "@/connection/connection";
+import { Card, EntryContainer, RoleInfoLabel } from '@/components/card';
+import { Masonry } from '@/components/masonry';
 import { getHeaderBackground, getZoneName } from '@/common';
-import { GroupChip } from '@components/group-chip';
+import { GroupChip } from '@/components/group-chip';
 import { MidiNoteSelector } from './midi-note-selector';
+import { ConfigFilter } from '@/components/component-enums';
+import { ConnectionStateContext } from '@/connection/connection-state';
 
 type MappingDisplayNames = {
   [Property in keyof Required<DrumPadMappings>]: (props: MappingEntryProps) => string;
@@ -31,7 +33,7 @@ const mappingDisplayNames: MappingDisplayNames = {
   noteCloseMain: ({padType}) => 'Note Close ' + getZoneName(padType, 0),
   noteCloseRim: ({padType}) => 'Note Close ' + getZoneName(padType, 1),
   noteCloseCup: ({padType}) => 'Note Close ' + getZoneName(padType, 2),
-  noteCross: ({padRole}) => 'Note ' + (getZonesCountByRole(padRole) === 3 ? 'Side-Rim' : 'Cross-Stick'),
+  noteCross: ({padIndex}) => 'Note ' + (getPadZonesCount(padIndex) === 3 ? 'Side-Rim' : 'Cross-Stick'),
   pedalChickEnabled: () => 'Enable Chick Note'
 };
 
@@ -55,8 +57,8 @@ type MappingDependency = Partial<Record<keyof DrumPadMappings, (config: Config, 
 type MappingDependencies = Record<PadType, MappingDependency>;
 const mappingDependencies: MappingDependencies = {
   Drum: {
-    noteCross: (config, padIndex) => getZonesCount(config.settings[padIndex].zonesType) === 3
-      || config.settings[padIndex].crossNoteEnabled!
+    noteCross: (config, _, padIndex) => getZonesCount(config.pads[padIndex].settings.zonesType) === 3
+      || config.pads[padIndex].settings.crossNoteEnabled!
   },
   Cymbal: {
     noteCloseMain: (config, padRole) => config.mappings[padRole].closedNotesEnabled!,
@@ -89,7 +91,7 @@ function MappingsCard({ padIndex }: {
   const group = useConfig(config => config.pads[padIndex].group);
   const pedalRole = useConfig(config => config.pads[padIndex].pedal);
   const pedalIndex = getPadIndexByRole(pedalRole);
-  const padType = useConfig(config => config.settings[padRole].padType);
+  const padType = useConfig(config => config.pads[padIndex].settings.padType);
   const headerBackground = getHeaderBackground(padType);
 
   if (padType == PadType.Pedal) {
@@ -100,6 +102,7 @@ function MappingsCard({ padIndex }: {
     <Box>
       <Card name={padName}
         headerBackground={headerBackground}
+        dropProps={{filter: ConfigFilter.Mappings, padRole: padRole}}        
         titleDecorators={<GroupChip group={group} />}
       >
         <MappingsPadInfo padIndex={padIndex} padRole={padRole} padType={padType} />
@@ -170,7 +173,7 @@ function MappingEntryNote(props: MappingEntryProps & {
 
   function onNoteChange(newNoteIndex: number) {
     updateConfig(config => (config.mappings[padRole][mappingId] as number) = newNoteIndex);
-    connection.sendSetPadMappingsCommand(padRole, { [mappingId]: newNoteIndex });
+    connection.sendSetRoleMappingsCommand(padRole, { [mappingId]: newNoteIndex });
   }
 
   return (
@@ -201,7 +204,7 @@ function MappingEntryEnable(props: MappingEntryProps & {
 
   function onChange(_event: unknown, newEnabled: boolean) {
     updateConfig(config => (config.mappings[padRole][mappingId] as boolean) = newEnabled);
-    connection.sendSetPadMappingsCommand(padRole, { [mappingId]: newEnabled });
+    connection.sendSetRoleMappingsCommand(padRole, { [mappingId]: newEnabled });
   }
 
   return (

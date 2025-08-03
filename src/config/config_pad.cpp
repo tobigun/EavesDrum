@@ -7,6 +7,7 @@
 #define PAD_NAME_PROP "name"
 #define PAD_ROLE_PROP "role"
 #define PAD_GROUP_PROP "group"
+#define PAD_SETTINGS_PROP "settings"
 #define PAD_AUTOCALIBRATE_PROP "autocalibrate"
 #define PAD_ENABLED_PROP "enabled"
 #define PAD_PEDAL_PROP "pedal"
@@ -46,18 +47,27 @@ void DrumConfigMapper::applyPadConfig(DrumPad& pad, DrumKit& drumKit, pad_size_t
   const bool autoCalibrate = padNode[PAD_AUTOCALIBRATE_PROP] | false;
   pad.setAutoCalibrate(autoCalibrate);
 
+  bool failed = false;
+
+  JsonObjectConst settingsNode = padNode[PAD_SETTINGS_PROP];
+  if (!settingsNode) {
+    eventLog.log(Level::ERROR, String("Pad[") + pad.getName() + "]: pedal has no settings");
+    failed = true;
+  } else {
+    DrumConfigMapper::applyPadSettings(pad, settingsNode);
+  }
+
   if (padNode[PAD_PEDAL_PROP].is<String>()) {
     String pedalRole = padNode[PAD_PEDAL_PROP];
     pad_size_t pedalIndex = findPedalIndexByRole(pedalRole, padsNode);
     if (pedalIndex == UNKNOWN_PAD) {
       eventLog.log(Level::ERROR, String("Pad[") + pad.getName() + "]: pedal with name '" + pedalRole + "' not found");
     } else {
-      DrumPad* pedalPad = &drumKit.getPad(pedalIndex);
+      DrumPad* pedalPad = drumKit.getPad(pedalIndex);
       pad.setPedalPad(pedalPad);
     }
   }
 
-  bool failed = false;
   if (!padNode[PAD_CONNECTOR_PROP].is<String>()) {
     eventLog.log(Level::ERROR, String("Pad[") + pad.getName() + "]: property '" PAD_CONNECTOR_PROP "' missing");
     failed = true;
@@ -107,8 +117,11 @@ void DrumConfigMapper::convertPadConfigToJson(const DrumPad& pad, const DrumKit&
   if (pad.getAutoCalibrate()) {
     padConfigNode[PAD_AUTOCALIBRATE_PROP] = pad.getAutoCalibrate();
   }
-  
+
   padConfigNode[PAD_ENABLED_PROP] = pad.isEnabled();
+
+  JsonObject padSettingsNode = padConfigNode[PAD_SETTINGS_PROP].to<JsonObject>();
+  convertPadSettingsToJson(pad, drumKit, padSettingsNode);
 
   DrumPad* pedalPad = pad.getPedalPad();
   if (pedalPad) {

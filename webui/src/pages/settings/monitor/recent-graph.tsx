@@ -33,7 +33,7 @@ export function RecentHitsGraph({selectedMessageInfo, setSelectedMessageInfo, re
   setSelectedMessageInfo: (msg: MonitorMessageInfo) => void,
   recentMessageInfos: MonitorMessageInfo[]
 }) {
-  const monitoredPadIndex = useConfig(config => config.monitor.padIndex);
+  const monitoredPadIndex = useConfig(config => config.monitor?.padIndex);
 
   const onMessageSelected = useCallback((messageInfo: MonitorMessageInfo) => {
     setSelectedMessageInfo(messageInfo);

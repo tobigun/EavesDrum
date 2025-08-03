@@ -7,23 +7,23 @@ import { Box, MenuItem, Select } from "@mui/material";
 import RecordIcon from '@mui/icons-material/FiberManualRecord';
 
 import { getHeaderBackground } from "@/common";
-import { Card, RoleInfoLabel, PanelIconToggleButton } from "@components/card";
-import { ConfigFilter } from "@components/file-upload";
-import { GroupChip } from "@components/group-chip";
-import { Switch } from "@components/switch";
-import { getPadIndexByRole, PadRole, PadType, updateConfig, useConfig } from "@config";
-import { connection, ConnectionStateContext, DrumCommand } from "@connection";
+import { Card, RoleInfoLabel, PanelIconToggleButton } from "@/components/card";
+import { GroupChip } from "@/components/group-chip";
+import { Switch } from "@/components/switch";
+import { getPadIndexByRole, PadType, updateConfig, useConfig } from "@config";
+import { connection, DrumCommand } from "@/connection/connection";
 import { recordButtonColor } from "./monitor/monitor-card";
 import { SettingsElements } from "./settings-pad";
 import { SettingEntryContainer } from "./setting-entry";
 import { PadTypeSelector } from "./pad-type-selector";
 import { useShallow } from "zustand/shallow";
+import { ConfigFilter } from "@/components/component-enums";
+import { ConnectionStateContext } from "@/connection/connection-state";
 
 export function SettingsCardGroup({ padIndex }: {
   padIndex: number,
 }) {
-  const padRole = useConfig(config => config.pads[padIndex].role);
-  const padType = useConfig(config => config.settings[padRole].padType);
+  const padType = useConfig(config => config.pads[padIndex].settings.padType);
   const pedalRole = useConfig(config => config.pads[padIndex].pedal);
   const pedalIndex = getPadIndexByRole(pedalRole);
 
@@ -33,17 +33,16 @@ export function SettingsCardGroup({ padIndex }: {
   
   return (
     <Box>
-      <SettingsCard padIndex={padIndex} padRole={padRole} padType={padType} />
+      <SettingsCard padIndex={padIndex} padType={padType} />
       {
-        pedalIndex && <SettingsCard padIndex={pedalIndex} padRole={pedalRole!} padType={PadType.Pedal} />
+        pedalIndex && <SettingsCard padIndex={pedalIndex} padType={PadType.Pedal} />
       }
     </Box>
   );
 }
 
-function SettingsCard({ padIndex, padRole, padType }: {
+function SettingsCard({ padIndex, padType }: {
   padIndex: number,
-  padRole: PadRole,
   padType: PadType
 }) {
   const padName = useConfig(config => config.pads[padIndex].name);
@@ -53,7 +52,7 @@ function SettingsCard({ padIndex, padRole, padType }: {
   return (
     <Card name={padName} defaultExpanded={false}
       headerBackground={headerBackground}
-      dropProps={{filter: ConfigFilter.Settings, padRole: padRole}}
+      dropProps={{filter: ConfigFilter.Settings, padIndex: padIndex}}
       titleDecorators={<GroupChip group={group} />}
       edgeDecorators={
         <>
@@ -62,9 +61,9 @@ function SettingsCard({ padIndex, padRole, padType }: {
         </>
       }>
       <RoleInfoLabel padIndex={padIndex} />
-      <PadTypeSelector padRole={padRole}/>
+      <PadTypeSelector padIndex={padIndex}/>
       <ConnectorInfo padIndex={padIndex} />
-      <SettingsElements padRole={padRole} padType={padType} />
+      <SettingsElements padIndex={padIndex} padType={padType} />
     </Card>
   );
 }
@@ -103,14 +102,14 @@ function MonitorToggleButton({ padIndex }: {
   padIndex: number,
 }) {
   const connected = useContext(ConnectionStateContext);
-  const monitoredPadIndex = useConfig(config => config.monitor.padIndex);
+  const monitoredPadIndex = useConfig(config => config.monitor?.padIndex);
   
   const isMonitored = (padIndex === monitoredPadIndex);
   
   const onChangePadMonitoring = useCallback(() => {
     const selectAsMonitor = !isMonitored;
     const newMonitoredPadIndex = selectAsMonitor ? padIndex : undefined;
-    updateConfig(config => config.monitor.padIndex = newMonitoredPadIndex);
+    updateConfig(config => config.monitor = { ...config.monitor, padIndex: newMonitoredPadIndex });
     connection.sendCommand(DrumCommand.setMonitor, { padIndex: newMonitoredPadIndex ?? null });
   }, [padIndex, isMonitored]);
   

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import { Stack } from "@mui/material";
-import { DrumPadSettings, PadRole, PadType, useConfig } from "@config";
+import { DrumPadSettings, PadType, useConfig } from "@config";
 import { SettingSliderEntry, SettingSliderEntryProps } from "./setting-slider";
 import { useShallow } from "zustand/shallow";
 import { chartColors, pedalThresholdColors } from "@theme";
@@ -49,16 +49,16 @@ function getDisplayName(settingId: string, padType: PadType, zone = 0) {
   return settingDisplayNames[settingId]?.(padType, zone);
 }
     
-export function SettingsElements({ padRole, padType }: {
-  padRole: string,
+export function SettingsElements({ padIndex, padType }: {
+  padIndex: number,
   padType: PadType
 }) {
-  const settingIds = useConfig(useShallow(config => Object.keys(config.settings[padRole])));
+  const settingIds = useConfig(useShallow(config => Object.keys(config.pads[padIndex].settings)));
   return <Stack gap={1}>
     {
       settingIdsOrdered
         .filter(settingId => settingIds.includes(settingId))
-        .map(settingId => <SettingsElement key={settingId} padRole={padRole} settingId={settingId} padType={padType} />)
+        .map(settingId => <SettingsElement key={settingId} padIndex={padIndex} settingId={settingId} padType={padType} />)
     }
   </Stack>;
 }
@@ -108,20 +108,20 @@ function createZoneThresholdAccessor(zone: number, hasMax: boolean): SettingsVal
   };
 }
 
-function SettingsElement({padRole, settingId, padType} : {
-  padRole: string,
+function SettingsElement({padIndex, settingId, padType} : {
+  padIndex: number,
   settingId: keyof DrumPadSettings,
   padType: PadType
 }) {
-  const defaultProps = {
-    padRole: padRole,
+  const defaultProps : SettingSliderEntryProps = {
+    padIndex: padIndex,
     label: getDisplayName(settingId, padType),
     valueAccessor: createValueAccessorBySettingIds(settingId)
   };
   
   switch (settingId) {
   case "zoneThresholds":
-    return <ZoneThresholdsSliderElements key={settingId} padRole={padRole} padType={padType} />;
+    return <ZoneThresholdsSliderElements key={settingId} padIndex={padIndex} padType={padType} />;
 
   case "scanTimeUs":
     return <SettingSliderEntry {...defaultProps} key={settingId}
@@ -139,7 +139,7 @@ function SettingsElement({padRole, settingId, padType} : {
       {...createThresholdSliderProps()} max={20} />;
     
   case "almostClosedThreshold": // also: closedThreshold
-    return <AlmostClosedThresholdSliderEntry padRole={padRole} key={settingId}
+    return <AlmostClosedThresholdSliderEntry padIndex={padIndex} key={settingId}
       {...createThresholdSliderProps()} />;
     
   case "chickDetectTimeoutMs":
@@ -153,26 +153,26 @@ function SettingsElement({padRole, settingId, padType} : {
   }
 }
 
-function ZoneThresholdsSliderElements({padRole, padType} : {
-  padRole: PadRole,
+function ZoneThresholdsSliderElements({padIndex, padType} : {
+  padIndex: number,
   padType: PadType
 }) {
-  const zoneThresholds = useConfig(config => config.settings[padRole].zoneThresholds);
+  const zoneThresholds = useConfig(config => config.pads[padIndex].settings.zoneThresholds);
   return zoneThresholds.map((zoneThreshold, zone) => {
     const hasMax = zoneThreshold.max !== undefined;
     const displayName = getDisplayName(hasMax ? 'zoneThresholdsMinMax' : 'zoneThreshold', padType, zone);
     return <SettingSliderEntry {...createThresholdSliderProps()} key={zone}
-      padRole={padRole}
+      padIndex={padIndex}
       label={displayName}
       valueAccessor={createZoneThresholdAccessor(zone, hasMax)}
       trackColor={chartColors[zone]} />;
   });
 }
 
-function AlmostClosedThresholdSliderEntry({padRole} : {padRole: PadRole}) {
+function AlmostClosedThresholdSliderEntry({padIndex} : {padIndex: number}) {
   const valueAccessor = createValueAccessorBySettingIds(['almostClosedThreshold', 'closedThreshold']);
   return <SettingSliderEntry
-    padRole={padRole}
+    padIndex={padIndex}
     key='pedalStateThresholds'
     label='Pedal State Thresholds [%]'
     sliderProps={{

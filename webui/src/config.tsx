@@ -17,10 +17,6 @@ export const useConfig = create<Config>(() => ({
   pads: [],
   connectors: {},
   mappings: {},
-  settings: {},
-  monitor: { triggeredByAllPads: false },
-  isDirty: false,
-  latencyTest: false
 }));
 
 export function initConfig() {
@@ -43,8 +39,7 @@ export function getPadIndexByRole(padRole?: PadRole): number | undefined {
 }
 
 export function getPadSettingsByIndex(padIndex: number): DrumPadSettings {
-  const role = useConfig.getState().pads[padIndex].role;
-  return useConfig.getState().settings[role];
+  return useConfig.getState().pads[padIndex].settings;
 }
 
 export function getPadByIndex(padIndex?: number): DrumPadConfig | undefined {
@@ -62,10 +57,8 @@ export interface Config {
   pads: DrumPadConfig[];
   connectors: Record<ConnectorId, ConnectorConfig>;
   mappings: Record<PadRole, DrumPadMappings>;
-  settings: Record<PadRole, DrumPadSettings>;
-  monitor: {padIndex?: number, triggeredByAllPads: boolean};
-  latencyTest: boolean;
-  isDirty: boolean;
+  monitor?: MonitorConfig;
+  isDirty?: boolean; // false if not present
   version?: VersionInfo;
 }
 
@@ -90,6 +83,7 @@ export interface DrumPadConfig {
   autoCalibrate: boolean;
   pedal?: PadRole;
   connector?: ConnectorId;
+  settings: DrumPadSettings;
 }
 
 export interface DrumPadMappings {
@@ -158,6 +152,12 @@ export enum CurveType {
   Log2 = "Log2"
 }
 
+export interface MonitorConfig {
+  padIndex?: number,
+  triggeredByAllPads?: boolean, // false if not present
+  latencyTest?: boolean; // false if not present
+}
+
 export function getZonesCount(zonesType: ZonesType): number {
   switch(zonesType) {
   case ZonesType.Zones1_Controller:
@@ -173,6 +173,6 @@ export function getZonesCount(zonesType: ZonesType): number {
   }
 }
 
-export function getZonesCountByRole(padRole: PadRole): number {
-  return getZonesCount(useConfig.getState().settings[padRole]?.zonesType);
+export function getPadZonesCount(padIndex: number): number {
+  return getZonesCount(useConfig.getState().pads[padIndex]?.settings.zonesType);
 }

@@ -40,12 +40,12 @@ void DrumMonitor::checkAndSendNonMonitoredPadHitInfo() {
 
   DrumPad* monitoredPad = getMonitoredPad();
   for (pad_size_t padIndex = 0; padIndex < drumKit->getPadsCount(); ++padIndex) {
-    DrumPad& pad = drumKit->getPad(padIndex);
-    bool isMonitored = &pad == monitoredPad; // monitored pads are handled seoarately as they contain history data
-    if (!isMonitored && pad.isHit()) {
-      MonitorHitInfo hitInfo = (pad.getPadType() == PadType::Pedal)
-          ? preparePedalHitInfo(pad)
-          : prepareDrumHitInfo(pad);
+    DrumPad* pad = drumKit->getPad(padIndex);
+    bool isMonitored = pad == monitoredPad; // monitored pads are handled seoarately as they contain history data
+    if (!isMonitored && pad->isHit()) {
+      MonitorHitInfo hitInfo = (pad->getPadType() == PadType::Pedal)
+          ? preparePedalHitInfo(*pad)
+          : prepareDrumHitInfo(*pad);
       sendHitMessage(hitInfo, false);
     }
   }

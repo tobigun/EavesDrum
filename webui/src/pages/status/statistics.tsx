@@ -5,10 +5,10 @@ import { useCallback, useEffect, useState } from 'react';
 
 import Box from '@mui/material/Box';
 
-import { connection, DrumCommand } from '@connection';
+import { connection, DrumCommand } from '@/connection/connection';
 import { IconButton, Stack, Typography } from '@mui/material';
 import ReloadIcon from '@mui/icons-material/Sync';
-import { InfoBox } from '@components/info-box';
+import { InfoBox } from '@/components/info-box';
 
 interface StatisticsJson {
     updateCountPer30s?: number;

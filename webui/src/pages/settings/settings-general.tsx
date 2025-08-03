@@ -4,10 +4,12 @@
 import { useContext } from "react";
 import { MAX_GATE_TIME_MS, updateConfig, useConfig } from "@config";
 import { createFractionConverter } from "./converter";
-import { connection, ConnectionStateContext, DrumCommand } from "@connection";
+import { connection, DrumCommand } from "@/connection/connection";
 import { Box, Stack } from "@mui/material";
-import { NumberInput } from "@components/number-input";
-import { Card, CardSize } from "@components/card";
+import { NumberInput } from "@/components/number-input";
+import { Card } from "@/components/card";
+import { CardSize } from "@/components/component-enums";
+import { ConnectionStateContext } from "@/connection/connection-state";
 
 export function GeneralCard() {
   const spacing = 1;

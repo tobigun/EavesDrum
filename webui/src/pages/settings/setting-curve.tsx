@@ -6,24 +6,25 @@ import { useCallback, useContext } from "react";
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 
 import { CurveType, updateConfig, useConfig } from "@config";
-import { connection, ConnectionStateContext } from "@connection";
+import { connection } from "@/connection/connection";
 import { SettingEntryContainer } from "./setting-entry";
 import { SettingsValueAccessor } from "./settings-pad";
+import { ConnectionStateContext } from "@/connection/connection-state";
 
-export function SettingCurveTypeEntry({ label, padRole, valueAccessor }: {
+export function SettingCurveTypeEntry({ label, padIndex, valueAccessor }: {
     label: string,
-    padRole: string,
+    padIndex: number,
     valueAccessor: SettingsValueAccessor
 }) {
   const connected = useContext(ConnectionStateContext);
   
-  const value = useConfig(config => valueAccessor.getValue(config.settings[padRole]));
+  const value = useConfig(config => valueAccessor.getValue(config.pads[padIndex].settings));
   
   const onCurveTypeChanged = useCallback((event: SelectChangeEvent) => {
     const value = event.target.value as CurveType;
-    updateConfig(config => valueAccessor.setValue(config.settings[padRole], value));
-    connection.sendSetPadSettingsCommand(padRole, valueAccessor.setValue({}, value));
-  }, [valueAccessor, padRole]);
+    updateConfig(config => valueAccessor.setValue(config.pads[padIndex].settings, value));
+    connection.sendSetPadSettingsCommand(padIndex, valueAccessor.setValue({}, value));
+  }, [valueAccessor, padIndex]);
   
   return (
     <SettingEntryContainer name={label}>

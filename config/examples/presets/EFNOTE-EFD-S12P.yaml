@@ -1,4 +1,4 @@
-preset:
+settings:
   padType: Drum
   zonesType: Zones3_Piezos
   curveType: Linear

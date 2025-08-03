@@ -41,8 +41,8 @@ public:
 
   // Pad
 
-  DrumPad& getPad(pad_size_t index) { return pads[index]; }
-  const DrumPad& getPad(pad_size_t index) const { return pads[index]; }
+  DrumPad* getPad(pad_size_t index) { return (index < padsCount) ? &pads[index] : nullptr; }
+  const DrumPad* getPad(pad_size_t index) const  { return (index < padsCount) ? &pads[index] : nullptr; }
 
   DrumPad* getPadByName(String name) {
     for (pad_size_t index = 0; index < padsCount; ++index) {

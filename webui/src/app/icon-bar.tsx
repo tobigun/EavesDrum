@@ -11,7 +11,8 @@ import SaveIcon from '@mui/icons-material/SdCard';
 import RestoreIcon from '@mui/icons-material/Undo';
 import UploadFile from '@mui/icons-material/UploadFile';
 import InfoIcon from '@mui/icons-material/InfoOutline';
-import { connection, ConnectionStateContext, DrumCommand } from "@connection";
+import { connection, DrumCommand } from "@/connection/connection";
+import { ConnectionStateContext } from "@/connection/connection-state";
 
 const iconSize = 'large';
 const iconColor = 'rgb(0, 0, 0)';
@@ -20,7 +21,7 @@ export function IconBar({ setFileUploadDialogOpen }: {
   setFileUploadDialogOpen: (open: boolean) => void
 }) {
   const connected = useContext(ConnectionStateContext);
-  const isDirty = useConfig(config => config.isDirty);
+  const isDirty = useConfig(config => config.isDirty ?? false);
   
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
 

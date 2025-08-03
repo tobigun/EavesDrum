@@ -29,8 +29,6 @@
 void enableMassStorageDevice();
 #endif
 
-enum ConfigType { SETTINGS, MAPPINGS };
-
 class DrumKit;
 
 class DrumConfigMapper {
@@ -44,14 +42,13 @@ public:
   static JsonDocument getDrumKitConfigAsJson(const DrumKit& drumKit);
   
   static void applyDrumKitMappings(DrumKit& drumKit, JsonObjectConst mappingsNode);
-  static void applyDrumKitSettings(DrumKit& drumKit, JsonObjectConst settingsNode);
   static void applyGeneralConfig(DrumKit& drumKit, JsonObjectConst generalNode);
+  static void applyPadSettings(DrumPad& pad, JsonObjectConst settingsNode);
 
 private:
   // From JSON
 
   static void applyDrumKitConfig(DrumKit& drumKit, const JsonDocument& configNode);
-  static void applyDrumKitSettingsOrMappings(DrumKit& drumKit, JsonObjectConst node, ConfigType type);
 
   static void applyPadConfigs(DrumKit& drumKit, JsonArrayConst& padsNode);
   static void applyPadConfig(DrumPad& pad, DrumKit& drumKit, pad_size_t padIndex, JsonArrayConst& padsNode);
@@ -64,7 +61,6 @@ private:
   static bool applyPinsConfig(DrumConnector& connector, DrumKit& drumKit, JsonArrayConst pinsNode);
   static DrumPin getPinsConfig(DrumConnector& connector, DrumKit& drumKit, JsonVariantConst pinsNode);
 
-  static void applyPadSettings(DrumPad& pad, JsonObjectConst settingsNode);
   static void applyPadMappings(DrumPad& pad, JsonObjectConst& mappingsNode);
 
   // To JSON

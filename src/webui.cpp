@@ -32,32 +32,54 @@ static void sendJson(JsonDocument json, AsyncWebSocketClient* client) {
   client->text(str);
 }
 
+void WebUI::handleGetConfigRequest(AsyncWebSocketClient* client) {
+  sendConfig(client);
+}
+
 void WebUI::sendConfig(AsyncWebSocketClient* client) {
   JsonDocument configDoc = DrumConfigMapper::getDrumKitConfigAsJson(*drumKit);
   JsonObject configNode = configDoc.as<JsonObject>();
 
-  const DrumMonitor& monitor = drumKit->getMonitor();
-  const DrumPad* monitoredPad = monitor.getMonitoredPad();
-  const JsonObject monitorNode = configNode[CONFIG_MONITOR].to<JsonObject>();
-  monitorNode[CONFIG_MONITOR_TRIGGERED_BY_ALL_PADS] = monitor.isTriggeredByAllPads();
-  if (monitoredPad) {
-    monitorNode[CONFIG_MONITOR_PAD] = monitoredPad->getIndex();
-  }
-  configNode["latencyTest"] = monitor.isLatencyTestActive();
-  configNode["isDirty"] = isConfigDirty;
-  
-  JsonObject versionNode = configNode["version"].to<JsonObject>();
-  versionNode["packageVersion"] = Version::getPackageVersion();
-  versionNode["gitCommitHash"] = Version::getGitCommitHash();
-  versionNode["buildTime"] = Version::getBuildTime();
+  setMonitorConfig(configNode);
+  setVersionInfo(configNode);
 
+  if (isConfigDirty) {
+    configNode["isDirty"] = isConfigDirty;
+  }
+  
   JsonDocument doc;
   doc["config"] = configNode;
   sendJson(doc, client);
 }
 
-void WebUI::handleGetConfigRequest(AsyncWebSocketClient* client) {
-  sendConfig(client);
+void WebUI::setMonitorConfig(JsonObject& configNode) {
+  const DrumMonitor& monitor = drumKit->getMonitor();
+  const DrumPad* monitoredPad = monitor.getMonitoredPad();
+  bool triggeredByAllPads = monitor.isTriggeredByAllPads();
+  bool latencyTestActive = monitor.isLatencyTestActive();
+
+  bool monitorSectionPresent = monitoredPad || triggeredByAllPads || latencyTestActive;
+  if (!monitorSectionPresent) {
+    return;
+  }
+
+  JsonObject monitorNode = configNode[CONFIG_MONITOR].to<JsonObject>();
+  if (monitoredPad) {
+    monitorNode[CONFIG_MONITOR_PAD] = monitoredPad->getIndex();
+  }
+  if (triggeredByAllPads) {
+    monitorNode[CONFIG_MONITOR_TRIGGERED_BY_ALL_PADS] = triggeredByAllPads;
+  }
+  if (latencyTestActive) {
+    monitorNode["latencyTest"] = monitor.isLatencyTestActive();
+  }
+}
+
+void WebUI::setVersionInfo(JsonObject& configNode) {
+  JsonObject versionNode = configNode["version"].to<JsonObject>();
+  versionNode["packageVersion"] = Version::getPackageVersion();
+  versionNode["gitCommitHash"] = Version::getGitCommitHash();
+  versionNode["buildTime"] = Version::getBuildTime();
 }
 
 void WebUI::handleSetMonitor(JsonObjectConst configNode) {
@@ -67,9 +89,7 @@ void WebUI::handleSetMonitor(JsonObjectConst configNode) {
     DrumPad* monitorPad = nullptr;
     if (configNode[CONFIG_MONITOR_PAD].is<pad_size_t>()) { // unset with null
       pad_size_t padIndex = configNode[CONFIG_MONITOR_PAD];
-      if (padIndex < drumKit->getPadsCount()) {
-        monitorPad = &drumKit->getPad(padIndex);
-      }
+      monitorPad = drumKit->getPad(padIndex);
     }
 
     if (!monitorPad) {
@@ -91,31 +111,37 @@ void WebUI::handleSetPadConfig(JsonObjectConst configNode) {
   for (JsonPairConst pair : configNode) {
     pad_size_t padIndex = atoi(pair.key().c_str());
     if (padIndex >= drumKit->getPadsCount()) {
-      SerialDebug.printf("Invalid enable pad: %d\n", padIndex);
+      eventLog.log(Level::ERROR, String("Invalid enable pad: ") + padIndex);
       continue;
     }
 
+    DrumPad& pad = *drumKit->getPad(padIndex);
+
     if (!pair.value()[CONFIG_ENABLED_PROP].isNull()) {
       bool enabled = pair.value()[CONFIG_ENABLED_PROP];
-      drumKit->getPad(padIndex).setEnabled(enabled);
+      pad.setEnabled(enabled);
       isConfigDirty = true;
     }
 
     if (!pair.value()[CONFIG_AUTOCALIBRATE_PROP].isNull()) {
       bool autoCalibrate = pair.value()[CONFIG_AUTOCALIBRATE_PROP];
-      drumKit->getPad(padIndex).setAutoCalibrate(autoCalibrate);
+      pad.setAutoCalibrate(autoCalibrate);
       isConfigDirty = true;
     }
   }
 }
 
-void WebUI::handleTriggerMonitor() {
-  drumKit->getMonitor().triggerMonitor();
-}
-
 void WebUI::handleSetSettingsRequest(AsyncWebSocketClient* client, JsonObjectConst settingsNode) {
-  DrumConfigMapper::applyDrumKitSettings(*drumKit, settingsNode);
-  isConfigDirty = true;
+  for (JsonPairConst keyValuePair : settingsNode) {
+    pad_size_t padIndex = atoi(keyValuePair.key().c_str());
+    DrumPad* pad = drumKit->getPad(padIndex);
+    if (!pad) {
+      eventLog.log(Level::ERROR, String("Invalid pad in setSettings request: ") + padIndex);
+      continue;
+    }
+    DrumConfigMapper::applyPadSettings(*pad, keyValuePair.value());
+    isConfigDirty = true;
+  }
 }
 
 void WebUI::handleSetMappingsRequest(JsonObjectConst mappingsNode) {
@@ -126,6 +152,10 @@ void WebUI::handleSetMappingsRequest(JsonObjectConst mappingsNode) {
 void WebUI::handleSetGeneralConfigRequest(JsonObjectConst generalConfigNode) {
   DrumConfigMapper::applyGeneralConfig(*drumKit, generalConfigNode);
   isConfigDirty = true;
+}
+
+void WebUI::handleTriggerMonitor() {
+  drumKit->getMonitor().triggerMonitor();
 }
 
 void WebUI::handlePlayNote(JsonObjectConst& argsNode) {
@@ -249,7 +279,7 @@ void WebUI::onWsEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsE
     JsonDocument doc;
     DeserializationError error = deserializeJson(doc, data, len);
     if (error) {
-      SerialDebug.printf("Deserialization failed: %s\n", error.c_str());
+      eventLog.log(Level::ERROR, String("Deserialization failed: ") + error.c_str());
       return;
     }
 
@@ -273,7 +303,7 @@ void WebUI::serve() {
 
   bool fsBegin = LittleFS.begin();
   if (!fsBegin) {
-    SerialDebug.println(F("Failed to mount filesystem, check if filesystem content was uploaded"));
+    eventLog.log(Level::ERROR, F("Failed to mount filesystem, check if filesystem content was uploaded"));
     return;
   }
 

@@ -3,7 +3,7 @@
 
 import { MouseEvent, ReactElement, useCallback, useState } from "react";
 import { ChokeType, getZonesCount, PadType, useConfig, ZonesType } from "@config";
-import { connection, DrumCommand } from "@connection";
+import { connection, DrumCommand } from "@/connection/connection";
 import { Popover } from "@mui/material";
 import CymbalIcon from '@mui/icons-material/Album';
 import DrumIcon from '@mui/icons-material/CircleOutlined';
@@ -14,7 +14,7 @@ import NoChokeIcon from '@mui/icons-material/MusicNote';
 import PiezoIcon from '@mui/icons-material/RadioButtonChecked';
 import SwitchIcon from '@mui/icons-material/ToggleOn';
 import { NestedList, NestedListItemInfo } from "./nested-list";
-import { CardBreadcrumb, CardBreadcrumbs } from "@components/breadcrumb";
+import { CardBreadcrumb, CardBreadcrumbs } from "@/components/breadcrumb";
 
 const HEADER_PAD_TYPE = "Select Pad Type:";
 const HEADER_ZONES_COUNT = "Select Zones Count:";
@@ -29,12 +29,12 @@ enum MenuTopLevel {
   ChokeType
 }
 
-export function PadTypeSelector({padRole}: {
-  padRole: string
+export function PadTypeSelector({padIndex}: {
+  padIndex: number
 }) {
-  const padType = useConfig(config => config.settings[padRole].padType);
-  const zonesType = useConfig(config => config.settings[padRole].zonesType);
-  const chokeType = useConfig(config => config.settings[padRole].chokeType) ?? ChokeType.None;
+  const padType = useConfig(config => config.pads[padIndex].settings.padType);
+  const zonesType = useConfig(config => config.pads[padIndex].settings.zonesType);
+  const chokeType = useConfig(config => config.pads[padIndex].settings.chokeType) ?? ChokeType.None;
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement>();
   const [openMenuTopLevel, setOpenMenuTopLevel] = useState<MenuTopLevel>(MenuTopLevel.HideMenu);
@@ -72,7 +72,7 @@ export function PadTypeSelector({padRole}: {
     const newChokeType = newChokeTypeOrUnknown ?? ChokeType.None;
     
     if (newPadType !== padType || newZonesType !== zonesType || newChokeType !== chokeType) {
-      connection.sendSetPadSettingsCommand(padRole, {
+      connection.sendSetPadSettingsCommand(padIndex, {
         padType: newPadType,
         zonesType: newZonesType,
         chokeType: newChokeType
@@ -81,7 +81,7 @@ export function PadTypeSelector({padRole}: {
     }
 
     handleClose();
-  }, [padRole, padType, zonesType, chokeType, handleClose]);
+  }, [padIndex, padType, zonesType, chokeType, handleClose]);
     
   const showMenu = openMenuTopLevel !== MenuTopLevel.HideMenu;
 

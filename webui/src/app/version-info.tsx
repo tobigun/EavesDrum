@@ -3,7 +3,7 @@
 
 import { Box, Divider, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, Typography } from "@mui/material";
 import { useConfig } from "@config";
-import { StyledTableRow } from "@components/table-row";
+import { StyledTableRow } from "@/components/table-row";
 import { licenses } from "./licenses";
 
 export function VersionInfo() {

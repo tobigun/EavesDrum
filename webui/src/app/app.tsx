@@ -6,11 +6,11 @@ import { useState } from 'react';
 import Box from '@mui/material/Box';
 
 import { AppBar } from './app-bar';
-import { ConnectionStateProvider } from '@connection';
-import { StatusPage } from "@pages/status/status-page";
-import { MappingsPage } from "@pages/mappings/mappings-page";
-import { SettingsPage } from "@pages/settings/settings-page";
-import { TabContentPage } from '@components/tab';
+import { TabContentPage } from '@/components/tab';
+import { ConnectionStateProvider } from '@/connection/connection-state';
+import { MappingsPage } from "@/pages/mappings/mappings-page";
+import { SettingsPage } from "@/pages/settings/settings-page";
+import { StatusPage } from "@/pages/status/status-page";
 
 import './app.css';
 

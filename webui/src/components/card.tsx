@@ -13,9 +13,10 @@ import Typography from '@mui/material/Typography';
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForwardIosSharp';
 
-import { ConfigDropOverlay, ConfigDropProps } from './file-upload';
+import { CardConfigDropOverlay, ConfigDropProps } from './file-upload';
 import { useConfig } from '@config';
 import { Button, ButtonProps } from '@mui/material';
+import { CardSize } from './component-enums';
 
 const CardAccordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters {...props} />
@@ -47,11 +48,6 @@ const CardAccordionSummary = styled(UnstyledCardAccordionSummary)(({ theme }) =>
     marginLeft: theme.spacing(1),
   },
 }));
-  
-export enum CardSize {
-    medium,
-    large
-}
 
 interface CardProps {
     name: string;
@@ -81,11 +77,11 @@ export function Card(props: AccordionProps & CardProps) {
         </Stack>
       </Stack>
       { props.dropProps ?
-        <ConfigDropOverlay dropProps={props.dropProps}>
+        <CardConfigDropOverlay dropProps={props.dropProps}>
           <AccordionDetails>
             {props.children}
           </AccordionDetails>
-        </ConfigDropOverlay>
+        </CardConfigDropOverlay>
         :
         <AccordionDetails>
           {props.children}

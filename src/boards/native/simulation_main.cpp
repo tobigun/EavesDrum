@@ -101,7 +101,7 @@ static const DrumPad* getHitPadAndAction(int key, CommandAction& action) {
     hitPadIndex = 0;
   }
 
-  return &drumKit.getPad(hitPadIndex);
+  return drumKit.getPad(hitPadIndex);
 }
 
 static int getPressedKey() {

@@ -5,7 +5,7 @@ import { Alert, MenuItem, Select, Stack } from "@mui/material";
 import { getPadByIndex, isPadPinConnectedToMux, useConfig } from "@config";
 
 export function MuxMonitorInputCheck() {
-  const monitoredPadIndex = useConfig(config => config.monitor.padIndex);
+  const monitoredPadIndex = useConfig(config => config.monitor?.padIndex);
   const monitoredPadName = getPadByIndex(monitoredPadIndex)?.name ?? 'None';
   const isMux = isPadPinConnectedToMux(0, monitoredPadIndex);
 

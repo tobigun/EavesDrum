@@ -11,8 +11,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import Paper from '@mui/material/Paper';
 
-import { connection, DrumCommand } from '@connection';
-import { StyledTableRow } from '@components/table-row';
+import { connection, DrumCommand } from '@/connection/connection';
+import { StyledTableRow } from '@/components/table-row';
 
 enum LogLevel {
   INFO,

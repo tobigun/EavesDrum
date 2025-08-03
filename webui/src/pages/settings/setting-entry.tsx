@@ -3,7 +3,7 @@
 
 import { Stack } from "@mui/material";
 import { PropsWithChildren } from "react";
-import { EntryContainer } from "@components/card";
+import { EntryContainer } from "@/components/card";
 
 export function SettingEntryContainer(props: PropsWithChildren<{ name: string }>) {
   return (

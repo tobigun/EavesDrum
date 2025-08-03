@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import LatencySvg from "@/image/latency.svg?react";
 
 import { getPadSettingsByIndex, isPadPinConnectedToMux, useConfig } from "@config";
-import { connection, DrumCommand } from "@connection";
+import { connection, DrumCommand } from "@/connection/connection";
 import { Alert, Step, StepLabel, Stepper } from "@mui/material";
 import { PropsWithChildren, useEffect, useState } from "react";
 import { Monitor } from "./monitor-card";
@@ -17,7 +17,7 @@ import { SettingSlider } from "../setting-slider";
 import { MidiNoteSelector } from "@/pages/mappings/midi-note-selector";
 import { MonitorMode } from "./monitor-mode";
 import { MonitorMessage } from "./monitor-message";
-import { InfoBox } from "@components/info-box";
+import { InfoBox } from "@/components/info-box";
 import { MuxMonitorInputCheck } from "./signal-graph/mux-monitor-input-check";
 
 export function LatencyTestWizard({closeLatencyTest} : {
@@ -122,7 +122,7 @@ function StepIntroduction() {
 function StepSelectChannel({ setNextEnabled } : {
   setNextEnabled: (enabled: boolean) => void
 }) {
-  const monitoredPadIndex = useConfig(config => config.monitor.padIndex);
+  const monitoredPadIndex = useConfig(config => config.monitor?.padIndex);
   const isMux = isPadPinConnectedToMux(0, monitoredPadIndex);
 
   useEffect(() => {
@@ -173,7 +173,7 @@ function StepAdjustTriggerSettings({threshold, setThreshold, midiNote, setMidiNo
   midiNote: number,
   setMidiNote: (value: number) => void,
 }) {
-  const monitoredPadIndex = useConfig(config => config.monitor.padIndex);
+  const monitoredPadIndex = useConfig(config => config.monitor?.padIndex);
   if (monitoredPadIndex === undefined) {
     return "No pad selected";
   }
@@ -248,7 +248,7 @@ function StepFinalTest({threshold, midiNote, setMidiNote} : {
     };
   }, []);
 
-  const monitoredPadIndex = useConfig(config => config.monitor.padIndex);
+  const monitoredPadIndex = useConfig(config => config.monitor?.padIndex);
   if (monitoredPadIndex === undefined) {
     return "No pad selected";
   }

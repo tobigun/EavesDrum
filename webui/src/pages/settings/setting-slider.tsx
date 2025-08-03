@@ -3,14 +3,15 @@
 
 import { useCallback, useContext } from "react";
 import { updateConfig, useConfig } from "@config";
-import { connection, ConnectionStateContext } from "@connection";
+import { connection } from "@/connection/connection";
 import { SettingEntryContainer } from "./setting-entry";
 import { Stack } from "@mui/material";
-import { ColoredSlider, ColoredSliderProps } from "@components/colored-slider";
-import { NumberInput } from "@components/number-input";
+import { ColoredSlider, ColoredSliderProps } from "@/components/colored-slider";
+import { NumberInput } from "@/components/number-input";
 import { SettingsValueAccessor } from "./settings-pad";
 import { useShallow } from "zustand/shallow";
 import { identityConverter, SettingsConverter } from "./converter";
+import { ConnectionStateContext } from "@/connection/connection-state";
 
 export interface SettingSliderProps {
   label: string,
@@ -24,32 +25,32 @@ export interface SettingSliderProps {
 }
 
 export interface SettingSliderEntryProps extends SettingSliderProps {
-  padRole: string,
+  padIndex: number,
   valueAccessor: SettingsValueAccessor
 }
 
 // A specialized form that directly updates the config and sends config commands
 export function SettingSliderEntry(props: SettingSliderEntryProps) {
   const valueAccessor = props.valueAccessor;
-  const padRole = props.padRole;
+  const padIndex = props.padIndex;
 
   const settingIndices = [...Array(props.valueAccessor.count)]
     .map((_, index) => index);
 
   const settingValues = useConfig(useShallow(config =>
     settingIndices.map(index =>
-      valueAccessor.getValue(config.settings[padRole], index))));
+      valueAccessor.getValue(config.pads[padIndex].settings, index))));
 
   const changeValues = useCallback((newValues: number[]) => {
     updateConfig(config => settingIndices.forEach(index => 
-      valueAccessor.setValue(config.settings[padRole], newValues[index], index)));
-  }, [padRole, valueAccessor, settingIndices]);
+      valueAccessor.setValue(config.pads[padIndex].settings, newValues[index], index)));
+  }, [padIndex, valueAccessor, settingIndices]);
   
   const sendValues = useCallback((newValues: number[]) => {
     const settings: any = {};
     settingIndices.forEach(index => valueAccessor.setValue(settings, newValues[index], index));
-    connection.sendSetPadSettingsCommand(padRole, settings);
-  }, [padRole, valueAccessor, settingIndices]);
+    connection.sendSetPadSettingsCommand(padIndex, settings);
+  }, [padIndex, valueAccessor, settingIndices]);
   
   return <SettingSlider {...props}
     count={valueAccessor.count}

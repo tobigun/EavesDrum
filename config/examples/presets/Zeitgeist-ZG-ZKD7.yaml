@@ -1,4 +1,4 @@
-preset: 
+settings: 
   padType: Cymbal
   zonesType: Zones3_PiezoAndSwitches_2TRS
   chokeType: Switch_Edge

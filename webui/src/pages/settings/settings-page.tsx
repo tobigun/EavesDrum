@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack';
 import { useShallow } from 'zustand/shallow';
 
 import { MonitorCard } from './monitor/monitor-card';
-import { Masonry } from '@components/masonry';
+import { Masonry } from '@/components/masonry';
 import { SettingsCardGroup } from './settings-card';
 import { useConfig } from '@config';
 import { GeneralCard } from './settings-general';

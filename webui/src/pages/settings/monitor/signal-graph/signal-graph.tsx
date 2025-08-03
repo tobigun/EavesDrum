@@ -144,8 +144,8 @@ function updatePedalSignalGraphDatasets(messageInfo: MonitorMessageInfo): Signal
   };
 
   const message = messageInfo.message;
-  const pedalConfig = useConfig.getState().pads[message.padIndex];
-  const tolerance = (useConfig.getState().settings[pedalConfig.role].moveDetectTolerance ?? NaN) * 100 / 1023;
+  const pedal = useConfig.getState().pads[message.padIndex];
+  const tolerance = (pedal.settings.moveDetectTolerance ?? NaN) * 100 / 1023;
   
   // add all values with their timestamp calculated relative to the hit's timestamp
   for (const entry of message.history) {

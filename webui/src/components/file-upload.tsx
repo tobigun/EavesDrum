@@ -3,48 +3,30 @@
 
 import { PropsWithChildren, useCallback, useState } from "react";
 import { parse } from "yaml";
-import { connection, DrumCommand } from "@connection";
-import { Alert, Box, Dialog, DialogProps, Snackbar, SnackbarCloseReason, Stack, Typography } from "@mui/material";
+import { connection, DrumCommand } from "@/connection/connection";
+import { Alert, AlertColor, Box, Dialog, DialogProps, Snackbar, SnackbarCloseReason, Stack, Typography } from "@mui/material";
 import { UploadFile } from "@mui/icons-material";
 import { useDropzone } from "react-dropzone";
-import { PadRole } from "@config";
-
-export enum ConfigFilter {
-  Settings,
-  Mappings
-}
+import { ConfigFilter } from "./component-enums";
 
 export interface ConfigDropProps {
   filter?: ConfigFilter,
+  padIndex?: number,
   padRole?: string
 }
 
-function applyConfig(configNode: any, filter?: ConfigFilter, padRole?: PadRole) : boolean {
+function applyConfig(configNode: any, dropProps: ConfigDropProps) : boolean {
   let success = false;
+  const filter = dropProps.filter;
+
   if (filter === undefined || filter === ConfigFilter.Settings) {
-    const settingsNode = configNode['settings'];
-    if (padRole) {
-      const padSettingsNode = settingsNode?.[padRole] ?? configNode['preset'];
-      if (padSettingsNode) {
-        connection.sendSetPadSettingsCommand(padRole, padSettingsNode);
-        success = true;
-      }
-    } else if (settingsNode) {
-      connection.sendSetSettingsCommand(settingsNode);
+    if (applyPadSettings(configNode, dropProps.padIndex)) {
       success = true;
     }
   }
-      
+
   if (filter === undefined || filter === ConfigFilter.Mappings) {
-    const mappingsNode = configNode['mappings'];
-    if (padRole) {
-      const padMappingsNode = mappingsNode?.[padRole];
-      if (padMappingsNode) {
-        connection.sendSetPadMappingsCommand(padRole, padMappingsNode);
-        success = true;
-      }
-    } else if (mappingsNode) {
-      connection.sendSetMappingsCommand(mappingsNode);
+    if (applyPadOrAllMappings(configNode, dropProps.padRole)) {
       success = true;
     }
   }
@@ -52,24 +34,69 @@ function applyConfig(configNode: any, filter?: ConfigFilter, padRole?: PadRole) 
   return success;
 }
 
-function handleConfigDrop(file: File, dropProps: ConfigDropProps, setErrorText: (message: string) => void) {
+// returns true if a config was applied
+function applyPadSettings(configNode: any, padIndex?: number): boolean {
+  const padSettingsNode = configNode['settings'];
+  if (!padSettingsNode) {
+    return false;
+  }
+
+  if (padIndex === undefined) { // config was dropped on overall config upload area
+    return false; // ignore, as the pad for this config is unknown
+  }
+
+  // settings were dropped on a pad -> apply settings for selected pad only
+  connection.sendSetPadSettingsCommand(padIndex, padSettingsNode);
+  return true; // Note: we do not check yet if backend accepted the settings (i.e. upload might still have failed)
+}
+
+// returns true if a config was applied
+function applyPadOrAllMappings(configNode: any, padRole?: string): boolean {
+  const mappingsNode = configNode['mappings'];
+  if (!mappingsNode) {
+    return false;
+  }
+
+  if (!padRole) { // mapping was dropped on overall config upload area -> use all applicable mappings
+    connection.sendSetMappingsCommand(mappingsNode);
+    return true;
+  }
+
+  // mappings were dropped on a pad -> apply settings for role of selected pad only
+  const roleMappingsNode = mappingsNode[padRole];
+  if (roleMappingsNode) { // uploaded config must contain mappings for selected pad
+    connection.sendSetRoleMappingsCommand(padRole, roleMappingsNode);
+    return true; // Note: we do not check yet if backend accepted the mappings (i.e. upload might still have failed)
+  }
+
+  return false;
+}
+
+
+interface FileUploadMessage {
+  message: string;
+  severity: AlertColor
+}
+
+function handleConfigDrop(file: File, dropProps: ConfigDropProps, setMessage: (message: FileUploadMessage) => void) {
   const reader = new FileReader();
-  reader.onabort = () => setErrorText('File reading was aborted');
-  reader.onerror = () => setErrorText('File reading has failed');
+  reader.onabort = () => setMessage({message: 'File reading was aborted', severity: 'error'});
+  reader.onerror = () => setMessage({message: 'File reading has failed', severity: 'error'});
   reader.onload = () => {
     try {
       const yaml = reader.result as string;
       const configNode = parse(yaml);
-      if (!applyConfig(configNode, dropProps.filter, dropProps.padRole)) {
-        setErrorText('No valid config entry found');
+      if (!applyConfig(configNode, dropProps)) {
+        setMessage({message: 'No valid config entry found', severity: 'error'});
       } else {
         connection.sendCommand(DrumCommand.getConfig);
+        setMessage({message: 'Config applied', severity: 'success'});
       }
     } catch(error) {
       if (typeof error === "string") {
-        setErrorText(error as string);
+        setMessage({message: error as string, severity: 'error'});
       } else if (error instanceof Error) {
-        setErrorText((error as Error).message);
+        setMessage({message: (error as Error).message, severity: 'error'});
       }        
       console.log(error);
     }
@@ -79,16 +106,16 @@ function handleConfigDrop(file: File, dropProps: ConfigDropProps, setErrorText: 
 
 const acceptedConfigTypes = { 'application/yaml': ['.yaml', '.yml'] };
 
-export function ConfigDropOverlay(props: {
+export function CardConfigDropOverlay(props: {
     dropProps: ConfigDropProps
 } & PropsWithChildren) {
   const [drag, setDrag] = useState(false);
-  const [errorText, setErrorText] = useState<string>();
+  const [message, setMessage] = useState<FileUploadMessage>();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    handleConfigDrop(acceptedFiles[0], props.dropProps, setErrorText);
+    handleConfigDrop(acceptedFiles[0], props.dropProps, setMessage);
     setDrag(false);
-  }, [props.dropProps, setErrorText]);
+  }, [props.dropProps, setMessage]);
   
   const {getRootProps, getInputProps} = useDropzone({
     onDrop,
@@ -106,41 +133,44 @@ export function ConfigDropOverlay(props: {
         </div>
         <div className='droparea' style={{ display: drag ? 'flex' : 'none' }}>
           <Stack display='flex' alignItems='center' justifyContent='center' padding={2} width='80%' height='80%' borderRadius='2px' border='2px dashed #bdbdbd'>
-            <Typography>Drop a mapping file (.yaml) here</Typography>
+            <Typography>
+              Drop a {props.dropProps.filter === ConfigFilter.Mappings ? 'mapping' : 'setting'} file (.yaml) here
+            </Typography>
             <UploadFile sx={{ fontSize: '5em' }}/>
           </Stack>
         </div>
       </Box>
-      <ErrorSnackbar errorText={errorText} setErrorText={setErrorText} />
+      <FileUploadSnackbar message={message} setMessage={setMessage} />
     </>
   );
 }
-function ErrorSnackbar({ errorText, setErrorText } : {
-    errorText: string | undefined,
-    setErrorText: (text: string | undefined) => void
+
+function FileUploadSnackbar({ message, setMessage } : {
+    message: FileUploadMessage | undefined,
+    setMessage: (message: FileUploadMessage | undefined) => void
 }) {
   const handleClose = useCallback((_event?: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
     if (reason === 'clickaway') {
       //return;
     }
-    setErrorText(undefined);
-  }, [setErrorText]);
+    setMessage(undefined);
+  }, [setMessage]);
 
   return (
-    <Snackbar open={!!errorText} onClose={handleClose}>
-      <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }} >
-        <Box sx={{ whiteSpace: "pre-wrap", fontFamily: 'Monospace' }}>{errorText}</Box>
+    <Snackbar open={!!message} onClose={handleClose}>
+      <Alert onClose={handleClose} severity={message?.severity} sx={{ width: '100%' }} >
+        <Box sx={{ whiteSpace: "pre-wrap", fontFamily: 'Monospace' }}>{message?.message}</Box>
       </Alert>
     </Snackbar>
   );
 }
 
 export function ConfigUploadDialog(props: DialogProps) {
-  const [errorText, setErrorText] = useState<string>();
+  const [message, setMessage] = useState<FileUploadMessage>();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
-    handleConfigDrop(file, {}, setErrorText);
+    handleConfigDrop(file, {}, setMessage);
     props.onClose?.({}, "backdropClick");
   }, [props]);
   
@@ -161,7 +191,7 @@ export function ConfigUploadDialog(props: DialogProps) {
           <UploadFile sx={{ fontSize: '5em' }}/>
         </Box>
       </Dialog>    
-      <ErrorSnackbar errorText={errorText} setErrorText={setErrorText} />
+      <FileUploadSnackbar message={message} setMessage={setMessage} />
     </>
   );
 }
