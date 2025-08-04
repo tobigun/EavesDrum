@@ -12,7 +12,7 @@ inputs:
     required: true
   save-cache:
     description: Whether the PlatformIO cache should be saved (or used restored)
-    default: true
+    default: "true"
 runs:
   using: "composite"
   steps:

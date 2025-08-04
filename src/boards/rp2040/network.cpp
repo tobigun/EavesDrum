@@ -184,7 +184,7 @@ void tud_network_init_cb() {
   }
 }
 
-void Network::service_traffic() {
+void NetworkConnection::service_traffic() {
   DrumIO::led(LED_NETWORK, true);
   // handle any packet received by tud_network_recv_cb()
   if (received_frame) {
@@ -198,7 +198,7 @@ void Network::service_traffic() {
   sys_check_timeouts();
 }
 
-void Network::setup() {
+void NetworkConnection::setup() {
   init_lwip();
   while (!netif_is_up(&netif_data)) {}
 

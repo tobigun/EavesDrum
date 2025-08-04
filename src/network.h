@@ -3,7 +3,7 @@
 
 #pragma once
 
-class Network {
+class NetworkConnection {
 public:
     void setup();
     void service_traffic();

@@ -1,0 +1,295 @@
+general:
+  gateTimeMs: 0
+mux:
+  - type: HC4067
+    pins:
+      analogIn: 7
+      enable: 35
+      select:
+        - 17
+        - 18
+        - 33
+        - 34
+  - type: HC4067
+    pins:
+      analogIn: 7
+      enable: 40
+      select:
+        - 36
+        - 37
+        - 38
+        - 39
+connectors:
+  Jack1:
+    pins:
+      - mux: 0
+        channel: 0
+      - mux: 0
+        channel: 1
+      - mux: 0
+        channel: 2
+  Jack2:
+    pins:
+      - mux: 0
+        channel: 3
+      - mux: 0
+        channel: 4
+  Jack3:
+    pins:
+      - mux: 0
+        channel: 5
+      - mux: 0
+        channel: 6
+  Jack4:
+    pins:
+      - mux: 0
+        channel: 7
+      - mux: 0
+        channel: 8
+  Jack5:
+    pins:
+      - mux: 0
+        channel: 9
+  Jack6:
+    pins:
+      - mux: 0
+        channel: 10
+      - mux: 0
+        channel: 11
+      - mux: 0
+        channel: 12
+  Jack7:
+    pins:
+      - mux: 0
+        channel: 13
+      - mux: 0
+        channel: 14
+      - mux: 0
+        channel: 15
+  Jack8:
+    pins:
+      - mux: 1
+        channel: 0
+      - mux: 1
+        channel: 1
+      - mux: 1
+        channel: 2
+  Jack9:
+    pins:
+      - mux: 1
+        channel: 7
+      - mux: 1
+        channel: 8
+      - mux: 1
+        channel: 9
+  Jack10:
+    pins:
+      - 9
+pads:
+  - name: Snare
+    role: Snare
+    enabled: true
+    connector: Jack1
+    settings:
+      padType: Drum
+      zonesType: Zones3_Piezos
+      curveType: Linear
+      scanTimeUs: 3000
+      maskTimeMs: 30
+      zoneThresholds:
+        - min: 110
+          max: 670
+        - min: 141
+          max: 572
+        - min: 511
+          max: 1023
+      headRimBias: 0
+  - name: Tom 1
+    role: Tom1
+    group: Toms
+    enabled: true
+    connector: Jack2
+    settings:
+      padType: Drum
+      zonesType: Zones2_Piezos
+      curveType: Linear
+      scanTimeUs: 3000
+      maskTimeMs: 30
+      zoneThresholds:
+        - min: 511
+          max: 1023
+        - min: 165
+          max: 1023
+      crossNoteEnabled: false
+      headRimBias: 0
+  - name: Tom 2
+    role: Tom2
+    group: Toms
+    enabled: true
+    connector: Jack3
+    settings:
+      padType: Drum
+      zonesType: Zones2_Piezos
+      curveType: Linear
+      scanTimeUs: 3000
+      maskTimeMs: 30
+      zoneThresholds:
+        - min: 511
+          max: 1023
+        - min: 196
+          max: 1023
+      crossNoteEnabled: false
+      headRimBias: 0
+  - name: Tom 3
+    role: Tom3
+    group: Toms
+    enabled: true
+    connector: Jack4
+    settings:
+      padType: Drum
+      zonesType: Zones2_Piezos
+      curveType: Linear
+      scanTimeUs: 3000
+      maskTimeMs: 30
+      zoneThresholds:
+        - min: 511
+          max: 1023
+        - min: 258
+          max: 1023
+      crossNoteEnabled: false
+      headRimBias: 0
+  - name: Kick
+    role: Kick
+    enabled: true
+    connector: Jack5
+    settings:
+      padType: Drum
+      zonesType: Zones1_Piezo
+      curveType: Linear
+      scanTimeUs: 3000
+      maskTimeMs: 30
+      zoneThresholds:
+        - min: 204
+          max: 700    
+  - name: Ride
+    role: Ride
+    enabled: true
+    connector: Jack6
+    settings:
+      padType: Cymbal
+      zonesType: Zones3_PiezoAndSwitches_2TRS
+      chokeType: Switch_Edge
+      curveType: Linear
+      scanTimeUs: 3000
+      maskTimeMs: 30
+      zoneThresholds:
+        - min: 151
+          max: 720
+        - min: 280
+        - min: 270
+  - name: Crash 1
+    role: Crash1
+    enabled: true
+    connector: Jack7
+    settings:
+      padType: Cymbal
+      zonesType: Zones3_PiezoAndSwitches_2TRS
+      chokeType: Switch_Edge
+      curveType: Linear
+      scanTimeUs: 3000
+      maskTimeMs: 30
+      zoneThresholds:
+        - min: 110
+          max: 670
+        - min: 273
+        - min: 511
+  - name: Crash 2
+    role: Crash2
+    enabled: true
+    connector: Jack8
+    settings:
+      padType: Cymbal
+      zonesType: Zones3_PiezoAndSwitches_2TRS
+      chokeType: Switch_Edge
+      curveType: Linear
+      scanTimeUs: 3000
+      maskTimeMs: 30
+      zoneThresholds:
+        - min: 110
+          max: 670
+        - min: 273
+        - min: 511
+  - name: Hi-Hat
+    role: Hi-Hat
+    enabled: true
+    pedal: Hi-Hat Pedal
+    connector: Jack9
+    settings:
+      padType: Cymbal
+      zonesType: Zones3_PiezoAndSwitches_2TRS
+      chokeType: Switch_Edge
+      curveType: Linear
+      scanTimeUs: 3000
+      maskTimeMs: 30
+      zoneThresholds:
+        - min: 82
+          max: 819
+        - min: 386
+        - min: 511
+  - name: Hi-Hat Pedal
+    role: Hi-Hat Pedal
+    enabled: true
+    connector: Jack10
+    settings:
+      padType: Pedal
+      zonesType: Zones1_Controller
+      zoneThresholds:
+        - min: 205
+          max: 819
+      almostClosedThreshold: 68
+      closedThreshold: 93
+      moveDetectTolerance: 20
+      chickDetectTimeoutMs: 13
+      curveType: Linear
+mappings:
+  Snare:
+    noteMain: 38
+    noteRim: 40
+    noteCross: 76
+  Tom1:
+    noteMain: 48
+    noteRim: 81
+    noteCross: 74
+  Tom2:
+    noteMain: 47
+    noteRim: 79
+    noteCross: 77
+  Tom3:
+    noteMain: 45
+    noteRim: 77
+    noteCross: 79
+  Kick:
+    noteMain: 36
+  Ride:
+    noteMain: 51
+    noteRim: 52
+    noteCup: 53
+  Crash1:
+    noteMain: 84
+    noteRim: 86
+    noteCup: 0
+  Crash2:
+    noteMain: 84
+    noteRim: 86
+    noteCup: 0
+  Hi-Hat:
+    closedNotesEnabled: false
+    noteMain: 19
+    noteCloseMain: 0
+    noteRim: 18
+    noteCloseRim: 0
+    noteCup: 0
+    noteCloseCup: 0
+  Hi-Hat Pedal:
+    pedalChickEnabled: true
+    noteMain: 21

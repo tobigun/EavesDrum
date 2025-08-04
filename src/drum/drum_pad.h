@@ -111,7 +111,7 @@ public:
 
     pin_size_t pinCount = connector->getPinCount();
     return (settings.zonesType == ZonesType::Zones3_PiezoAndSwitches_1TRS)
-      ? min(pinCount, 2) // special handling of TRS 3-zone cymbals
+      ? min(pinCount, (pin_size_t) 2) // special handling of TRS 3-zone cymbals
       : min(pinCount, settings.getZoneCount()); // otherwise zone count equals pin count
   }
 

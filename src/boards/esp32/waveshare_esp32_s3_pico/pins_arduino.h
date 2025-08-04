@@ -1,6 +1,10 @@
 // Copyright (c) 2025 Tobias Gunkel
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+// Waveshare recommends this generic config for Arduino: ESP32S3 Dev Module (ESP32S3_DEV).
+// The above board does not consider the ESP32-S3-R2 specifics like the 2MB In-Package PSRAM RAM.
+// So we just losely used the settinfs from the above config here.
+
 #ifndef Pins_Arduino_h
 #define Pins_Arduino_h
 
@@ -60,8 +64,9 @@ static const uint8_t T14 = 14;
 #define BUILTIN_LED  LED_BUILTIN // backward compatibility
 
 static const uint8_t RGB_DATA = 21;
-// RGB_BUILTIN and RGB_BRIGHTNESS can be used in new Arduino API neopixelWrite()
+// RGB_BUILTIN and RGB_BRIGHTNESS can be used with rgbLedWrite()
 #define RGB_BUILTIN (RGB_DATA + SOC_GPIO_PIN_COUNT)  
+#define RGB_BUILTIN_LED_COLOR_ORDER LED_COLOR_ORDER_RGB
 #define RGB_BRIGHTNESS 64
 
 #endif /* Pins_Arduino_h */

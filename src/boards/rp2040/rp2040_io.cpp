@@ -1,8 +1,6 @@
 // Copyright (c) 2025 Tobias Gunkel
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifdef ARDUINO_ARCH_RP2040
-
 #include "drum_io.h"
 #include "log.h"
 
@@ -26,11 +24,12 @@
 static dma_channel_config cfg;
 static uint dma_chan;
 
-static void led_init();
+
+static void ledInit();
 
 
 void DrumIO::setup(bool usePwmPowerSupply) {
-  led_init();
+  ledInit();
 
 #ifdef OVERCLOCK_ADC
   uint32_t adc_clk_freq_hz = clock_get_hz(clk_sys);
@@ -116,7 +115,7 @@ void DrumIO::writeDigitalOutPin(pin_size_t pinNumber, pin_status_t status) {
   digitalWriteFast(pinNumber, status);
 }
 
-static void led_init() {
+static void ledInit() {
   pinMode(GPIO_LED_0, OUTPUT);
   digitalWrite(GPIO_LED_0, HIGH);
 
@@ -144,5 +143,3 @@ void DrumIO::reset() {
   SerialDebug.println("Reset");
   AIRCR_Register = 0x5FA0004;
 }
-
-#endif

@@ -16,7 +16,7 @@
 #include <Arduino.h>
 
 MidiDevice MIDI;
-Network network;
+NetworkConnection network;
 
 DrumKit drumKit;
 
@@ -27,11 +27,11 @@ void logVersion() {
 
 #ifdef HAS_BLUETOOTH
 void onBluetoothConnected() {
-    DrumIO::led(LED_NETWORK, true); // TODO: change led id
+  DrumIO::led(LED_NETWORK, true); // TODO: change led id
 }
 
 void onBluetoothDisconnected() {
-    DrumIO::led(LED_NETWORK, false); // TODO: change led id
+  DrumIO::led(LED_NETWORK, false); // TODO: change led id
 }
 #endif
 
@@ -40,17 +40,17 @@ static WifiConnect wifi;
 
 void initWireless() {
   EDRUM_DEBUGLN("Connecting ...");
-    DrumIO::led(LED_NETWORK, false);
+  DrumIO::led(LED_NETWORK, false);
   wifi.connect();
   // wifi.startServer();
-    DrumIO::led(LED_NETWORK, true);
+  DrumIO::led(LED_NETWORK, true);
   EDRUM_DEBUGLN("Connected");
 }
 
 #endif
 
 void setup() {
-#ifdef ENABLE_USB_SERIAL
+#ifdef ENABLE_SERIAL
   SerialDebug.begin(115200);
 #endif
 

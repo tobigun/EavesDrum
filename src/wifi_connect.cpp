@@ -10,7 +10,6 @@
 #include <ESPmDNS.h>
 
 #include "wifi_connect.h"
-#include "images/drum.h"
 
 WiFiProvisioner::WiFiProvisioner provisioner;
 
@@ -19,6 +18,9 @@ DNSServer *m_dns_server;
 const byte DNS_PORT = 53;
 IPAddress apIP(192, 168, 4, 1);
 IPAddress netMsk(255, 255, 255, 0);
+
+#define HOSTNAME "eaves"
+#define WIFI_AP_NAME "EavesDrum"
 
 void WifiConnect::startServer() {
   // Initialize the server object
@@ -32,8 +34,8 @@ void WifiConnect::startServer() {
 
   // Configure the access point
   WiFi.softAPConfig(apIP, apIP, netMsk);
-  WiFi.softAP("Lucie");
-  WiFi.setHostname("trommel");
+  WiFi.softAP(WIFI_AP_NAME);
+  WiFi.setHostname(HOSTNAME);
   delay(100);
   Serial.println("AP IP address: " + String(WiFi.softAPIP()));
 
@@ -46,17 +48,17 @@ void WifiConnect::connect() {
   //provisioner.resetCredentials();
   provisioner.enableSerialDebug(true);
   
-  provisioner.AP_NAME = "Lucies Trommel";
-  provisioner.SVG_LOGO = DRUM_SVG;
+  provisioner.AP_NAME = WIFI_AP_NAME;
+  //provisioner.SVG_LOGO = DRUM_SVG;
 
-  provisioner.setConnectionTimeout(10000);
+  provisioner.setConnectionTimeout(10000); // 10s
   provisioner.connectToWiFi();
-  MDNS.begin("trommel");
+  MDNS.begin(HOSTNAME);
 }
 
 void WifiConnect::provision() {
   provisioner.setupAccessPointAndServer();
-  WiFi.setHostname("trommel");
+  WiFi.setHostname(HOSTNAME);
 }
 
 #endif

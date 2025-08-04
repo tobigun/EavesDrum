@@ -2,8 +2,8 @@ name: Build firmware
 
 on:
   push:
-    branches: "*"
-    tags: "v*.*.*"
+    branches: [ "*" ]
+    tags: [ "v*.*.*" ]
 
 env:
   PICO1_ARTIFACT: pico-build
@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        environment: ["pico", "pico2"]
+        environment: ["pico", "pico2", "esp32"]
         #os: [ubuntu-latest, windows-latest]  
     runs-on: ubuntu-24.04     
     steps:
@@ -29,9 +29,11 @@ jobs:
         with:
           command: run
           environment: ${{ matrix.environment }}
+          save-cache: ${{ matrix.environment != 'esp32' }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
+        if: matrix.environment != 'esp32'
         with:
           name: ${{ matrix.environment }}-build
           path: |

@@ -42,8 +42,8 @@ static std::shared_ptr<PadSoundPlayback> padPlayback;
 
 void setupUsb() {}
 
-void Network::setup() {}
-void Network::service_traffic() {
+void NetworkConnection::setup() {}
+void NetworkConnection::service_traffic() {
   AsyncWebServer::poll();
 }
 

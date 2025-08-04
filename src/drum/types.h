@@ -5,7 +5,7 @@
 
 #include <stdint.h>
 
-#define MAX_SENSOR_VALUE 1023
+#define MAX_SENSOR_VALUE ((sensor_value_t) 1023)
 #define INVALID_SENSOR_VALUE UINT16_MAX
 
 #define MAX_MIDI_NOTE 127

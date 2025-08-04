@@ -39,7 +39,7 @@
     "arduino",
     "espidf"
   ],
-  "name": "Waveshare ESP32 S3 Pico",
+  "name": "Waveshare ESP32 S3 Pico (ESP32-S3R2, 16MB Flash [W25Q128 QSPI & QPI], 2MB PSRAM [In-Package QSPI])",
   "upload": {
     "flash_size": "16MB",
     "maximum_ram_size": 327680,
