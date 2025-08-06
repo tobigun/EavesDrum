@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "general": {
+      "type": "object",
+      "properties": {
+        "gateTimeMs": { "type": "integer" }
+      },
+      "additionalProperties": false
+    },
+    "mux": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "enum": ["HC4067", "HC4051"] },
+          "pins": {
+            "type": "object",
+            "properties": {
+              "analogIn": { "type": "integer" },
+              "enable": { "type": "integer" },
+              "select": {
+                "type": "array",
+                "items": { "type": "integer" },
+                "minItems": 3,
+                "maxItems": 4
+              }
+            },
+            "additionalProperties": false,
+            "required": ["analogIn", "enable", "select"]
+          }
+        },
+        "additionalProperties": false,
+        "required": ["type", "pins"]
+      }
+    },
+    "connectors": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "pins": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "mux": { "type": "integer" },
+                    "channel": { "type": "integer" }
+                  },
+                  "required": ["mux", "channel"]
+                },
+                { "type": "integer" }
+              ]
+            }
+          }
+        },
+        "additionalProperties": false,
+        "required": ["pins"]
+      }
+    },
+    "pads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "role": { "type": "string" },
+          "group": { "type": "string" },
+          "enabled": { "type": "boolean" },
+          "connector": { "type": "string" },
+          "pedal": { "type": "string" },
+          "settings": {
+            "type": "object",
+            "properties": {
+              "padType": { "enum": ["Drum", "Cymbal", "Pedal"] },
+              "zonesType": { "enum": [
+                "Zones1_Controller",
+                "Zones1_Piezo",
+                "Zones2_Piezos",
+                "Zones2_PiezoAndSwitch",
+                "Zones3_Piezos",
+                "Zones3_PiezoAndSwitches_2TRS",
+                "Zones3_PiezoAndSwitches_1TRS"
+              ]},
+              "curveType": { "enum": [
+                "Linear",
+                "Exponential1",
+                "Exponential2",
+                "Logarithmic1",
+                "Logarithmic2"
+              ]},
+              "scanTimeUs": { "type": "integer" },
+              "maskTimeMs": { "type": "integer" },
+              "chokeType": { "enum": [
+                "None",
+                "Switch_Edge",
+                "Switch_Cup"] },
+              "zoneThresholds": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "min": { "type": "integer" },
+                    "max": { "type": "integer" }
+                  },
+                  "required": ["min"],
+                  "maxItems": 3
+                }
+              },
+              "headRimBias": { "type": "integer" },
+              "crossNoteEnabled": { "type": "boolean" },
+              "almostClosedThreshold": { "type": "integer" },
+              "closedThreshold": { "type": "integer" },
+              "moveDetectTolerance": { "type": "integer" },
+              "chickDetectTimeoutMs": { "type": "integer" }
+            },
+            "additionalProperties": false,
+            "required": ["padType", "zonesType", "zoneThresholds"]
+          }
+        },
+        "additionalProperties": false,
+        "required": ["name", "role", "enabled", "connector", "settings"]
+      }
+    },
+    "mappings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "noteMain": { "type": "integer" },
+          "noteRim": { "type": "integer" },
+          "noteCross": { "type": "integer" },
+          "noteCup": { "type": "integer" },
+          "noteCloseMain": { "type": "integer" },
+          "noteCloseRim": { "type": "integer" },
+          "noteCloseCup": { "type": "integer" },
+          "closedNotesEnabled": { "type": "boolean" },
+          "pedalChickEnabled": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["mux", "connectors", "pads", "mappings"],
+  "additionalProperties": false
+}
