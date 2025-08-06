@@ -25,7 +25,7 @@ BLEMIDI_CREATE_INSTANCE("Lucies MIDI", MIDI_INSTANCE);
 #endif
 
 #ifdef ESP32
-extern "C" uint16_t tusb_midi_load_descriptor(uint8_t *dst, uint8_t *itf) {
+extern "C" uint16_t tusb_drum_midi_load_descriptor(uint8_t *dst, uint8_t *itf) {
   uint8_t str_index = tinyusb_add_string_descriptor("TinyUSB MIDI");
   uint8_t ep_num = tinyusb_get_free_duplex_endpoint();
   TU_VERIFY(ep_num != 0);
@@ -46,7 +46,7 @@ void MidiDevice::begin() {
 #endif
 
 #ifdef ESP32
- tinyusb_enable_interface(USB_INTERFACE_MIDI, TUD_MIDI_DESC_LEN, tusb_midi_load_descriptor);
+ tinyusb_enable_interface(USB_INTERFACE_MIDI, TUD_MIDI_DESC_LEN, tusb_drum_midi_load_descriptor);
 #endif
  
   // Initialize MIDI, and listen to all MIDI channels
