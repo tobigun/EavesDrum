@@ -1,0 +1,100 @@
+# yaml-language-server: $schema=./config.jsonc
+mappings:
+  Snare:
+    noteMain: 38 # Center
+    noteRim: 40 # Rimshot
+    noteCross: 37 # Sidestick
+    # Zone Trigger (CC): 6
+    # Edge: 33
+    # Rim Only: 76
+  Tom1:
+    name: Rack Tom 1
+    noteMain: 48 # Center
+    noteRim: 82 # Rimshot
+    noteCross: 81 # Rim only
+  Tom2:
+    name: Rack Tom 2
+    noteMain: 47 # Center
+    noteRim: 80 # Rimshot
+    noteCross: 79 # Rim only
+  Tom3:
+    name: Rack Tom 3
+    noteMain: 45 # Center
+    noteRim: 78 # Rimshot
+    noteCross: 77 # Rim only
+  Tom4:
+    name: Floor Tom 1
+    noteMain: 43 # Center
+    noteRim: 75 # Rimshot
+    noteCross: 74 # Rim only
+  Tom5:
+    name: Floor Tom 2
+    noteMain: 41 # Center
+    noteRim: 73 # Rimshot
+    noteCross: 72 # Rim only
+  Kick:
+    noteMain: 36 # Hit
+  HiHat:
+    name: Hi-Hat
+    closedNotesEnabled: false
+    noteMain: 19 # Tip Trigger (CC)
+    noteCloseMain: 11 # Closed Tip
+    noteRim: 7 # Edge Trigger (CC)
+    noteCloseRim: 22 # Closed Edge
+    noteCup: 53 # n/a (use Ride Bell)
+    noteCloseCup: 53 # n/a (use Ride Bell)
+    # Open Tip 0: 12
+    # Open Tip 1: 13
+    # Open Tip 2: 14
+    # Open Tip 3: 15
+    # Open Tip 4: 16
+    # Open Tip 5: 17
+    # Tight Tip: 63
+    # Open Edge 0: 64
+    # Open Edge 1: 24
+    # Open Edge 2: 25
+    # Open Edge 3: 26
+    # Open Edge 4: 60
+    # Open Edge 5: 124
+    # Tight Edge: 62
+  HiHatPedal:
+    name: Hi-Hat Pedal
+    pedalChickEnabled: true
+    noteMain: 21 # Pedal Closed
+    # Pedal Open: 23
+  Ride1:
+    name: Ride
+    noteMain: 51 # Bow Tip
+    noteRim: 52 # Edge
+    noteCup: 53 # Bell
+    # Muted Hit: 54
+  Cymbal1:
+    name: Crash 1
+    noteMain: 87 # Bow Tip
+    noteRim: 86 # Crash
+    noteCup: 53 # n/a (use Ride Bell)
+    # Muted Hit: 83
+  Cymbal2:
+    name: Crash 2
+    noteMain: 27 # Bow Tip
+    noteRim: 28 # Crash
+    noteCup: 53 # n/a (use Ride Bell)
+    # Muted Hit: 94
+  Cymbal3:
+    name: Crash 3
+    noteMain: 31 # Bow Tip
+    noteRim: 32 # Crash
+    noteCup: 53 # n/a (use Ride Bell)
+    # Muted Hit: 58
+  Cymbal4:
+    name: Crash 4
+    noteMain: 96 # Bow Tip
+    noteRim: 98 # Crash
+    noteCup: 53 # n/a (use Ride Bell)
+    # Muted Hit: 99
+  Effect1:
+    name: "Tambourine / Shaker / One Shot"
+    noteMain: 3 # Tambourine
+    noteRim: 2 # Shaker
+    noteCup: 1 # One Shot
+  

@@ -1,0 +1,116 @@
+# yaml-language-server: $schema=./config.jsonc
+# BFD Player 1.2
+# https://cdn.inmusicbrands.com/BFD/BFD%20Player%20-%20User%20Guide%20-%20v1.2.0%20-%20RevC.pdf
+mappings:
+  Snare: 
+    noteMain: 38 # Hit
+    noteRim: 40 # Rim Shot
+    crossNoteEnabled: false
+    noteCross: 37 # Side Stick
+    # Rim Click: 76
+  Tom1:
+    name: High Tom 1
+    noteMain: 47 # Hit
+    noteRim: 80 # Rim Shot
+    crossNoteEnabled: false
+    noteCross: 79 # Rim Click
+  Tom2:
+    name: High Tom 2
+    noteMain: 48 # Hit
+    noteRim: 82 # Rim Shot
+    crossNoteEnabled: false
+    noteCross: 81 # Rim Click
+  Tom3:
+    name: Mid Tom
+    noteMain: 45 # Hit
+    noteRim: 78 # Rim Shot
+    crossNoteEnabled: false
+    noteCross: 77 # Rim Click
+  Tom4: 
+    name: Floor Tom 1
+    noteMain: 43 # Hit
+    noteRim: 75 # Rim Shot
+    crossNoteEnabled: false
+    noteCross: 74 # Rim Click
+  Tom5: 
+    name: Floor Tom 2
+    noteMain: 41 # Hit
+    noteRim: 73 # Rim Shot
+    crossNoteEnabled: false
+    noteCross: 72 # Rim Click
+  Kick: 
+    noteMain: 35 # Hit
+  HiHat:
+    name: Hi-Hat
+    closedNotesEnabled: false
+    noteMain: 27 # Variable Tip
+    noteCloseMain: 0 # Closed Tip
+    noteRim: 28 # Variable Shank
+    noteCloseRim: 9 # Closed Shank
+    noteCup: 29 # Variable Bell
+    noteCloseCup: 18 # Closed Bell
+    # 1/8 Tip: 1
+    # 2/8 Tip: 2
+    # 3/8 Tip: 3
+    # 4/8 Tip: 4
+    # 5/8 Tip: 5
+    # 6/8 Tip: 6
+    # 7/8 Tip: 7
+    # Open Tip: 8
+    # 1/8 Shank: 10
+    # 2/8 Shank: 11
+    # 3/8 Shank: 12
+    # 4/8 Shank: 13
+    # 5/8 Shank: 14
+    # 6/8 Shank: 15
+    # 7/8 Shank: 16
+    # Open Shank: 17
+    # 1/8 Bell: 19
+    # 2/8 Bell: 20
+    # 3/8 Bell: 21
+    # 4/8 Bell: 22
+    # 5/8 Bell: 23
+    # 6/8 Bell: 24
+    # 7/8 Bell: 25
+    # Open Bell: 26
+    # Choke: 33
+  HiHatPedal: 
+    name: Hi-Hat Pedal
+    pedalChickEnabled: true
+    noteMain: 32 # Pedal
+    # Splash: 31
+  Ride1:
+    name: Ride
+    noteMain: 51 # Bow
+    noteRim: 52 # Edge
+    noteCup: 53 # Bell
+    # Hit: 120
+    # Choke: 54
+  Cymbal1: 
+    name: Cymbal 1
+    noteMain: 89 # Bow
+    noteRim: 49 # Edge
+    noteCup: 127 # Bell
+    # Hit: 126
+    # Choke: 94
+  Cymbal2: 
+    name: Cymbal 2
+    noteMain: 96 # Bow
+    noteRim: 98 # Edge
+    noteCup: 125 # Bell
+    # Hit: 124
+    # Choke: 95
+  Cymbal3: 
+    name: Crash 1
+    noteMain: 84 # Bow
+    noteRim: 86 # Edge
+    noteCup: 85 # Bell
+    # Hit: 121
+    # Choke: 83
+  Cymbal4: 
+    name: Crash 2
+    noteMain: 101 # Bow
+    noteRim: 57 # Edge
+    noteCup: 123 # Bell
+    # Hit: 122
+    # Choke: 58

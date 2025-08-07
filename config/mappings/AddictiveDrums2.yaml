@@ -1,0 +1,124 @@
+# yaml-language-server: $schema=./config.jsonc
+mappings:
+  Snare:
+    noteMain: 38 # Open Hit
+    noteRim: 37 # Rimshot
+    noteCross: 42 # Sidestick
+    # Rimclick: 44
+    # Shallow Hit: 43
+    # Shallow Rimshot: 41
+    # Positional (CC): 6
+  Tom1:
+    name: Tom 1
+    noteMain: 71 # Center
+    noteRim: 72 # Rimshot
+    crossNoteEnabled: false
+  Tom2:
+    name: Tom 2
+    noteMain: 69 # Center
+    noteRim: 70 # Rimshot
+    crossNoteEnabled: false
+  Tom3:
+    name: Tom 3
+    noteMain: 67 # Center
+    noteRim: 68 # Rimshot
+    crossNoteEnabled: false
+  Tom4:
+    name: Tom 4
+    noteMain: 65 # Center
+    noteRim: 66 # Rimshot
+    crossNoteEnabled: false
+  Kick:
+    noteMain: 36 # Hit
+  HiHat:
+    name: Hi-Hat
+    closedNotesEnabled: false
+    noteMain: 8 # Tip (CC)
+    noteCloseMain: 49 # Closed1 Tip
+    noteRim: 7 # Shaft (CC)
+    noteCloseRim: 50 # Closed1 Shaft
+    noteCup: 9 # Bell (CC)
+    noteCloseCup: 53 # Closed Bell
+    # Open Bell: 58
+    # Open D: 57
+    # Open C: 56
+    # Open B: 55
+    # Open A: 54
+    # Closed2 Tip: 51
+    # Closed2 Shaft: 52
+  HiHatPedal:
+    name: Hi-Hat Pedal
+    pedalChickEnabled: true
+    noteMain: 48 # Foot Close
+    # Foot Splash: 59
+  Ride1:
+    name: Ride 1
+    noteMain: 60 # Tip
+    noteRim: 62 # Edge
+    noteCup: 61 # Bell
+    # Choke: 63
+    # Positional (CC): 4
+  Ride2:
+    name: Ride 2
+    noteMain: 84 # Tip
+    noteRim: 86 # Edge
+    noteCup: 85 # Bell
+    # Choke: 87
+    # Positional (CC): 3
+  Cymbal1:
+    name: Cymbal 1
+    noteMain: 77
+    noteRim: 77 # n/a
+    noteCup: 61 # n/a (use Ride1 Bell)
+    # Choke: 78
+  Cymbal2:
+    name: Cymbal 2
+    noteMain: 79
+    noteRim: 79 # n/a
+    noteCup: 61 # n/a (use Ride1 Bell)
+    # Choke: 80
+  Cymbal3:
+    name: Cymbal 3
+    noteMain: 81
+    noteRim: 81 # n/a
+    noteCup: 61 # n/a (use Ride1 Bell)
+    # Choke: 82
+  Cymbal4:
+    name: Cymbal 4
+    noteMain: 89
+    noteRim: 89 # n/a
+    noteCup: 61 # n/a (use Ride1 Bell)
+    # Choke: 90
+  Cymbal5:
+    name: Cymbal 5
+    noteMain: 91
+    noteRim: 91 # n/a
+    noteCup: 61 # n/a (use Ride1 Bell)
+    # Choke: 92
+  Cymbal6:
+    name: Cymbal 6
+    noteMain: 93
+    noteRim: 93 # n/a
+    noteCup: 61 # n/a (use Ride1 Bell)
+    # Choke: 94
+  Effect1:
+    name: "Sticks"
+    noteMain: 75
+  Effect2:
+    name: "Flexi 1"
+    noteMain: 47 # A
+    noteRim: 73 # B
+    noteCup: 74 # C
+    # D: 76
+  Effect3:
+    name: "Flexi 2"
+    noteMain: 96 # A
+    noteRim: 97 # B
+    noteCup: 98 # C
+    # D: 99
+  Effect4:
+    name: "Flexi 3"
+    noteMain: 101 # A
+    noteRim: 102 # B
+    noteCup: 103 # C
+    # D: 104

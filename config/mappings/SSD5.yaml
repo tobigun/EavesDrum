@@ -1,0 +1,89 @@
+# yaml-language-server: $schema=./config.jsonc
+# Steven Slate SSD5
+mappings:
+  Snare:
+    noteMain: 38 # Center
+    noteRim: 40 # Rimshot
+    noteCross: 37 # Sidestick
+    # Side: 34
+    # Rimshot Edge: 33
+    # Rimclick: 39
+    # Rolls: 21
+  Tom1:
+    name: Rack Tom 1
+    noteMain: 48 # Center
+    noteRim: 19 # Rimclick
+    crossNoteEnabled: false
+  Tom2:
+    name: Rack Tom 2
+    noteMain: 47 # Center
+    noteRim: 17 # Rimclick
+    crossNoteEnabled: false
+  Tom3:
+    name: Floor Tom 1
+    noteMain: 43 # Center
+    noteRim: 14 # Rimclick
+    crossNoteEnabled: false
+  Tom4:
+    name: Floor Tom 2
+    noteMain: 41 # Center
+    noteRim: 12 # Rimclick
+    crossNoteEnabled: false
+  Kick:
+    noteMain: 36 # Center
+    # Double: 35
+  HiHat:
+    name: Hi-Hat
+    closedNotesEnabled: false
+    noteMain: 46 # Tip (CC)
+    noteCloseMain: 42 # Closed Tip
+    noteRim: 26 # Shank (CC)
+    noteCloseRim: 22 # Shank Closed
+    noteCup: 53 # n/a (use Ride Bell)
+    noteCloseCup: 53 # n/a (use Ride Bell)
+    # Tip Open 3: 71
+    # Tip Open 2: 70
+    # Tip Open 1: 69
+    # Tip Loosen: 68
+    # Tip Closed Tight: 66
+    # Shank Open 3: 65
+    # Shank Open 2: 64
+    # Shank Open 1: 63
+    # Shank Loosen: 62
+    # Shank Closed Tight: 60
+  HiHatPedal:
+    name: Hi-Hat Pedal
+    pedalChickEnabled: true
+    noteMain: 44 # Pedal
+    # Footsplash: 73
+  Ride1:
+    name: Ride
+    noteMain: 51 # Bow Tip
+    noteRim: 59 # Edge
+    noteCup: 53 # Bell
+    # Bow Shank: 52
+    # Choke: 58
+  Cymbal1:
+    name: Crash Left
+    noteMain: 91 # Tip
+    noteRim: 55 # Edge
+    noteCup: 53 # n/a (use Ride Bell)
+    # Choke: 54
+  Cymbal2: 
+    name: Crash Right
+    noteMain: 92 # Tip
+    noteRim: 57 # Edge
+    noteCup: 53 # n/a (use Ride Bell)
+    # Choke: 56
+  Cymbal3:
+    name: Splash
+    noteMain: 90 # Bow Tip
+    noteRim: 50 # Crash
+    noteCup: 53 # n/a (use Ride Bell)
+    # Choke: 49
+  Cymbal4:
+    name: China
+    noteMain: 93 # Bow Tip
+    noteRim: 31 # Edge
+    noteCup: 53 # n/a (use Ride Bell)
+    # Choke: 32

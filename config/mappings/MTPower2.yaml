@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=./config.jsonc
+mappings:
+  Snare:
+    noteMain: 38
+    noteRim: 38 # n/a
+    noteCross: 37 # Sidestick
+  Tom1:
+    name: Tom Hi
+    noteMain: 48
+    noteRim: 48 # n/a
+    crossNoteEnabled: false
+  Tom2:
+    name: Tom Mid
+    noteMain: 45
+    noteRim: 45 # n/a
+    crossNoteEnabled: false
+  Tom3:
+    name: Tom Low
+    noteMain: 41
+    noteRim: 41 # n/a
+    crossNoteEnabled: false
+  Kick:
+    noteMain: 36
+  HiHat:
+    name: Hi-Hat
+    closedNotesEnabled: false
+    noteMain: 46 # Open
+    noteCloseMain: 42 # Closed
+    noteRim: 46 # n/a
+    noteCloseRim: 42 # n/a
+    noteCup: 53 # n/a (use Common Bell)
+    noteCloseCup: 53 # n/a
+  HiHatPedal:
+    name: Hi-Hat Pedal
+    pedalChickEnabled: true
+    noteMain: 65 # Chick
+  Ride1:
+    name: Ride
+    noteMain: 51 # Bow Tip
+    noteRim: 51 # n/a
+    noteCup: 53 # Bell
+  Cymbal1:
+    name: Crash Left
+    noteMain: 49
+    noteRim: 49 # n/a
+    noteCup: 53 # n/a (use Common Bell)
+  Cymbal2:
+    name: Crash Right
+    noteMain: 57
+    noteRim: 57 # n/a
+    noteCup: 53 # n/a (use Common Bell)
+    # Choke: 58
+  Cymbal3:
+    name: Splash
+    noteMain: 55
+    noteRim: 55 # n/a
+    noteCup: 53 # n/a (use Common Bell)
+  Cymbal4:
+    name: China
+    noteMain: 52
+    noteRim: 52 # n/a
+    noteCup: 53 # n/a (use Common Bell)
