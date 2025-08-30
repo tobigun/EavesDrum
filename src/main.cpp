@@ -12,6 +12,7 @@
 #include "version.h"
 #include "webui.h"
 #include "wifi_connect.h"
+#include <tusb.h>
 
 #include <Arduino.h>
 
@@ -49,10 +50,36 @@ void initWireless() {
 
 #endif
 
-void setup() {
+void reconnectUsb() {
+  if (tud_mounted()) {
+    tud_disconnect();
+    delay(10);
+    tud_connect();
+  }
+}
+
+void ledTest() {
+  DrumIO::led(LED_WATCHDOG, true);
+  DrumIO::led(LED_HIT_INDICATOR, true);
+  DrumIO::led(LED_NETWORK, true);
+
+  delay(200);
+
+  DrumIO::led(LED_WATCHDOG, false);
+  DrumIO::led(LED_HIT_INDICATOR, false);
+  DrumIO::led(LED_NETWORK, false);
+}
+
+void setup() {  
+  DrumIO::setup(true);
+
+  reconnectUsb();
+
 #ifdef ENABLE_SERIAL
   SerialDebug.begin(115200);
 #endif
+
+  ledTest();
 
   logVersion();
 
@@ -66,8 +93,6 @@ void setup() {
 #else
   setupUsb();
 #endif
-
-  DrumIO::setup(true);
 
   network.setup();
   webUI.setup(drumKit);
