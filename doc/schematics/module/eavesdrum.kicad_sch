@@ -7075,6 +7075,26 @@
 		)
 		(uuid "f0e5a99b-5f0d-4369-9f7c-6b4099d93779")
 	)
+	(text_box "Resistor values depending on color:\nred: 4.7k (Osram LS R976)\nblue: 4.7k (Everlight 19-218/BHC-ZL1M2QY/3T)\nwhite: 10k (Kento CICADT0603-0.6DT)\n\nNote: might differ between vendors/models"
+		(exclude_from_sim no)
+		(at 121.92 129.54 0)
+		(size 50.8 13.97)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(type none)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left top)
+		)
+		(uuid "7750f13d-fbb8-4767-ac1f-78a283023cff")
+	)
 	(text_box "JP1: ADC selection for Multiplexer 2\n1=ADC0: Multiplexer 1 and 2 share ADC0 by multiplexing via their Enable pins.\n  Connector pin ADC1 can be used for another function.\n3=ADC1: Multplexer 2 outputs to ADC1 via Voltage Divider 2.\n  The components of Voltage Divider 2 must be populated.\n  Connector pin ADC1 cannot be used for another function."
 		(exclude_from_sim no)
 		(at 181.61 116.84 0)

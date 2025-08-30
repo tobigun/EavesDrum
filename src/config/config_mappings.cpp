@@ -16,6 +16,8 @@
 void DrumConfigMapper::applyPadMappings(DrumPad& pad, JsonObjectConst& mappingsNode) {
   DrumMappings& mappings = pad.getMappings();
 
+  MAPPING_FROM_JSON(name, String) 
+
   MAPPING_NOTE_FROM_JSON(noteMain)
   MAPPING_NOTE_FROM_JSON(noteRim)
   MAPPING_NOTE_FROM_JSON(noteCup)
@@ -113,6 +115,10 @@ static int getSupportedMappings(const DrumPad& pad, const DrumMappingId*& mappin
 
 void DrumConfigMapper::convertPadMappingsToJson(const DrumPad& pad, const DrumKit& drumKit, JsonObject& mappingsNode) {
   const DrumMappings& padMappings = pad.getMappings();
+
+  if (padMappings.name) {
+    mappingsNode["name"] = padMappings.name;
+  }
 
   const DrumMappingId* mappingIds;
   int mappingsCount = getSupportedMappings(pad, mappingIds);

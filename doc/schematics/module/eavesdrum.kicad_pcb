@@ -3712,7 +3712,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C17514"
+		(property "LCSC" "C17530"
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
@@ -14445,7 +14445,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C17514"
+		(property "LCSC" "C17630"
 			(at 0 0 90)
 			(layer "F.SilkS")
 			(hide yes)
@@ -15212,7 +15212,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C17655"
+		(property "LCSC" "C17673"
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
@@ -23701,7 +23701,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C17655"
+		(property "LCSC" "C17673"
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
