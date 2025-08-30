@@ -195,10 +195,10 @@ uint8_t const* tud_descriptor_configuration_cb(uint8_t index)
 // array of pointer to string descriptors
 static char const* string_desc_arr[] = {
   [STRID_LANGID] = (const char[]) { 0x09, 0x04 }, // supported language is English (0x0409)
-  [STRID_MANUFACTURER] = "TinyUSB",
+  [STRID_MANUFACTURER] = PROJECT_NAME,
   [STRID_PRODUCT] = PROJECT_NAME,
   [STRID_SERIAL] = "123456",
-  [STRID_INTERFACE_NET] = PROJECT_NAME " Network",
+  [STRID_INTERFACE_NET] = "USB Network",
 #if CFG_TUD_CDC  
   [STRID_INTERFACE_SERIAL] = PROJECT_NAME " Serial",
 #endif
