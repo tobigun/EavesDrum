@@ -12,7 +12,11 @@
 #include "version.h"
 #include "webui.h"
 #include "wifi_connect.h"
+
+#if __has_include(<tusb.h>)
 #include <tusb.h>
+#define HAS_TINY_USB
+#endif
 
 #include <Arduino.h>
 
@@ -51,11 +55,13 @@ void initWireless() {
 #endif
 
 void reconnectUsb() {
+#ifdef HAS_TINY_USB
   if (tud_mounted()) {
     tud_disconnect();
     delay(10);
     tud_connect();
   }
+#endif
 }
 
 void ledTest() {
