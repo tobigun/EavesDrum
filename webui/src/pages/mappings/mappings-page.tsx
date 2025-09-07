@@ -41,12 +41,16 @@ function getDisplayName(props: MappingEntryProps) {
   return mappingDisplayNames[props.mappingId](props);
 }
 
-type MappingDependency = Partial<Record<keyof DrumPadMappings, (config: Config, padRole: PadRole, padIndex: number) => boolean>>;
+function isCrossNoteEnabled(config: Config, padIndex: number): boolean {
+  return getZonesCount(config.pads[padIndex].settings.zonesType) === 3;
+  // TODO: config.pads[padIndex].settings.crossNoteEnabled;
+}
+
+type MappingDependency = Partial<Record<keyof DrumPadMappings, (config: Config, padRole: PadRole, padIndex?: number) => boolean>>;
 type MappingDependencies = Record<PadType, MappingDependency>;
 const mappingDependencies: MappingDependencies = {
   Drum: {
-    noteCross: (config, _, padIndex) => getZonesCount(config.pads[padIndex].settings.zonesType) === 3
-      || config.pads[padIndex].settings.crossNoteEnabled!
+    noteCross: (config, _, padIndex) => padIndex === undefined || isCrossNoteEnabled(config, padIndex!)
   },
   Cymbal: {
     noteCloseMain: (config, padRole) => config.mappings[padRole].closedNotesEnabled!,
@@ -112,7 +116,7 @@ function MappingsPadInfo({ padIndex, padRole, padType }: {
 
   return (
     <>
-      <RoleInfo padIndex={padIndex} />
+      <RoleInfo padRole={padRole} />
       {
         supportedMappingIds
           .map(mappingId => <MappingEntry key={mappingId} padIndex={padIndex} padRole={padRole} mappingId={mappingId} padType={padType} />)
@@ -122,7 +126,7 @@ function MappingsPadInfo({ padIndex, padRole, padType }: {
 }
 
 interface MappingEntryProps {
-  padIndex: number,
+  padIndex?: number,
   padRole: string,
   mappingId: DrumMappingId,
   padType: PadType

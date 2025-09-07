@@ -149,7 +149,8 @@ function SettingsElement({padIndex, settingId, padType} : {
     return <SettingSliderEntry {...defaultProps} key={settingId} min={-100} max={100} />;
 
   case "crossNoteEnabled":
-    return <SettingEnableEntry {...defaultProps} key={settingId} />;
+    // TODO
+    //return <SettingEnableEntry {...defaultProps} key={settingId} />;
   }
 }
 

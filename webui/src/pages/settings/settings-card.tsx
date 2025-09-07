@@ -47,6 +47,7 @@ function SettingsCard({ padIndex, padType }: {
 }) {
   const padName = useConfig(config => config.pads[padIndex].name);
   const group = useConfig(config => config.pads[padIndex].group);
+  const role = useConfig(config => config.pads[padIndex].role);
   const headerBackground = getHeaderBackground(padType);
   
   return (
@@ -61,7 +62,7 @@ function SettingsCard({ padIndex, padType }: {
         </>
       }>
       <PadTypeSelector padIndex={padIndex}/>
-      <RoleInfo padIndex={padIndex} />
+      <RoleInfo padRole={role} />
       <ConnectorInfo padIndex={padIndex} />
       <SettingsElements padIndex={padIndex} padType={padType} />
     </Card>

@@ -92,12 +92,11 @@ export function Card(props: AccordionProps & CardProps) {
   );
 }
 
-export function RoleInfo({ padIndex }: { padIndex: number }) {
-  const role = useConfig(config => config.pads[padIndex].role);
-  const roleName = useConfig.getState().mappings[role].name;
-  return <SettingEntryContainer name='Role'>
-    <Select disabled={true} value={role} size='small'>
-      <MenuItem value={role}>{roleName ? roleName : role}</MenuItem>
+export function RoleInfo({ padRole }: { padRole: string }) {
+  const mappingName = useConfig(config => config.mappings[padRole]?.name);
+  return <SettingEntryContainer name='Mapping'>
+    <Select disabled={true} value={padRole} size='small'>
+      <MenuItem value={padRole}>{mappingName ? mappingName : padRole}</MenuItem>
     </Select>
   </SettingEntryContainer>;
 }
