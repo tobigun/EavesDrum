@@ -18,6 +18,7 @@
 #define CONFIG_MONITOR_PAD "padIndex"
 #define CONFIG_MONITOR_TRIGGERED_BY_ALL_PADS "triggeredByAllPads"
 
+#define CONFIG_CONNECTOR_PROP "connector"
 #define CONFIG_ENABLED_PROP "enabled"
 #define CONFIG_AUTOCALIBRATE_PROP "autoCalibrate"
 
@@ -107,7 +108,9 @@ void WebUI::handleSetMonitor(JsonObjectConst configNode) {
   }
 }
 
-void WebUI::handleSetPadConfig(JsonObjectConst configNode) {
+void WebUI::handleSetPadConfig(JsonObjectConst configNode, AsyncWebSocketClient* client) {
+  bool sendConfigRequired = false;
+
   for (JsonPairConst pair : configNode) {
     pad_size_t padIndex = atoi(pair.key().c_str());
     if (padIndex >= drumKit->getPadsCount()) {
@@ -116,18 +119,37 @@ void WebUI::handleSetPadConfig(JsonObjectConst configNode) {
     }
 
     DrumPad& pad = *drumKit->getPad(padIndex);
+    JsonVariantConst nodeValue = pair.value();
 
-    if (!pair.value()[CONFIG_ENABLED_PROP].isNull()) {
-      bool enabled = pair.value()[CONFIG_ENABLED_PROP];
+    if (!nodeValue[CONFIG_CONNECTOR_PROP].isUnbound()) {
+      DrumConnector* connector = nullptr;
+      if (!nodeValue[CONFIG_CONNECTOR_PROP].isNull()) {
+        String connectorId = nodeValue[CONFIG_CONNECTOR_PROP];
+        connector = drumKit->getConnectorById(connectorId);
+        if (!connector) {
+          eventLog.log(Level::ERROR, String("Disable as connectorId is invalid: ") + connectorId);
+        }
+      }
+      pad.setConnector(connector);
+      isConfigDirty = true;
+      sendConfigRequired = true;
+    }
+
+    if (!nodeValue[CONFIG_ENABLED_PROP].isNull()) {
+      bool enabled = nodeValue[CONFIG_ENABLED_PROP];
       pad.setEnabled(enabled);
       isConfigDirty = true;
     }
 
-    if (!pair.value()[CONFIG_AUTOCALIBRATE_PROP].isNull()) {
-      bool autoCalibrate = pair.value()[CONFIG_AUTOCALIBRATE_PROP];
+    if (!nodeValue[CONFIG_AUTOCALIBRATE_PROP].isNull()) {
+      bool autoCalibrate = nodeValue[CONFIG_AUTOCALIBRATE_PROP];
       pad.setAutoCalibrate(autoCalibrate);
       isConfigDirty = true;
     }
+  }
+
+  if (sendConfigRequired) {
+    sendConfig(client);
   }
 }
 
@@ -235,7 +257,7 @@ void WebUI::handleCommand(String cmd, JsonObjectConst& argsNode, AsyncWebSocketC
   } else if (cmd == "setMonitor") {
     handleSetMonitor(argsNode);
   } else if (cmd == "setPadConfig") {
-    handleSetPadConfig(argsNode);
+    handleSetPadConfig(argsNode, client);
   } else if (cmd == "triggerMonitor") {
     handleTriggerMonitor();
   } else if (cmd == "saveConfig") {

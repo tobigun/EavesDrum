@@ -31,7 +31,7 @@ private:
   void handleSetMappingsRequest(JsonObjectConst mappingsNode);
   void handleSetGeneralConfigRequest(JsonObjectConst generalConfigNode);
   void handleSetMonitor(JsonObjectConst configNode);
-  void handleSetPadConfig(JsonObjectConst configNode);
+  void handleSetPadConfig(JsonObjectConst configNode, AsyncWebSocketClient* client);
   void handleTriggerMonitor();
   void handleSaveConfigRequest(AsyncWebSocketClient* client);
   void handleRestoreConfigRequest(AsyncWebSocketClient* client);

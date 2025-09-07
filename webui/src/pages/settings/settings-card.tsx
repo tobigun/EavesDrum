@@ -3,14 +3,14 @@
 
 import { ChangeEvent, useCallback, useContext } from "react";
 
-import { Box, MenuItem, Select } from "@mui/material";
+import { Box, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import RecordIcon from '@mui/icons-material/FiberManualRecord';
 
 import { getHeaderBackground } from "@/common";
 import { Card, RoleInfo, PanelIconToggleButton } from "@/components/card";
 import { GroupChip } from "@/components/group-chip";
 import { Switch } from "@/components/switch";
-import { getPadIndexByName, PadType, updateConfig, useConfig } from "@config";
+import { ConnectorId, getPadIndexByName, PadType, updateConfig, useConfig } from "@config";
 import { connection, DrumCommand } from "@/connection/connection";
 import { recordButtonColor } from "./monitor/monitor-card";
 import { SettingsElements } from "./settings-pad";
@@ -71,10 +71,26 @@ function SettingsCard({ padIndex, padType }: {
 
 function ConnectorInfo({ padIndex }: { padIndex: number }) {
   const connectorId = useConfig(config => config.pads[padIndex].connector);
-  const pinCount = useConfig(useShallow(config => connectorId ? config.connectors[connectorId].pins.length : 0));
+  const usedConnectors = useConfig(useShallow(config => new Set(config.pads.map(pad => pad.connector))));
+  useConfig(useShallow(config => connectorId ? config.connectors[connectorId].pins.length : 0)); // only used to trigger update
+
+  const handleSelectChange = (event: SelectChangeEvent) => {
+    const newConnectorId = event.target.value;
+    if (newConnectorId !== connectorId) {
+      const value = (newConnectorId !== "-") ? newConnectorId : (null as unknown as ConnectorId);
+      connection.sendSetPadConfigCommand(padIndex, {connector: value});
+    }
+  };
+
   return <SettingEntryContainer name='Connector'>
-    <Select disabled={true} value={connectorId} size='small'>
-      <MenuItem value={connectorId}>{connectorId} (Pins: {pinCount})</MenuItem>
+    <Select value={connectorId ?? "-"} size='small' onChange={handleSelectChange}>
+      <MenuItem value={"-"}>&mdash;</MenuItem>
+      {
+        Object.keys(useConfig.getState().connectors).map(id =>
+          <MenuItem key={id} value={id} disabled={id != connectorId && usedConnectors.has(id)}>
+            {id} (Pins: {useConfig.getState().connectors[id].pins.length})
+          </MenuItem>)
+      }
     </Select>
   </SettingEntryContainer>;
 }

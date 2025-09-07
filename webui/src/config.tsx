@@ -75,7 +75,7 @@ export interface DrumPadConfig {
   enabled: boolean;
   autoCalibrate: boolean;
   pedal?: string; // name of the pedal pad
-  connector?: ConnectorId;
+  connector?: ConnectorId; // undefined: no connector
   settings: DrumPadSettings;
 }
 
