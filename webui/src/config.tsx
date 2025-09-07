@@ -92,8 +92,6 @@ export interface DrumPadMappings {
   noteCloseCup?: number;
 
   noteCross?: number;
-
-  pedalChickEnabled?: boolean;
 }
 
 export type DrumPadMappingValues = Omit<DrumPadMappings, "name">;
@@ -117,7 +115,6 @@ export const mappingValuesTyoes: MappingTypes = {
   noteCloseRim: "number",
   noteCloseCup: "number",
   noteCross: "number",
-  pedalChickEnabled: "boolean"
 };
 
 export interface DrumPadSettings {

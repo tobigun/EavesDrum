@@ -21,6 +21,4 @@ struct DrumMappings {
   midi_note_t noteCloseMain = MIDI_NOTE_UNASSIGNED;
   midi_note_t noteCloseRim = MIDI_NOTE_UNASSIGNED;
   midi_note_t noteCloseCup = MIDI_NOTE_UNASSIGNED;
-
-  bool_or_undefined pedalChickEnabled = BOOL_UNDEFINED;
 };

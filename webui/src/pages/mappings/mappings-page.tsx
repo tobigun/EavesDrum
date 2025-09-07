@@ -27,7 +27,7 @@ type MappingDisplayNames = {
   [Property in keyof Required<DrumPadMappingValues>]: (props: MappingEntryProps) => string;
 };
 const mappingDisplayNames: MappingDisplayNames = {
-  noteMain: ({padType}) => 'Note ' + getZoneName(padType, 0),
+  noteMain: ({padType}) => 'Note ' + ((padType === PadType.Pedal) ? "Pedal Chick" : getZoneName(padType, 0)),
   noteRim: ({padType}) => 'Note ' + getZoneName(padType, 1),
   noteCup: ({padType}) => 'Note ' + getZoneName(padType, 2),
   closedNotesEnabled: () => 'Enable Closed Notes',
@@ -35,7 +35,6 @@ const mappingDisplayNames: MappingDisplayNames = {
   noteCloseRim: ({padType}) => 'Note Close ' + getZoneName(padType, 1),
   noteCloseCup: ({padType}) => 'Note Close ' + getZoneName(padType, 2),
   noteCross: ({padIndex}) => 'Note ' + (getPadZonesCount(padIndex) === 3 ? 'Side-Rim' : 'Cross-Stick'),
-  pedalChickEnabled: () => 'Enable Chick Note'
 };
 
 function getDisplayName(props: MappingEntryProps) {
@@ -54,9 +53,7 @@ const mappingDependencies: MappingDependencies = {
     noteCloseRim: (config, padRole) => config.mappings[padRole].closedNotesEnabled!,
     noteCloseCup: (config, padRole) => config.mappings[padRole].closedNotesEnabled!,
   },
-  Pedal: {
-    noteMain: (config, padRole) => config.mappings[padRole].pedalChickEnabled!
-  }
+  Pedal: {}
 };
 
 export function MappingsPage() {

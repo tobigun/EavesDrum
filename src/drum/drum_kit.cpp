@@ -116,7 +116,7 @@ void DrumKit::evaluateHiHat(const DrumPad& pad, const DrumPad& pedal) {
     evaluateCymbal(pad);
   }
 
-  if (pedalMappings.pedalChickEnabled == true && pedal.hits[0]) { // when hihat is closed
+  if (pedalMappings.noteMain != MIDI_NOTE_UNASSIGNED && pedal.hits[0]) { // play chick sound when hihat is closed
     sendMidiNoteOnMessage(pedalMappings.noteMain, pedal.hitVelocities[0]);
   }
 }

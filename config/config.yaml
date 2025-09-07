@@ -294,5 +294,4 @@ mappings:
     noteRim: 18
   HiHatPedal:
     name: Hi-Hat Pedal
-    pedalChickEnabled: true
     noteMain: 21

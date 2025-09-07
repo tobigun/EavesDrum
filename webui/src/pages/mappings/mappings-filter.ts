@@ -30,7 +30,6 @@ const mappingItemsHiHat: MappingConstraints = {
 };
 
 const mappingItemsPedalControl: MappingConstraints = {
-  pedalChickEnabled: { requiredZones: 1 },
   noteMain: { requiredZones: 1 },
 };
 

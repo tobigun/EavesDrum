@@ -41,8 +41,6 @@ void DrumConfigMapper::applyMappings(DrumMappings& mappings, JsonObjectConst& ma
   NOTE_MAPPING_FROM_JSON(noteCloseMain)
   NOTE_MAPPING_FROM_JSON(noteCloseRim)
   NOTE_MAPPING_FROM_JSON(noteCloseCup)
-
-  BOOL_MAPPING_FROM_JSON(pedalChickEnabled)
 }
 
 ///////////////////////////// To JSON
@@ -75,6 +73,4 @@ void DrumConfigMapper::convertMappingsToJson(const DrumMappings& mappings, JsonO
   NOTE_MAPPING_TO_JSON(noteCloseMain)
   NOTE_MAPPING_TO_JSON(noteCloseRim)
   NOTE_MAPPING_TO_JSON(noteCloseCup)
-
-  BOOL_MAPPING_TO_JSON(pedalChickEnabled)
 }
