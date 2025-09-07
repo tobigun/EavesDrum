@@ -27,17 +27,18 @@ type MappingDisplayNames = {
   [Property in keyof Required<DrumPadMappingValues>]: (props: MappingEntryProps) => string;
 };
 const mappingDisplayNames: MappingDisplayNames = {
-  noteMain: ({padType}) => 'Note ' + ((padType === PadType.Pedal) ? "Pedal Chick" : getZoneName(padType, 0)),
-  noteRim: ({padType}) => 'Note ' + getZoneName(padType, 1),
-  noteCup: ({padType}) => 'Note ' + getZoneName(padType, 2),
+  noteMain: ({padType}) => 'Note ' + (padType ? ((padType === PadType.Pedal) ? "Pedal Chick" : getZoneName(padType, 0)) : "Main"),
+  noteRim: ({padType}) => 'Note ' + (padType ? getZoneName(padType, 1) : "Rim"),
+  noteCup: ({padType}) => 'Note ' + (padType ? getZoneName(padType, 2) : "Cup"),
   closedNotesEnabled: () => 'Enable Closed Notes',
-  noteCloseMain: ({padType}) => 'Note Close ' + getZoneName(padType, 0),
-  noteCloseRim: ({padType}) => 'Note Close ' + getZoneName(padType, 1),
-  noteCloseCup: ({padType}) => 'Note Close ' + getZoneName(padType, 2),
+  noteCloseMain: ({padType}) => 'Note Close ' + (padType ? getZoneName(padType, 0) : "Main"),
+  noteCloseRim: ({padType}) => 'Note Close ' + (padType ? getZoneName(padType, 1) : "Rim"),
+  noteCloseCup: ({padType}) => 'Note Close ' + (padType ? getZoneName(padType, 2) : "Cup"),
   noteCross: ({padIndex}) => 'Note ' + ((padIndex !== undefined && getPadZonesCount(padIndex) === 3) ? 'Side-Rim (Cross-Stick)' : 'Cross-Stick'),
 };
 
 function getDisplayName(props: MappingEntryProps) {
+  console.log("Getting display name for mappingId=" + props.mappingId);
   return mappingDisplayNames[props.mappingId](props);
 }
 
@@ -63,17 +64,33 @@ const mappingDependencies: MappingDependencies = {
 export function MappingsPage() {
   const padCount = useConfig(useShallow(config => config.pads.length));
 
+  const roles = useConfig(useShallow(config => Object.keys(config.mappings)));
+  const usedRoles = useConfig.getState().pads.map(pad => pad.role);
+  const unusedRoles = roles.filter(role => !usedRoles.includes(role));
+  console.log(unusedRoles);
+
   return (
-    <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}>
+    <>
+      <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}>
+        {
+          [...Array(padCount)].map((_, padIndex) =>
+            <MappingsCardForPad key={padIndex} padIndex={padIndex} />)
+        }
+      </Masonry>
       {
-        [...Array(padCount)].map((_, padIndex) =>
-          <MappingsCard key={padIndex} padIndex={padIndex} />)
+        unusedRoles.length > 0 ? <hr></hr> : null
       }
-    </Masonry>
+      <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}>
+        {
+          unusedRoles.map(role =>
+            <MappingsCardForRole key={role} padRole={role} />)
+        }
+      </Masonry>
+    </>
   );
 }
 
-function MappingsCard({ padIndex }: {
+function MappingsCardForPad({ padIndex }: {
   padIndex: number
 }) {
   const padName = useConfig(config => config.pads[padIndex].name);
@@ -95,11 +112,11 @@ function MappingsCard({ padIndex }: {
         dropProps={{filter: ConfigFilter.Mappings, padRole: padRole}}        
         titleDecorators={<GroupChip group={group} />}
       >
-        <MappingsPadInfo padIndex={padIndex} padRole={padRole} padType={padType} />
+        <MappingsInfo padIndex={padIndex} padRole={padRole} padType={padType} />
         {
           pedalIndex !== undefined && <>
             <Box padding={1} width='100%' />
-            <MappingsPadInfo padIndex={pedalIndex} padRole={getPadByIndex(pedalIndex).role} padType={PadType.Pedal} />
+            <MappingsInfo padIndex={pedalIndex} padRole={getPadByIndex(pedalIndex).role} padType={PadType.Pedal} />
           </>
         }
       </Card>
@@ -107,12 +124,28 @@ function MappingsCard({ padIndex }: {
   );
 }
 
-function MappingsPadInfo({ padIndex, padRole, padType }: {
-  padIndex: number,
-  padRole: string,
-  padType: PadType
+function MappingsCardForRole({ padRole }: {
+  padRole: string
 }) {
-  const supportedMappingIds = getSupportedMappingIds(getPadByIndex(padIndex));
+  return (
+    <Box>
+      <Card name={`Unused (${padRole})`}
+        dropProps={{filter: ConfigFilter.Mappings, padRole: padRole}}
+      >
+        <MappingsInfo padRole={padRole} />
+      </Card>
+    </Box>
+  );
+}
+
+function MappingsInfo({ padIndex, padRole, padType }: {
+  padIndex?: number,
+  padRole: string,
+  padType?: PadType
+}) {
+  const supportedMappingIds = padIndex !== undefined
+    ? getSupportedMappingIds(getPadByIndex(padIndex))
+    : Object.keys(useConfig.getState().mappings[padRole]) as DrumMappingId[];
 
   return (
     <>
@@ -129,7 +162,7 @@ interface MappingEntryProps {
   padIndex?: number,
   padRole: string,
   mappingId: DrumMappingId,
-  padType: PadType
+  padType?: PadType
 }
 
 function MappingEntry(props: MappingEntryProps) {
@@ -137,16 +170,16 @@ function MappingEntry(props: MappingEntryProps) {
 
   const mapping = useConfig(config => config.mappings[padRole][mappingId]);
   const isNoteEntry = (mappingValuesTyoes[mappingId] === 'number');
+  const isBoolEntry = (mappingValuesTyoes[mappingId] === 'boolean');
   
-  const dependsOn = mappingDependencies[padType][mappingId];
+  const dependsOn = padType ? mappingDependencies[padType][mappingId] : undefined;
   const enabled = useConfig(config => dependsOn ? dependsOn(config, padRole, padIndex) : true);
 
   return (
     <>
       {
-        isNoteEntry
-          ? (enabled ? <MappingEntryNote {...props} noteIndex={mapping as number | undefined} /> : null)
-          : <MappingEntryEnable {...props} enabled={mapping as boolean | undefined} />
+        (isNoteEntry && enabled) ? <MappingEntryNote {...props} noteIndex={mapping as number | undefined} />
+          : (isBoolEntry ? <MappingEntryEnable {...props} enabled={mapping as boolean | undefined} /> : null)
       }
     </>
   );

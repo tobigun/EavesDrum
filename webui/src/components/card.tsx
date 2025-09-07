@@ -94,9 +94,9 @@ export function Card(props: AccordionProps & CardProps) {
 
 export function RoleInfo({ padRole }: { padRole: string }) {
   const mappingName = useConfig(config => config.mappings[padRole]?.name);
-  return <SettingEntryContainer name='Mapping'>
+  return <SettingEntryContainer name='Role (Mapping)'>
     <Select disabled={true} value={padRole} size='small'>
-      <MenuItem value={padRole}>{mappingName ? mappingName : padRole}</MenuItem>
+      <MenuItem value={padRole}>{padRole + (mappingName ? ` (${mappingName})` : "")}</MenuItem>
     </Select>
   </SettingEntryContainer>;
 }
