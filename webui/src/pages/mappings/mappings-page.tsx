@@ -34,7 +34,7 @@ const mappingDisplayNames: MappingDisplayNames = {
   noteCloseMain: ({padType}) => 'Note Close ' + getZoneName(padType, 0),
   noteCloseRim: ({padType}) => 'Note Close ' + getZoneName(padType, 1),
   noteCloseCup: ({padType}) => 'Note Close ' + getZoneName(padType, 2),
-  noteCross: ({padIndex}) => 'Note ' + (getPadZonesCount(padIndex) === 3 ? 'Side-Rim' : 'Cross-Stick'),
+  noteCross: ({padIndex}) => 'Note ' + ((padIndex !== undefined && getPadZonesCount(padIndex) === 3) ? 'Side-Rim (Cross-Stick)' : 'Cross-Stick'),
 };
 
 function getDisplayName(props: MappingEntryProps) {

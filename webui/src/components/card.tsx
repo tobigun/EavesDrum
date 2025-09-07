@@ -159,7 +159,7 @@ export function EntryContainer(props: PropsWithChildren<{ name: string, labelWid
 function DisplayNameLabel({ name, labelWidth }: { name: string, labelWidth: string }) {
   return (
     <Typography minWidth={labelWidth} maxWidth={labelWidth}
-      marginTop={1} variant="body1" noWrap
+      marginTop={1} variant="body1" title={name} noWrap
     >
       {name + ':'}
     </Typography>
