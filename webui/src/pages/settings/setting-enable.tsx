@@ -6,13 +6,15 @@ import { updateConfig, useConfig } from "@config";
 import { SettingEntryContainer } from "./setting-entry";
 import { SettingsValueAccessor } from "./settings-pad";
 import { connection } from "@/connection/connection";
+import { useContext } from "react";
+import { ConnectionStateContext } from "@/connection/connection-state";
 
 export function SettingEnableEntry({ label, padIndex, valueAccessor }: {
     label: string,
     padIndex: number,
     valueAccessor: SettingsValueAccessor
   }) {
-  const connected = true; // TODO useContext(ConnectionStateContext);
+  const connected = useContext(ConnectionStateContext);
   const checkedValue = useConfig(config => valueAccessor.getValue(config.pads[padIndex].settings));
   
   function onChange(_event: unknown, newEnabled: boolean) {
