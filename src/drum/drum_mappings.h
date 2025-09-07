@@ -5,33 +5,22 @@
 
 #include "types.h"
 
-enum DrumMappingId {
-  NOTE_MAIN,
-  NOTE_RIM,
-  NOTE_CUP,
-  NOTE_CROSS,
-
-  ENABLE_CLOSED_NOTES,
-  NOTE_CLOSE_MAIN,
-  NOTE_CLOSE_RIM,
-  NOTE_CLOSE_CUP,
-
-  ENABLE_PEDAL_CHICK
-};
-
 struct DrumMappings {
-  midi_note_t noteMain = 0;
-  midi_note_t noteRim = 0;
-  midi_note_t noteCup = 0; // cymbal
+  String role = String((char*) nullptr);
+  String name = String((char*) nullptr);
+
+  midi_note_t noteMain = MIDI_NOTE_UNASSIGNED;
+  midi_note_t noteRim = MIDI_NOTE_UNASSIGNED;
+  midi_note_t noteCup = MIDI_NOTE_UNASSIGNED; // cymbal
 
   // snare
-  midi_note_t noteCross = 0;
+  midi_note_t noteCross = MIDI_NOTE_UNASSIGNED;
 
   // hihat
-  bool closedNotesEnabled = false;
-  midi_note_t noteCloseMain = 0;
-  midi_note_t noteCloseRim = 0;
-  midi_note_t noteCloseCup = 0;
+  bool_or_undefined closedNotesEnabled = BOOL_UNDEFINED;
+  midi_note_t noteCloseMain = MIDI_NOTE_UNASSIGNED;
+  midi_note_t noteCloseRim = MIDI_NOTE_UNASSIGNED;
+  midi_note_t noteCloseCup = MIDI_NOTE_UNASSIGNED;
 
-  bool pedalChickEnabled = false;
+  bool_or_undefined pedalChickEnabled = BOOL_UNDEFINED;
 };

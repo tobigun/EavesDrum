@@ -160,8 +160,7 @@ void WebUI::handleTriggerMonitor() {
 
 void WebUI::handlePlayNote(JsonObjectConst& argsNode) {
   midi_note_t midiNote = argsNode["note"];
-  MIDI.sendNoteOn(midiNote, 100, 10);
-  MIDI.sendNoteOff(midiNote, 0, 10);
+  drumKit->sendMidiNoteOnOffMessage(midiNote, 100);
 }
 
 void WebUI::handleEventLogRequest(AsyncWebSocketClient* client) {

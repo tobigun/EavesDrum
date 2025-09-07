@@ -109,14 +109,14 @@ void DrumKit::evaluateHiHat(const DrumPad& pad, const DrumPad& pedal) {
   const DrumMappings& pedalMappings = pedal.getMappings();
 
   bool isClosed = pedal.hihat.state == HiHatState::Closed;
-  if (isClosed && pedalMappings.closedNotesEnabled) {
+  if (isClosed && pedalMappings.closedNotesEnabled == true) {
     const midi_note_t notes[] = {padMappings.noteCloseMain, padMappings.noteCloseRim, padMappings.noteCloseCup};
     evaluateCymbalWithNotes(pad, notes);
   } else {
     evaluateCymbal(pad);
   }
 
-  if (pedalMappings.pedalChickEnabled && pedal.hits[0]) { // when hihat is closed
+  if (pedalMappings.pedalChickEnabled == true && pedal.hits[0]) { // when hihat is closed
     sendMidiNoteOnMessage(pedalMappings.noteMain, pedal.hitVelocities[0]);
   }
 }
@@ -140,8 +140,10 @@ void DrumKit::evaluateCymbalWithNotes(const DrumPad& pad, const midi_note_t* not
 }
 
 void DrumKit::sendMidiNoteOnOffMessage(midi_note_t note, midi_velocity_t velocity) {
-  MIDI.sendNoteOn(note, velocity, MIDI_CHANNEL);
-  MIDI.sendNoteOff(note, 0, MIDI_CHANNEL);
+  if (note != MIDI_NOTE_UNASSIGNED) {
+    MIDI.sendNoteOn(note, velocity, MIDI_CHANNEL);
+    MIDI.sendNoteOff(note, 0, MIDI_CHANNEL);
+  }
 }
 
 void DrumKit::sendMidiNoteOnWithDelayedOffMessage(midi_note_t note, midi_velocity_t velocity) {
@@ -163,6 +165,10 @@ void DrumKit::sendMidiNoteOnWithDelayedOffMessage(midi_note_t note, midi_velocit
 void DrumKit::sendMidiNoteOnMessage(midi_note_t note, midi_velocity_t velocity) {
   DrumIO::led(LED_HIT_INDICATOR, true);
   last_hit_time_us = micros();
+
+  if (note == MIDI_NOTE_UNASSIGNED) {
+    return;
+  }
 
   if (gateTimeMs > 0) {
     sendMidiNoteOnWithDelayedOffMessage(note, velocity);

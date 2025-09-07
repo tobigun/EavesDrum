@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import RecordIcon from '@mui/icons-material/FiberManualRecord';
 
 import { connection, DrumCommand } from '@/connection/connection';
-import { getPadSettingsByIndex, PadType, updateConfig, useConfig } from "@config";
+import { getPadByIndex, PadType, updateConfig, useConfig } from "@config";
 import { Card, PanelButton, PanelToggleButton } from "@/components/card";
 import { MonitorMessage, MonitorMessageInfo } from "./monitor-message";
 import { LatencyTestWizard } from "./latency-test";
@@ -147,7 +147,7 @@ export function Monitor({mode = MonitorMode.Default, showHitGraph = true} : {
     const waitForHit = monitoredPad !== undefined || triggeredByAllPads;
     let waitMessage = 'Waiting for hit ...';
     if (monitoredPad !== undefined) {
-      const settings = getPadSettingsByIndex(monitoredPad);
+      const settings = getPadByIndex(monitoredPad).settings;
       if (settings.padType === PadType.Pedal) {
         waitMessage = 'Waiting for pedal movement ...';
       }

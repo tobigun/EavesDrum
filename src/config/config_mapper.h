@@ -8,6 +8,7 @@
 #include "drum.h"
 
 #define MAX_PAD_COUNT 20
+#define MAX_MAPPINGS_COUNT 32
 #define MAX_MUX_COUNT 4
 #define MAX_CONNECTOR_COUNT 32
 
@@ -50,18 +51,18 @@ private:
 
   static void applyDrumKitConfig(DrumKit& drumKit, const JsonDocument& configNode);
 
-  static void applyPadConfigs(DrumKit& drumKit, JsonArrayConst& padsNode);
+  static void addPadsToDrumKit(DrumKit& drumKit, JsonArrayConst& padsNode);
   static void applyPadConfig(DrumPad& pad, DrumKit& drumKit, pad_size_t padIndex, JsonArrayConst& padsNode);
-  static pad_size_t findPedalIndexByRole(String pedalRole, JsonArrayConst& padsNode);
+  static pad_size_t findPedalIndexByName(String pedalRole, JsonArrayConst& padsNode);
 
-  static void applyMuxConfigs(DrumKit& drumKit, JsonArrayConst& muxNodes);
+  static void addMultiplexersToKit(DrumKit& drumKit, JsonArrayConst& muxNodes);
   static bool applyMuxConfig(DrumMux& mux, JsonObjectConst& muxNode);
 
-  static void applyConnectorsConfig(DrumKit& drumKit, JsonObjectConst connectorsNode);
+  static void addConnectorsToDrumKit(DrumKit& drumKit, JsonObjectConst connectorsNode);
   static bool applyPinsConfig(DrumConnector& connector, DrumKit& drumKit, JsonArrayConst pinsNode);
   static DrumPin getPinsConfig(DrumConnector& connector, DrumKit& drumKit, JsonVariantConst pinsNode);
 
-  static void applyPadMappings(DrumPad& pad, JsonObjectConst& mappingsNode);
+  static void applyMappings(DrumMappings& mappings, JsonObjectConst& mappingsNode);
 
   // To JSON
   static void convertGeneralConfigToJson(const DrumKit& drumKit, JsonDocument& config);
@@ -72,7 +73,7 @@ private:
   static void convertConnectorConfigToJson(const DrumConnector& pad, const DrumKit& drumKit, JsonObject& connectorNode);
   static void convertPinsToJson(const DrumConnector& pad, JsonArray pinsNode);
   static void convertPadSettingsToJson(const DrumPad& pad, const DrumKit& drumKit, JsonObject& settingsNode);
-  static void convertPadMappingsToJson(const DrumPad& pad, const DrumKit& drumKit, JsonObject& mappingsNode);
+  static void convertMappingsToJson(const DrumMappings& mappings, JsonObject& mappingsNode);
 
   // Low level
   static JsonDocument loadDrumKitConfig();

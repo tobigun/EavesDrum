@@ -7,7 +7,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import LatencySvg from "@/image/latency.svg?react";
 
-import { getPadSettingsByIndex, isPadPinConnectedToMux, useConfig } from "@config";
+import { getPadByIndex, isPadPinConnectedToMux, useConfig } from "@config";
 import { connection, DrumCommand } from "@/connection/connection";
 import { Alert, Step, StepLabel, Stepper } from "@mui/material";
 import { PropsWithChildren, useEffect, useState } from "react";
@@ -210,7 +210,7 @@ function StepAdjustTriggerSettings({threshold, setThreshold, midiNote, setMidiNo
             2. Now open your Drum Software and press the &quot;Play MIDI note&quot; button below to trigger the playback of the MIDI note.<br/>
         </Typography>
         <Stack direction='row' width='fit-content' paddingLeft={5} spacing={2}>
-          <MidiNoteSelector configNote={midiNote} onNoteChange={setMidiNote} />
+          <MidiNoteSelector configNote={midiNote} onNoteChange={value => value !== undefined && setMidiNote(value)} />
           <Button variant="outlined" onClick={onMidiTestClicked}>Play MIDI note</Button>
         </Stack>
         <Box>
@@ -253,7 +253,7 @@ function StepFinalTest({threshold, midiNote, setMidiNote} : {
     return "No pad selected";
   }
 
-  const settings = getPadSettingsByIndex(monitoredPadIndex);
+  const settings = getPadByIndex(monitoredPadIndex).settings;
   const scanTimeMs = settings.scanTimeUs! / 1000;
 
   function onMeasureLatencyClicked() {
@@ -267,7 +267,7 @@ function StepFinalTest({threshold, midiNote, setMidiNote} : {
           Press the &quot;Measure Latency&quot; button to start the measurement.
         </Typography>
         <Stack direction='row' width='fit-content' paddingLeft={5}>
-          <MidiNoteSelector configNote={midiNote} onNoteChange={setMidiNote} />
+          <MidiNoteSelector configNote={midiNote} onNoteChange={value => value !== undefined && setMidiNote(value)} />
           <Button variant="outlined" onClick={onMeasureLatencyClicked}>Measure Latency</Button>
         </Stack>
         {

@@ -7,10 +7,10 @@ import { Box, MenuItem, Select } from "@mui/material";
 import RecordIcon from '@mui/icons-material/FiberManualRecord';
 
 import { getHeaderBackground } from "@/common";
-import { Card, RoleInfoLabel, PanelIconToggleButton } from "@/components/card";
+import { Card, RoleInfo, PanelIconToggleButton } from "@/components/card";
 import { GroupChip } from "@/components/group-chip";
 import { Switch } from "@/components/switch";
-import { getPadIndexByRole, PadType, updateConfig, useConfig } from "@config";
+import { getPadIndexByName, PadType, updateConfig, useConfig } from "@config";
 import { connection, DrumCommand } from "@/connection/connection";
 import { recordButtonColor } from "./monitor/monitor-card";
 import { SettingsElements } from "./settings-pad";
@@ -24,10 +24,10 @@ export function SettingsCardGroup({ padIndex }: {
   padIndex: number,
 }) {
   const padType = useConfig(config => config.pads[padIndex].settings.padType);
-  const pedalRole = useConfig(config => config.pads[padIndex].pedal);
-  const pedalIndex = getPadIndexByRole(pedalRole);
+  const pedalName = useConfig(config => config.pads[padIndex].pedal);
+  const pedalIndex = pedalName ? getPadIndexByName(pedalName) : undefined;
 
-  if (padType == PadType.Pedal) {
+  if (padType === PadType.Pedal) {
     return null;
   }
   
@@ -60,8 +60,8 @@ function SettingsCard({ padIndex, padType }: {
           <MonitorToggleButton key="monitor" padIndex={padIndex} />
         </>
       }>
-      <RoleInfoLabel padIndex={padIndex} />
       <PadTypeSelector padIndex={padIndex}/>
+      <RoleInfo padIndex={padIndex} />
       <ConnectorInfo padIndex={padIndex} />
       <SettingsElements padIndex={padIndex} padType={padType} />
     </Card>

@@ -6,7 +6,7 @@ import { getPadByIndex, isPadPinConnectedToMux, useConfig } from "@config";
 
 export function MuxMonitorInputCheck() {
   const monitoredPadIndex = useConfig(config => config.monitor?.padIndex);
-  const monitoredPadName = getPadByIndex(monitoredPadIndex)?.name ?? 'None';
+  const monitoredPadName = monitoredPadIndex !== undefined ? getPadByIndex(monitoredPadIndex).name : 'None';
   const isMux = isPadPinConnectedToMux(0, monitoredPadIndex);
 
   return (

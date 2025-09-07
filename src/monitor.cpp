@@ -236,8 +236,7 @@ void DrumMonitor::startLatencyTest(bool preview, sensor_value_t threshold, midi_
   latencyTest.preview = preview;
 
   if (!preview) {
-    MIDI.sendNoteOn(midiNote, 100, 10);
-    MIDI.sendNoteOff(midiNote, 0, 10);
+    drumKit->sendMidiNoteOnOffMessage(midiNote, 100);
   }
 }
 

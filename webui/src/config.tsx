@@ -30,24 +30,17 @@ export function updateConfig(updater: ConfigUpdateFunc) {
   useConfig.setState(produce((config) => { updater(config); }));
 }
 
-export function getPadIndexByRole(padRole?: PadRole): number | undefined {
-  if (!padRole) {
-    return undefined;
-  }
-  const index = useConfig.getState().pads.findIndex(pad => pad.role === padRole);
+export function getPadIndexByName(padName: string): number | undefined {
+  const index = useConfig.getState().pads.findIndex(pad => pad.name === padName);
   return index == -1 ? undefined : index;
 }
 
-export function getPadSettingsByIndex(padIndex: number): DrumPadSettings {
-  return useConfig.getState().pads[padIndex].settings;
-}
-
-export function getPadByIndex(padIndex?: number): DrumPadConfig | undefined {
-  return padIndex !== undefined ? useConfig.getState().pads[padIndex] : undefined;
+export function getPadByIndex(padIndex: number): DrumPadConfig {
+  return useConfig.getState().pads[padIndex];
 }
 
 export function isPadPinConnectedToMux(pin: number, padIndex?: number): boolean {
-  const connectorId = getPadByIndex(padIndex)?.connector;
+  const connectorId = padIndex !== undefined ? getPadByIndex(padIndex)?.connector : undefined;
   const connector = connectorId !== undefined ? useConfig.getState().connectors[connectorId] : undefined;
   return (typeof connector?.pins[pin]) === 'object';
 }
@@ -81,12 +74,14 @@ export interface DrumPadConfig {
   group: string;
   enabled: boolean;
   autoCalibrate: boolean;
-  pedal?: PadRole;
+  pedal?: string; // name of the pedal pad
   connector?: ConnectorId;
   settings: DrumPadSettings;
 }
 
 export interface DrumPadMappings {
+  name?: string;
+
   noteMain?: number;
   noteRim?: number;
   noteCup?: number;
@@ -100,6 +95,30 @@ export interface DrumPadMappings {
 
   pedalChickEnabled?: boolean;
 }
+
+export type DrumPadMappingValues = Omit<DrumPadMappings, "name">;
+export type DrumMappingId = keyof DrumPadMappingValues;
+
+type MappingTypeName<T> =
+  T extends number ? "number" :
+  T extends boolean ? "boolean" :
+  never;
+
+type MappingTypes = Required<{
+  [K in keyof DrumPadMappingValues]: MappingTypeName<DrumPadMappingValues[K]>
+}>;
+
+export const mappingValuesTyoes: MappingTypes = {
+  noteMain: "number",
+  noteRim: "number",
+  noteCup: "number",
+  closedNotesEnabled: "boolean",
+  noteCloseMain: "number",
+  noteCloseRim: "number",
+  noteCloseCup: "number",
+  noteCross: "number",
+  pedalChickEnabled: "boolean"
+};
 
 export interface DrumPadSettings {
   padType: PadType;

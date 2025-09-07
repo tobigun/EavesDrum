@@ -10,7 +10,7 @@
 
 ///////////////////////////// From JSON
 
-void DrumConfigMapper::applyConnectorsConfig(DrumKit& drumKit, JsonObjectConst connectorsNode) {
+void DrumConfigMapper::addConnectorsToDrumKit(DrumKit& drumKit, JsonObjectConst connectorsNode) {
   if (!connectorsNode) {
     eventLog.log(Level::INFO, "Config: " CONNECTORS_SECTION " node missing");
     return;

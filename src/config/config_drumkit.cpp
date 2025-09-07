@@ -22,13 +22,13 @@ void DrumConfigMapper::applyDrumKitConfig(DrumKit& drumKit, const JsonDocument& 
   applyGeneralConfig(drumKit, generalNode);
 
   JsonArrayConst muxNodes = configNode[MUX_SECTION];
-  applyMuxConfigs(drumKit, muxNodes);
+  addMultiplexersToKit(drumKit, muxNodes);
 
   JsonObjectConst connectorsNodes = configNode[CONNECTORS_SECTION];
-  applyConnectorsConfig(drumKit, connectorsNodes);
+  addConnectorsToDrumKit(drumKit, connectorsNodes);
   
   JsonArrayConst padsNode = configNode[PADS_SECTION];
-  applyPadConfigs(drumKit, padsNode);
+  addPadsToDrumKit(drumKit, padsNode);
 
   JsonObjectConst mappingsNode = configNode[MAPPINGS_SECTION];
   applyDrumKitMappings(drumKit, mappingsNode);
@@ -58,16 +58,20 @@ void DrumConfigMapper::applyDrumKitMappings(DrumKit& drumKit, JsonObjectConst ma
     return;
   }
 
-  for (JsonPairConst padKeyValuePair : mappingsNode) {
-    String role = String(padKeyValuePair.key().c_str());
+  for (JsonPairConst mappingsKeyValuePair : mappingsNode) {
+    String role = mappingsKeyValuePair.key().c_str();
+    DrumMappings& mappings = drumKit.getOrCreateMappings(role);
+
+    JsonObjectConst mappingValuesNode = mappingsKeyValuePair.value();
+    DrumConfigMapper::applyMappings(mappings, mappingValuesNode);
+    
     DrumPad* pad = drumKit.getPadByRole(role);
     if (!pad) {
-      eventLog.log(Level::ERROR, String("Config: mappings reference pad with role ") + role + " which does not exist");
-      continue;
+      // Note: not all roles have to be used, so this is just a warning
+      eventLog.log(Level::INFO, String("Config: mappings reference pad with role ") + role + " which does not exist");
+    } else {
+      pad->setMappings(&mappings);
     }
-
-    JsonObjectConst padValuesNode = padKeyValuePair.value();
-    DrumConfigMapper::applyPadMappings(*pad, padValuesNode);
   }
 }
 
@@ -86,16 +90,18 @@ JsonDocument DrumConfigMapper::getDrumKitConfigAsJson(const DrumKit& drumKit) {
   convertConnectorConfigsToJson(drumKit, config);
 
   JsonArray padsNode = config[PADS_SECTION].to<JsonArray>();
-  JsonObject mappingsNode = config[MAPPINGS_SECTION].to<JsonObject>();
-
   for (pad_size_t padIndex = 0; padIndex < drumKit.getPadsCount(); ++padIndex) {
     const DrumPad& pad = *drumKit.getPad(padIndex);
-
     JsonObject padConfigNode = padsNode[padIndex].to<JsonObject>();
     convertPadConfigToJson(pad, drumKit, padConfigNode);
+  }
 
-    JsonObject padMappingsNode = mappingsNode[pad.getRole()].to<JsonObject>();
-    convertPadMappingsToJson(pad, drumKit, padMappingsNode);
+  JsonObject mappingsNode = config[MAPPINGS_SECTION].to<JsonObject>();
+  for (mappings_size_t mappingsIndex = 0; mappingsIndex < drumKit.getMappingsCount(); ++mappingsIndex) {
+    const DrumMappings& mappings = *drumKit.getMappings(mappingsIndex);
+
+    JsonObject mappingValuesNode = mappingsNode[mappings.role].to<JsonObject>();
+    convertMappingsToJson(mappings, mappingValuesNode);
   }
 
   return config;

@@ -124,8 +124,8 @@ public:
   DrumSettings& getSettings() { return settings; }
   const DrumSettings& getSettings() const { return settings; }
 
-  DrumMappings& getMappings() { return mappings; }
-  const DrumMappings& getMappings() const { return mappings; }
+  const DrumMappings& getMappings() const { return mappings ? *mappings : defaultMappings; }
+  void setMappings(DrumMappings* mappings) { this->mappings = mappings; }
 
   void setCurve(CurveType curveType) { settings.curveType = curveType; }
 
@@ -192,12 +192,14 @@ private:
   bool enabled = false;
 
   DrumSettings settings;
-  DrumMappings mappings;
 
   DrumPad* pedalPad = nullptr;
   DrumConnector* connector = nullptr;
 
   SensingState sensingState = SensingState::PeakDetect;
+
+  DrumMappings* mappings = nullptr;
+  static DrumMappings defaultMappings;
 
 private:
   friend class ControllerSensing;

@@ -130,6 +130,7 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
+          "name": { "type": "string" },
           "noteMain": { "type": "integer" },
           "noteRim": { "type": "integer" },
           "noteCross": { "type": "integer" },

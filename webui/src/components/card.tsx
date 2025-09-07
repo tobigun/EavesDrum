@@ -15,8 +15,9 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForwardIosSharp';
 
 import { CardConfigDropOverlay, ConfigDropProps } from './file-upload';
 import { useConfig } from '@config';
-import { Button, ButtonProps } from '@mui/material';
+import { Button, ButtonProps, MenuItem, Select } from '@mui/material';
 import { CardSize } from './component-enums';
+import { SettingEntryContainer } from '@/pages/settings/setting-entry';
 
 const CardAccordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters {...props} />
@@ -91,15 +92,14 @@ export function Card(props: AccordionProps & CardProps) {
   );
 }
 
-export function RoleInfoLabel({ padIndex }: { padIndex: number }) {
+export function RoleInfo({ padIndex }: { padIndex: number }) {
   const role = useConfig(config => config.pads[padIndex].role);
-  return (
-    <Typography variant="body1" align='center' paddingX={1} color='secondary'
-      border={1} borderColor='rgb(53, 53, 53)' noWrap
-    >
-      {role}
-    </Typography>
-  );
+  const roleName = useConfig.getState().mappings[role].name;
+  return <SettingEntryContainer name='Role'>
+    <Select disabled={true} value={role} size='small'>
+      <MenuItem value={role}>{roleName ? roleName : role}</MenuItem>
+    </Select>
+  </SettingEntryContainer>;
 }
 
 const panelElementMinHeight = '30px';

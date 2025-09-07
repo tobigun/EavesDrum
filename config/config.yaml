@@ -173,7 +173,7 @@ pads:
         - min: 204
           max: 700    
   - name: Ride
-    role: Ride
+    role: Ride1
     enabled: true
     connector: Jack6
     settings:
@@ -188,8 +188,8 @@ pads:
           max: 720
         - min: 280
         - min: 270
-  - name: Crash 1
-    role: Crash1
+  - name: Cymbal 1
+    role: Cymbal1
     enabled: true
     connector: Jack7
     settings:
@@ -204,8 +204,8 @@ pads:
           max: 670
         - min: 273
         - min: 511
-  - name: Crash 2
-    role: Crash2
+  - name: Cymbal 2
+    role: Cymbal2
     enabled: true
     connector: Jack8
     settings:
@@ -221,7 +221,7 @@ pads:
         - min: 273
         - min: 511
   - name: Hi-Hat
-    role: Hi-Hat
+    role: HiHat
     enabled: true
     pedal: Hi-Hat Pedal
     connector: Jack9
@@ -238,7 +238,7 @@ pads:
         - min: 386
         - min: 511
   - name: Hi-Hat Pedal
-    role: Hi-Hat Pedal
+    role: HiHatPedal
     enabled: true
     connector: Jack10
     settings:
@@ -258,39 +258,41 @@ mappings:
     noteRim: 40
     noteCross: 76
   Tom1:
+    name: Tom 1
     noteMain: 48
     noteRim: 81
     noteCross: 74
   Tom2:
+    name: Tom 2
     noteMain: 47
     noteRim: 79
     noteCross: 77
   Tom3:
+    name: Tom 3
     noteMain: 45
     noteRim: 77
     noteCross: 79
   Kick:
     noteMain: 36
-  Ride:
+  Ride1:
+    name: Ride
     noteMain: 51
     noteRim: 52
     noteCup: 53
-  Crash1:
+  Cymbal1:
+    name: Crash 1
     noteMain: 84
     noteRim: 86
-    noteCup: 0
-  Crash2:
+  Cymbal2:
+    name: Crash 2
     noteMain: 84
     noteRim: 86
-    noteCup: 0
-  Hi-Hat:
+  HiHat:
+    name: Hi-Hat
     closedNotesEnabled: false
     noteMain: 19
-    noteCloseMain: 0
     noteRim: 18
-    noteCloseRim: 0
-    noteCup: 0
-    noteCloseCup: 0
-  Hi-Hat Pedal:
+  HiHatPedal:
+    name: Hi-Hat Pedal
     pedalChickEnabled: true
     noteMain: 21

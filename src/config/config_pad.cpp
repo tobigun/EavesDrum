@@ -15,7 +15,7 @@
 
 ///////////////////////////// From JSON
 
-void DrumConfigMapper::applyPadConfigs(DrumKit& drumKit, JsonArrayConst& padsNode) {
+void DrumConfigMapper::addPadsToDrumKit(DrumKit& drumKit, JsonArrayConst& padsNode) {
   if (!padsNode) {
     eventLog.log(Level::INFO, "Config: " PADS_SECTION " node missing");
     return;
@@ -58,12 +58,12 @@ void DrumConfigMapper::applyPadConfig(DrumPad& pad, DrumKit& drumKit, pad_size_t
   }
 
   if (padNode[PAD_PEDAL_PROP].is<String>()) {
-    String pedalRole = padNode[PAD_PEDAL_PROP];
-    pad_size_t pedalIndex = findPedalIndexByRole(pedalRole, padsNode);
+    String pedalName = padNode[PAD_PEDAL_PROP];
+    pad_size_t pedalIndex = findPedalIndexByName(pedalName, padsNode);
     if (pedalIndex == UNKNOWN_PAD) {
-      eventLog.log(Level::ERROR, String("Pad[") + pad.getName() + "]: pedal with name '" + pedalRole + "' not found");
+      eventLog.log(Level::ERROR, String("Pad[") + pad.getName() + "]: pedal with name '" + pedalName + "' not found");
     } else {
-      DrumPad* pedalPad = drumKit.getPad(pedalIndex);
+      DrumPad* pedalPad = drumKit.getPadUnchecked(pedalIndex);
       pad.setPedalPad(pedalPad);
     }
   }
@@ -89,10 +89,10 @@ void DrumConfigMapper::applyPadConfig(DrumPad& pad, DrumKit& drumKit, pad_size_t
   }
 }
 
-pad_size_t DrumConfigMapper::findPedalIndexByRole(String pedalRole, JsonArrayConst& padsNode) {
+pad_size_t DrumConfigMapper::findPedalIndexByName(String pedalName, JsonArrayConst& padsNode) {
   for (pad_size_t padIndex = 0; padIndex < padsNode.size(); ++padIndex) {
     auto padNode = padsNode[padIndex];
-    if (String(padNode[PAD_ROLE_PROP]) == pedalRole) {
+    if (String(padNode[PAD_NAME_PROP]) == pedalName) {
       return padIndex;
     }
   }

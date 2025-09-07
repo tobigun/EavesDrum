@@ -43,6 +43,9 @@ public:
 
   DrumPad* getPad(pad_size_t index) { return (index < padsCount) ? &pads[index] : nullptr; }
   const DrumPad* getPad(pad_size_t index) const  { return (index < padsCount) ? &pads[index] : nullptr; }
+  
+  // get pad without bounds check (for internal use only)
+  DrumPad* getPadUnchecked(pad_size_t index) { return &pads[index]; }
 
   DrumPad* getPadByName(String name) {
     for (pad_size_t index = 0; index < padsCount; ++index) {
@@ -67,6 +70,34 @@ public:
   DrumPad& addPad() {
     return pads[padsCount++];
   }
+
+  // Mappings
+  
+  DrumMappings* getMappings(mappings_size_t index) { return index < mappingsCount ? &mappings[index] : nullptr; }
+  
+  const DrumMappings* getMappings(mappings_size_t index) const  { return index < mappingsCount ? &mappings[index] : nullptr; }
+  
+  DrumMappings* getMappings(String role) {
+    for (mappings_size_t index = 0; index < mappingsCount; ++index) {
+      if (mappings[index].role == role) {
+        return &mappings[index];
+      }
+    }
+    return nullptr;
+  }
+
+  DrumMappings& getOrCreateMappings(String role) {
+    DrumMappings* searchResult = getMappings(role);
+    if (searchResult) {
+      return *searchResult;
+    }
+    
+    DrumMappings& newMappings = mappings[mappingsCount++];
+    newMappings.role = role;
+    return newMappings;
+  }
+
+  mappings_size_t getMappingsCount() const { return mappingsCount; }
 
   // Mux
 
@@ -121,6 +152,9 @@ public:
     this->gateTimeMs = gateTimeMs;
   }
 
+public:
+  void sendMidiNoteOnOffMessage(midi_note_t note, midi_velocity_t velocity);
+
 private:
   void evaluatePad(time_us_t senseTimeUs, DrumPad& pad);
   void evaluateDrum(const DrumPad& pad);
@@ -129,7 +163,6 @@ private:
   void evaluateCymbalWithNotes(const DrumPad& pad, const midi_note_t* notes);
   void sendMidiNoteOnMessage(midi_note_t note, midi_velocity_t velocity);
   void sendPendingMidiNoteOffMessages();
-  void sendMidiNoteOnOffMessage(midi_note_t note, midi_velocity_t velocity);
   void sendMidiNoteOnWithDelayedOffMessage(midi_note_t note, midi_velocity_t velocity);
 
 private:
@@ -150,6 +183,9 @@ private:
 
   pad_size_t padsCount = 0;
   DrumPad pads[MAX_PAD_COUNT];
+
+  mappings_size_t mappingsCount = 0;
+  DrumMappings mappings[MAX_MAPPINGS_COUNT];
 
   pad_size_t connectorsCount = 0;
   DrumConnector connectors[MAX_CONNECTOR_COUNT];

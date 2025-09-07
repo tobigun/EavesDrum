@@ -8,6 +8,11 @@
 #include "sensing/piezo.h"
 #include "sensing/piezo_switch.h"
 
+DrumMappings DrumPad::defaultMappings = {
+  .role = "None",
+  .name = "Default",
+};
+
 void DrumPad::init() {
   if (pedalPad && pedalPad->getPadType() != PadType::Pedal) {
     eventLog.log(Level::ERROR, String("Pad[") + pedalPad->getName() + "] does not have type 'Pedal'");

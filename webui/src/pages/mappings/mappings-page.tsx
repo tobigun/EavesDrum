@@ -12,18 +12,19 @@ import PlayIcon from '@mui/icons-material/PlayArrow';
 
 import { useShallow } from 'zustand/shallow';
 
-import { Config, DrumPadMappings, getPadIndexByRole, getPadZonesCount, getZonesCount, PadRole, PadType, updateConfig, useConfig } from '@config';
+import { Config, DrumMappingId, DrumPadMappings, DrumPadMappingValues, getPadByIndex, getPadIndexByName, getPadZonesCount, getZonesCount, mappingValuesTyoes, PadRole, PadType, updateConfig, useConfig } from '@config';
 import { connection, DrumCommand } from "@/connection/connection";
-import { Card, EntryContainer, RoleInfoLabel } from '@/components/card';
+import { Card, EntryContainer, RoleInfo } from '@/components/card';
 import { Masonry } from '@/components/masonry';
 import { getHeaderBackground, getZoneName } from '@/common';
 import { GroupChip } from '@/components/group-chip';
 import { MidiNoteSelector } from './midi-note-selector';
 import { ConfigFilter } from '@/components/component-enums';
 import { ConnectionStateContext } from '@/connection/connection-state';
+import { getSupportedMappingIds } from './mappings-filter';
 
 type MappingDisplayNames = {
-  [Property in keyof Required<DrumPadMappings>]: (props: MappingEntryProps) => string;
+  [Property in keyof Required<DrumPadMappingValues>]: (props: MappingEntryProps) => string;
 };
 const mappingDisplayNames: MappingDisplayNames = {
   noteMain: ({padType}) => 'Note ' + getZoneName(padType, 0),
@@ -40,18 +41,6 @@ const mappingDisplayNames: MappingDisplayNames = {
 function getDisplayName(props: MappingEntryProps) {
   return mappingDisplayNames[props.mappingId](props);
 }
-
-const mappingIdsOrdered: (keyof DrumPadMappings)[] = [
-  'pedalChickEnabled',
-  'closedNotesEnabled',
-  'noteMain',
-  'noteCloseMain',
-  'noteRim',
-  'noteCloseRim',
-  'noteCup',
-  'noteCloseCup',
-  'noteCross',
-];
 
 type MappingDependency = Partial<Record<keyof DrumPadMappings, (config: Config, padRole: PadRole, padIndex: number) => boolean>>;
 type MappingDependencies = Record<PadType, MappingDependency>;
@@ -89,8 +78,8 @@ function MappingsCard({ padIndex }: {
   const padName = useConfig(config => config.pads[padIndex].name);
   const padRole = useConfig(config => config.pads[padIndex].role);
   const group = useConfig(config => config.pads[padIndex].group);
-  const pedalRole = useConfig(config => config.pads[padIndex].pedal);
-  const pedalIndex = getPadIndexByRole(pedalRole);
+  const pedalName = useConfig(config => config.pads[padIndex].pedal);
+  const pedalIndex = pedalName ? getPadIndexByName(pedalName) : undefined;
   const padType = useConfig(config => config.pads[padIndex].settings.padType);
   const headerBackground = getHeaderBackground(padType);
 
@@ -107,9 +96,9 @@ function MappingsCard({ padIndex }: {
       >
         <MappingsPadInfo padIndex={padIndex} padRole={padRole} padType={padType} />
         {
-          pedalIndex && pedalRole && <>
+          pedalIndex !== undefined && <>
             <Box padding={1} width='100%' />
-            <MappingsPadInfo padIndex={pedalIndex} padRole={pedalRole} padType={PadType.Pedal} />
+            <MappingsPadInfo padIndex={pedalIndex} padRole={getPadByIndex(pedalIndex).role} padType={PadType.Pedal} />
           </>
         }
       </Card>
@@ -122,14 +111,13 @@ function MappingsPadInfo({ padIndex, padRole, padType }: {
   padRole: string,
   padType: PadType
 }) {
-  const mappingIds = useConfig(useShallow(config => Object.keys(config.mappings[padRole])));
+  const supportedMappingIds = getSupportedMappingIds(getPadByIndex(padIndex));
 
   return (
     <>
-      <RoleInfoLabel padIndex={padIndex} />
+      <RoleInfo padIndex={padIndex} />
       {
-        mappingIdsOrdered
-          .filter(mappingId => mappingIds.includes(mappingId))
+        supportedMappingIds
           .map(mappingId => <MappingEntry key={mappingId} padIndex={padIndex} padRole={padRole} mappingId={mappingId} padType={padType} />)
       }
     </>
@@ -139,7 +127,7 @@ function MappingsPadInfo({ padIndex, padRole, padType }: {
 interface MappingEntryProps {
   padIndex: number,
   padRole: string,
-  mappingId: keyof DrumPadMappings,
+  mappingId: DrumMappingId,
   padType: PadType
 }
 
@@ -147,7 +135,7 @@ function MappingEntry(props: MappingEntryProps) {
   const { padIndex, padRole, mappingId, padType } = props;
 
   const mapping = useConfig(config => config.mappings[padRole][mappingId]);
-  const isNoteEntry = (typeof mapping === 'number');
+  const isNoteEntry = (mappingValuesTyoes[mappingId] === 'number');
   
   const dependsOn = mappingDependencies[padType][mappingId];
   const enabled = useConfig(config => dependsOn ? dependsOn(config, padRole, padIndex) : true);
@@ -156,35 +144,35 @@ function MappingEntry(props: MappingEntryProps) {
     <>
       {
         isNoteEntry
-          ? (enabled ? <MappingEntryNote {...props} noteIndex={mapping as number} /> : null)
-          : <MappingEntryEnable {...props} enabled={mapping as boolean} />
+          ? (enabled ? <MappingEntryNote {...props} noteIndex={mapping as number | undefined} /> : null)
+          : <MappingEntryEnable {...props} enabled={mapping as boolean | undefined} />
       }
     </>
   );
 }
 
 function MappingEntryNote(props: MappingEntryProps & {
-  noteIndex: number
+  noteIndex: number | undefined
 }) {
   const { padRole, mappingId, noteIndex } = props;
 
   const displayName = getDisplayName(props);
   const connected = useContext(ConnectionStateContext);
 
-  function onNoteChange(newNoteIndex: number) {
-    updateConfig(config => (config.mappings[padRole][mappingId] as number) = newNoteIndex);
-    connection.sendSetRoleMappingsCommand(padRole, { [mappingId]: newNoteIndex });
+  function onNoteChange(newNoteIndex?: number) {
+    updateConfig(config => (config.mappings[padRole][mappingId] as number | undefined) = newNoteIndex);
+    connection.sendSetRoleMappingsCommand(padRole, { [mappingId]: newNoteIndex ?? null });
   }
 
   return (
     <EntryContainer name={displayName} labelWidth='9em'>
       <Grid container alignItems='center' flexGrow={1} spacing={1}>
         <Grid size={9}>
-          <MidiNoteSelector configNote={noteIndex} onNoteChange={onNoteChange} />
+          <MidiNoteSelector configNote={noteIndex} onNoteChange={onNoteChange} allowUndefined={true} />
         </Grid>
         <Grid size={3} textAlign='center'>
           <Button variant="outlined" title='Send midi note' disabled={!connected} sx={{ width: '80%' }}
-            onClick={() => onPlayMidiNote(noteIndex)}
+            onClick={() => onPlayMidiNote(noteIndex ?? 0)}
           >
             <PlayIcon color="primary" />
           </Button>
@@ -195,8 +183,9 @@ function MappingEntryNote(props: MappingEntryProps & {
 }
 
 function MappingEntryEnable(props: MappingEntryProps & {
-  enabled: boolean
+  enabled: boolean | undefined
 }) {
+  const defaultValue = false;
   const { padRole, mappingId, enabled } = props;
 
   const displayName = getDisplayName(props);
@@ -209,7 +198,7 @@ function MappingEntryEnable(props: MappingEntryProps & {
 
   return (
     <EntryContainer name={displayName} labelWidth='11em'>
-      <Switch checked={enabled} onChange={onChange} disabled={!connected} />
+      <Switch checked={enabled ?? defaultValue} onChange={onChange} disabled={!connected} />
     </EntryContainer>
   );
 }

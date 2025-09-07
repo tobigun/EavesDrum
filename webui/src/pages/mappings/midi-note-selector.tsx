@@ -8,28 +8,39 @@ import { MenuItem, Select, SelectChangeEvent, Stack } from "@mui/material";
 import { NumberInput } from "@/components/number-input";
 import { ConnectionStateContext } from "@/connection/connection-state";
 
-export function MidiNoteSelector({ configNote, onNoteChange }: { configNote: number, onNoteChange: (note: number) => void }) {
+const NONE = -1;
+const NOTE_MAX = 127;
+
+export function MidiNoteSelector({ configNote, onNoteChange, allowUndefined = false }: {
+  configNote: number | undefined,
+  onNoteChange: (note?: number) => void,
+  allowUndefined?: boolean
+}) {
   const connected = useContext(ConnectionStateContext);
+  const minValue = allowUndefined ? NONE : 0;
 
   const handleSelectChange = (event: SelectChangeEvent) => {
-    onNoteChange(Number(event.target.value));
+    const value = Number(event.target.value);
+    onNoteChange(value !== NONE ? value : undefined);
   };
 
   const handleValueChange = (value: number) => {
     if (Number.isInteger(value)) {
-      onNoteChange(Math.max(0, Math.min(value, 127)));
+      const newValue = Math.max(minValue, Math.min(value, NOTE_MAX));
+      onNoteChange(newValue !== NONE ? newValue : undefined);
     }
   };
 
   return (
     <Stack direction='row' alignItems='center'>
-      <NumberInput disabled={!connected} value={configNote}
+      <NumberInput disabled={!connected} value={configNote ?? NONE}
         onValueChange={(value) => value !== null && handleValueChange(value)}
-        min={0} max={127} />
-      <Select disabled={!connected} size='small' value={configNote.toString()}
+        min={minValue} max={NOTE_MAX} />
+      <Select disabled={!connected} size='small' value={configNote?.toString() ?? `${NONE}`}
         onChange={handleSelectChange}
         sx={{ minWidth: '5.5em', width: '50%', textAlign: 'center' }}
       >
+        {allowUndefined ? <MenuItem key={NONE} value={NONE}>&mdash;</MenuItem> : null}
         {notes.map((note, index) => <MenuItem key={index} value={index}>{note}</MenuItem>)}
       </Select>
     </Stack>
@@ -37,7 +48,7 @@ export function MidiNoteSelector({ configNote, onNoteChange }: { configNote: num
 }
 
 const baseNotes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const notes = Array.from({ length: 128 }, (_, key) => {
+const notes = Array.from({ length: NOTE_MAX + 1 }, (_, key) => {
   const baseNote = baseNotes[key % baseNotes.length];
   const octave = Math.trunc(key / baseNotes.length) - 2;
   return `${baseNote}${octave}`;

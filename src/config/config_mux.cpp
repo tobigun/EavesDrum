@@ -19,7 +19,7 @@ static MuxType mapStringToMuxType(String value) {
   return Unknown;
 }
 
-void DrumConfigMapper::applyMuxConfigs(DrumKit& drumKit, JsonArrayConst& muxNodes) {
+void DrumConfigMapper::addMultiplexersToKit(DrumKit& drumKit, JsonArrayConst& muxNodes) {
   for (JsonObjectConst muxNode : muxNodes) {
     if (drumKit.getMuxCount() >= MAX_MUX_COUNT) {
       eventLog.log(Level::ERROR, String("Max. mux count reached: ") + MAX_MUX_COUNT);

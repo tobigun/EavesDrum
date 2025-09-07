@@ -37,3 +37,7 @@ time_us_t micros() {
 void yield(void) { std::this_thread::yield(); }
 
 void pinMode(pin_size_t pinNumber, PinMode pinMode) {}
+
+void delay(unsigned long ms) {
+  usleep(ms * 1000);
+}
