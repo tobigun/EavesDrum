@@ -6,8 +6,8 @@
 #include "types.h"
 
 struct DrumMappings {
-  String role = String((char*) nullptr);
-  String name = String((char*) nullptr);
+  String role = nullptr;
+  String name = nullptr;
 
   midi_note_t noteMain = MIDI_NOTE_UNASSIGNED;
   midi_note_t noteRim = MIDI_NOTE_UNASSIGNED;

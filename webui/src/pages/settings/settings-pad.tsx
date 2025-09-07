@@ -8,7 +8,6 @@ import { useShallow } from "zustand/shallow";
 import { chartColors, pedalThresholdColors } from "@theme";
 import { SettingCurveTypeEntry } from "./setting-curve";
 import { getZoneName } from "@/common";
-import { SettingEnableEntry } from "./setting-enable";
 import { createFractionConverter, SettingsConverter } from "./converter";
 
 const settingIdsOrdered: (keyof DrumPadSettings)[] = [

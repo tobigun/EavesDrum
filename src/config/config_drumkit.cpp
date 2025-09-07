@@ -68,7 +68,7 @@ void DrumConfigMapper::applyDrumKitMappings(DrumKit& drumKit, JsonObjectConst ma
     DrumPad* pad = drumKit.getPadByRole(role);
     if (!pad) {
       // Note: not all roles have to be used, so this is just a warning
-      eventLog.log(Level::INFO, String("Config: mappings reference pad with role ") + role + " which does not exist");
+      eventLog.log(Level::INFO, String("Config: unused mappings with role: ") + role);
     } else {
       pad->setMappings(&mappings);
     }

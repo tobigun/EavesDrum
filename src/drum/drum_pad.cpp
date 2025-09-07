@@ -18,6 +18,10 @@ void DrumPad::init() {
     eventLog.log(Level::ERROR, String("Pad[") + pedalPad->getName() + "] does not have type 'Pedal'");
     pedalPad = nullptr;
   }
+
+  if (!areMappingsAssigned()) {
+    eventLog.log(Level::WARN, String("Pad[") + name + "] uses unknown role '" + (role ? role : "-") + "'");
+  }
 }
 
 sensor_value_t DrumPad::readInput(DrumPin& pin, bool autoCalibrate) {

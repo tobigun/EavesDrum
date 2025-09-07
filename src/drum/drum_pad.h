@@ -127,6 +127,8 @@ public:
   const DrumMappings& getMappings() const { return mappings ? *mappings : defaultMappings; }
   void setMappings(DrumMappings* mappings) { this->mappings = mappings; }
 
+  bool const areMappingsAssigned() const { return mappings != nullptr; }
+
   void setCurve(CurveType curveType) { settings.curveType = curveType; }
 
   DrumPad* getPedalPad() const { return pedalPad; }

@@ -38,8 +38,7 @@ void DrumConfigMapper::applyPadConfig(DrumPad& pad, DrumKit& drumKit, pad_size_t
   const char* name = padNode[PAD_NAME_PROP];
   pad.setName(name == nullptr ? String("Unknown") + padIndex : name);
 
-  const char* role = padNode[PAD_ROLE_PROP];
-  pad.setRole(role == nullptr ? String("Unknown") + padIndex : role);
+  pad.setRole(padNode[PAD_ROLE_PROP] | "Default");
 
   const char* groupName = padNode[PAD_GROUP_PROP] | "";
   pad.setGroup(groupName);

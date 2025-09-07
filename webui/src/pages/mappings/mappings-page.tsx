@@ -53,9 +53,9 @@ const mappingDependencies: MappingDependencies = {
     noteCross: (config, _, padIndex) => padIndex === undefined || isCrossNoteEnabled(config, padIndex!)
   },
   Cymbal: {
-    noteCloseMain: (config, padRole) => config.mappings[padRole].closedNotesEnabled!,
-    noteCloseRim: (config, padRole) => config.mappings[padRole].closedNotesEnabled!,
-    noteCloseCup: (config, padRole) => config.mappings[padRole].closedNotesEnabled!,
+    noteCloseMain: (config, padRole) => config.mappings[padRole]?.closedNotesEnabled ?? false,
+    noteCloseRim: (config, padRole) => config.mappings[padRole]?.closedNotesEnabled ?? false,
+    noteCloseCup: (config, padRole) => config.mappings[padRole]?.closedNotesEnabled ?? false,
   },
   Pedal: {}
 };
@@ -64,18 +64,30 @@ export function MappingsPage() {
   const padCount = useConfig(useShallow(config => config.pads.length));
 
   const roles = useConfig(useShallow(config => Object.keys(config.mappings)));
-  const usedRoles = useConfig.getState().pads.map(pad => pad.role);
-  const unusedRoles = roles.filter(role => !usedRoles.includes(role));
-  console.log(unusedRoles);
+  const usedRoles = useConfig(useShallow(config => new Set(config.pads.map(pad => pad.role))));
+  const unusedRoles = roles.filter(role => !usedRoles.has(role));
+
+  const validPadIndexList = useConfig(useShallow(config => config.pads
+    .map((pad, index) => roles.includes(pad.role) ? index : null)
+    .filter(index => index != null)
+  ));
+  const invalidPadIndexList = [...Array(padCount).keys()].filter(index => !validPadIndexList.includes(index));
 
   return (
     <>
       <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}>
         {
-          [...Array(padCount)].map((_, padIndex) =>
-            <MappingsCardForPad key={padIndex} padIndex={padIndex} />)
+          validPadIndexList.map(padIndex => <MappingsCardForPad key={padIndex} padIndex={padIndex} />)
         }
       </Masonry>
+      {
+        invalidPadIndexList.length > 0 ? <hr></hr> : null
+      }
+      <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}>
+        {
+          invalidPadIndexList.map(padIndex => <MappingsCardForPad key={padIndex} padIndex={padIndex} />)
+        }
+      </Masonry>      
       {
         unusedRoles.length > 0 ? <hr></hr> : null
       }
@@ -167,7 +179,7 @@ interface MappingEntryProps {
 function MappingEntry(props: MappingEntryProps) {
   const { padIndex, padRole, mappingId, padType } = props;
 
-  const mapping = useConfig(config => config.mappings[padRole][mappingId]);
+  const mapping = useConfig(config => config.mappings[padRole]?.[mappingId]);
   const isNoteEntry = (mappingValuesTyoes[mappingId] === 'number');
   const isBoolEntry = (mappingValuesTyoes[mappingId] === 'boolean');
   
@@ -193,7 +205,10 @@ function MappingEntryNote(props: MappingEntryProps & {
   const connected = useContext(ConnectionStateContext);
 
   function onNoteChange(newNoteIndex?: number) {
-    updateConfig(config => (config.mappings[padRole][mappingId] as number | undefined) = newNoteIndex);
+    updateConfig(config => config.mappings[padRole] = {
+      ...config.mappings[padRole],
+      [mappingId]: newNoteIndex
+    });
     connection.sendSetRoleMappingsCommand(padRole, { [mappingId]: newNoteIndex ?? null });
   }
 
