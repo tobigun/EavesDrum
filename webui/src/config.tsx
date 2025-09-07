@@ -21,7 +21,7 @@ export const useConfig = create<Config>(() => ({
 
 export function initConfig() {
   connection.registerOnJsonDataListener('config', config => {
-    useConfig.setState(config);
+    useConfig.setState(config, true);
   });  
 }
 

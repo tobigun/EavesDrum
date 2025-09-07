@@ -38,7 +38,6 @@ const mappingDisplayNames: MappingDisplayNames = {
 };
 
 function getDisplayName(props: MappingEntryProps) {
-  console.log("Getting display name for mappingId=" + props.mappingId);
   return mappingDisplayNames[props.mappingId](props);
 }
 
