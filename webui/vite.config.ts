@@ -53,11 +53,8 @@ export default defineConfig(({ mode }) => {
           ws: true,
           secure: false,
           rewriteWsOrigin: true,
-          configure: (proxy) => {
-            proxy.on("error", (err) => {
-              console.log("Proxy: ", err);
-            });
-            proxy.on("proxyReqWs", (proxyReq) => {
+          configure: (proxy: any) => {
+            proxy.on("proxyReqWs", (proxyReq: any) => {
               console.log(`Proxy: forward WS Request: ${proxyReq.host}:${proxyReq.port ?? 80}${proxyReq.path}`);
             });
             proxy.on("close", () => {
