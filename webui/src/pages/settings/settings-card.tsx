@@ -7,7 +7,7 @@ import { Box, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import RecordIcon from '@mui/icons-material/FiberManualRecord';
 
 import { getHeaderBackground } from "@/common";
-import { Card, RoleInfo, PanelIconToggleButton } from "@/components/card";
+import { Card, PanelIconToggleButton } from "@/components/card";
 import { GroupChip } from "@/components/group-chip";
 import { Switch } from "@/components/switch";
 import { ConnectorId, getPadIndexByName, PadType, updateConfig, useConfig } from "@config";
@@ -19,6 +19,7 @@ import { PadTypeSelector } from "./pad-type-selector";
 import { useShallow } from "zustand/shallow";
 import { ConfigFilter } from "@/components/component-enums";
 import { ConnectionStateContext } from "@/connection/connection-state";
+import { RoleInfo } from "@/components/role-info";
 
 export function SettingsCardGroup({ padIndex }: {
   padIndex: number,

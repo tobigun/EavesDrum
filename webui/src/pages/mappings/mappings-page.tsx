@@ -14,7 +14,7 @@ import { useShallow } from 'zustand/shallow';
 
 import { Config, DrumMappingId, DrumPadMappings, DrumPadMappingValues, getPadByIndex, getPadIndexByName, getPadZonesCount, getZonesCount, mappingValuesTyoes, PadRole, PadType, updateConfig, useConfig } from '@config';
 import { connection, DrumCommand } from "@/connection/connection";
-import { Card, EntryContainer, RoleInfo } from '@/components/card';
+import { Card, EntryContainer } from '@/components/card';
 import { Masonry } from '@/components/masonry';
 import { getHeaderBackground, getZoneName } from '@/common';
 import { GroupChip } from '@/components/group-chip';
@@ -24,6 +24,7 @@ import { ConnectionStateContext } from '@/connection/connection-state';
 import { getSupportedMappingIds } from './mappings-filter';
 import { Typography, TypographyProps } from '@mui/material';
 import { PadTypeSelector } from '../settings/pad-type-selector';
+import { RoleInfo } from '@/components/role-info';
 
 type MappingDisplayNames = {
   [Property in keyof Required<DrumPadMappingValues>]: (props: MappingEntryProps) => string;
@@ -91,7 +92,7 @@ export function MappingsPage() {
         }
       </Masonry>      
       {
-        unusedRoles.length > 0 ? <MappingSectionHeader name="Unused Mappings" color="black" /> : null
+        unusedRoles.length > 0 ? <MappingSectionHeader name="Unused Roles" color="black" /> : null
       }
       <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}>
         {
@@ -149,10 +150,17 @@ function MappingsCardForPad({ padIndex }: {
 function MappingsCardForRole({ padRole }: {
   padRole: string
 }) {
+  const roleName = useConfig(config => config.mappings[padRole].name);
+
   return (
     <Box>
-      <Card name={`Role: ${padRole}`}
-        dropProps={{filter: ConfigFilter.Mappings, padRole: padRole}}
+      <Card name={<>
+        <span>{(roleName ? roleName : padRole)}</span>
+        &nbsp;
+        <Box component="em" color='grey' fontSize="0.7em">(ID: {padRole})</Box>
+      </>}
+      color='rgba(42, 64, 86, 1)'
+      dropProps={{filter: ConfigFilter.Mappings, padRole: padRole}}
       >
         <MappingsInfo padRole={padRole} />
       </Card>
