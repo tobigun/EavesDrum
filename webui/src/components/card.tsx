@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Tobias Gunkel
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useRef, useState } from 'react';
 
 import { styled } from '@mui/material/styles';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -12,12 +12,17 @@ import ToggleButton, { ToggleButtonProps } from '@mui/material/ToggleButton';
 import Typography from '@mui/material/Typography';
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForwardIosSharp';
+import RenameIcon from "@mui/icons-material/Edit";
+import RenameDoneIcon from "@mui/icons-material/Done";
+import RenameCancelIcon from "@mui/icons-material/Close";
 
 import { CardConfigDropOverlay, ConfigDropProps } from './file-upload';
 import { useConfig } from '@config';
-import { Button, ButtonProps, MenuItem, Select } from '@mui/material';
+import { Button, ButtonProps, IconButton, Input, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { CardSize } from './component-enums';
 import { SettingEntryContainer } from '@/pages/settings/setting-entry';
+import { useShallow } from 'zustand/shallow';
+import { connection } from '@/connection/connection';
 
 const CardAccordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters {...props} />
@@ -57,8 +62,34 @@ interface CardProps {
     edgeDecorators?: React.ReactNode;
     dropProps?: ConfigDropProps;
     headerBackground?: string;
+    onRename?: (name: string) => void;
 }
 export function Card(props: AccordionProps & CardProps) {
+  const [editMode, setEditMode] = useState(false);
+  const onRename = props.onRename;
+  const editModeSupported = onRename !== undefined;
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function handleRenameClick(event: any) {
+    event.stopPropagation();
+    setEditMode(true);
+  }
+  
+  function handleRenameDone(event: any) {
+    event.stopPropagation();
+    setEditMode(false);
+
+    const newName = inputRef?.current?.value;
+    if (newName && newName !== "") {
+      onRename?.(newName);
+    }
+  }
+
+  function handleRenameCancelled(event: any) {
+    event.stopPropagation();
+    setEditMode(false);
+  }
+
   return (
     <CardAccordion
       defaultExpanded={props.defaultExpanded}
@@ -69,11 +100,31 @@ export function Card(props: AccordionProps & CardProps) {
       <Stack direction='row' alignItems='center' sx={{background: props.headerBackground}}>
         <CardAccordionSummary sx={{ paddingRight: 0 }}>
           <Stack direction="row" spacing={1} alignItems='center'>
-            <Typography variant="h5">{props.name}</Typography>
+            {
+              (editModeSupported && editMode)
+                ? <Input inputRef={inputRef} defaultValue={props.name} onClick={(event) => event.stopPropagation()} />
+                : <Typography variant="h5">{props.name}</Typography>
+            }
             {props.titleDecorators}
           </Stack>
         </CardAccordionSummary>
         <Stack spacing={1} direction="row" alignItems='center' sx={{ paddingRight: 2 }}>
+          {
+            !editModeSupported ? null : ( editMode ?
+              <>
+                <IconButton size="small" onClick={handleRenameDone} color="primary" >
+                  <RenameDoneIcon />
+                </IconButton>
+                <IconButton size="small" onClick={handleRenameCancelled} color="primary" >
+                  <RenameCancelIcon />
+                </IconButton>
+              </>
+              :
+              <IconButton size="small" onClick={handleRenameClick} color="primary" sx={{display: 'none', '.Mui-expanded &': {display: 'block'}}} >
+                <RenameIcon />
+              </IconButton>
+            )
+          }
           {props.edgeDecorators}
         </Stack>
       </Stack>
@@ -92,11 +143,28 @@ export function Card(props: AccordionProps & CardProps) {
   );
 }
 
-export function RoleInfo({ padRole }: { padRole: string }) {
-  const mappingName = useConfig(config => config.mappings[padRole]?.name);
+export function RoleInfo({ padRole, padIndex }: {
+  padRole: string,
+  padIndex?: number
+}) {
+  const roles = useConfig(useShallow(config => Object.keys(config.mappings)));
+  const mappingNames = roles.map(role => useConfig.getState().mappings[role]?.name);
+  
+  const handleSelectChange = (event: SelectChangeEvent) => {
+    const role = event.target.value;
+    connection.sendSetPadConfigCommand(padIndex!, { role: role });
+  };
+
   return <SettingEntryContainer name='Role (Mapping)'>
-    <Select disabled={true} value={padRole} size='small'>
-      <MenuItem value={padRole}>{padRole + (mappingName ? ` (${mappingName})` : "")}</MenuItem>
+    <Select value={padRole} disabled={padIndex === undefined} size='small'
+      onChange={handleSelectChange}
+      sx={{color: roles.includes(padRole) ? null : 'red'}}>
+      {
+        !roles.includes(padRole) ? <MenuItem value={padRole} sx={{ color: 'red' }}>{padRole}</MenuItem> : null
+      }
+      {
+        roles.map((_, index) => <MenuItem key={roles[index]} value={roles[index]}>{roles[index] + (mappingNames[index] ? ` (${mappingNames[index]})` : "")}</MenuItem>)
+      }
     </Select>
   </SettingEntryContainer>;
 }

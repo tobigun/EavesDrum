@@ -18,6 +18,8 @@
 #define CONFIG_MONITOR_PAD "padIndex"
 #define CONFIG_MONITOR_TRIGGERED_BY_ALL_PADS "triggeredByAllPads"
 
+#define CONFIG_NAME_PROP "name"
+#define CONFIG_ROLE_PROP "role"
 #define CONFIG_CONNECTOR_PROP "connector"
 #define CONFIG_ENABLED_PROP "enabled"
 #define CONFIG_AUTOCALIBRATE_PROP "autoCalibrate"
@@ -134,14 +136,29 @@ void WebUI::handleSetPadConfig(JsonObjectConst configNode, AsyncWebSocketClient*
       isConfigDirty = true;
       sendConfigRequired = true;
     }
+    
+    if (nodeValue[CONFIG_NAME_PROP].is<String>()) {
+      String name = nodeValue[CONFIG_NAME_PROP];
+      pad.setName(name);
+      isConfigDirty = true;
+      sendConfigRequired = true;
+    }
 
-    if (!nodeValue[CONFIG_ENABLED_PROP].isNull()) {
+    if (nodeValue[CONFIG_ROLE_PROP].is<String>()) {
+      String role = nodeValue[CONFIG_ROLE_PROP];
+      pad.setRole(role);
+      pad.setMappings(drumKit->getMappings(role));
+      isConfigDirty = true;
+      sendConfigRequired = true;
+    }
+
+    if (nodeValue[CONFIG_ENABLED_PROP].is<bool>()) {
       bool enabled = nodeValue[CONFIG_ENABLED_PROP];
       pad.setEnabled(enabled);
       isConfigDirty = true;
     }
 
-    if (!nodeValue[CONFIG_AUTOCALIBRATE_PROP].isNull()) {
+    if (nodeValue[CONFIG_AUTOCALIBRATE_PROP].is<bool>()) {
       bool autoCalibrate = nodeValue[CONFIG_AUTOCALIBRATE_PROP];
       pad.setAutoCalibrate(autoCalibrate);
       isConfigDirty = true;

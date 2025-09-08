@@ -22,6 +22,7 @@ import { MidiNoteSelector } from './midi-note-selector';
 import { ConfigFilter } from '@/components/component-enums';
 import { ConnectionStateContext } from '@/connection/connection-state';
 import { getSupportedMappingIds } from './mappings-filter';
+import { Typography, TypographyProps } from '@mui/material';
 
 type MappingDisplayNames = {
   [Property in keyof Required<DrumPadMappingValues>]: (props: MappingEntryProps) => string;
@@ -81,7 +82,7 @@ export function MappingsPage() {
         }
       </Masonry>
       {
-        invalidPadIndexList.length > 0 ? <hr></hr> : null
+        invalidPadIndexList.length > 0 ? <MappingSectionHeader name="Invalid Mappings" color="white" bgcolor="rgb(157, 67, 67)" /> : null
       }
       <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}>
         {
@@ -89,7 +90,7 @@ export function MappingsPage() {
         }
       </Masonry>      
       {
-        unusedRoles.length > 0 ? <hr></hr> : null
+        unusedRoles.length > 0 ? <MappingSectionHeader name="Unused Mappings" color="black" /> : null
       }
       <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}>
         {
@@ -98,6 +99,14 @@ export function MappingsPage() {
         }
       </Masonry>
     </>
+  );
+}
+
+export function MappingSectionHeader(props: TypographyProps & { name: string }) {
+  return (
+    <Typography variant="body1" align='center' paddingX={1} border={1} borderColor='rgb(53, 53, 53)' noWrap {...props}>
+      {props.name}
+    </Typography>
   );
 }
 
@@ -140,7 +149,7 @@ function MappingsCardForRole({ padRole }: {
 }) {
   return (
     <Box>
-      <Card name={`Unused (${padRole})`}
+      <Card name={`Role: ${padRole}`}
         dropProps={{filter: ConfigFilter.Mappings, padRole: padRole}}
       >
         <MappingsInfo padRole={padRole} />
@@ -160,7 +169,7 @@ function MappingsInfo({ padIndex, padRole, padType }: {
 
   return (
     <>
-      <RoleInfo padRole={padRole} />
+      <RoleInfo padRole={padRole} padIndex={padIndex} />
       {
         supportedMappingIds
           .map(mappingId => <MappingEntry key={mappingId} padIndex={padIndex} padRole={padRole} mappingId={mappingId} padType={padType} />)

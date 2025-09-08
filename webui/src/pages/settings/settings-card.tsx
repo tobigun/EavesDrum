@@ -50,11 +50,16 @@ function SettingsCard({ padIndex, padType }: {
   const role = useConfig(config => config.pads[padIndex].role);
   const headerBackground = getHeaderBackground(padType);
   
+  function handleRename(name: string) {
+    connection.sendSetPadConfigCommand(padIndex, {name: name});
+  }
+
   return (
     <Card name={padName} defaultExpanded={false}
       headerBackground={headerBackground}
       dropProps={{filter: ConfigFilter.Settings, padIndex: padIndex}}
       titleDecorators={<GroupChip group={group} />}
+      onRename={handleRename}
       edgeDecorators={
         <>
           <SettingEnabledSwitch key="enabled" padIndex={padIndex} />
@@ -62,7 +67,7 @@ function SettingsCard({ padIndex, padType }: {
         </>
       }>
       <PadTypeSelector padIndex={padIndex}/>
-      <RoleInfo padRole={role} />
+      <RoleInfo padRole={role} padIndex={padIndex} />
       <ConnectorInfo padIndex={padIndex} />
       <SettingsElements padIndex={padIndex} padType={padType} />
     </Card>
