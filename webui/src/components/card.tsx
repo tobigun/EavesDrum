@@ -18,7 +18,7 @@ import RenameCancelIcon from "@mui/icons-material/Close";
 
 import { CardConfigDropOverlay, ConfigDropProps } from './file-upload';
 import { useConfig } from '@config';
-import { Button, ButtonProps, IconButton, Input, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import { Box, Button, ButtonProps, IconButton, Input, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { CardSize } from './component-enums';
 import { SettingEntryContainer } from '@/pages/settings/setting-entry';
 import { useShallow } from 'zustand/shallow';
@@ -155,7 +155,7 @@ export function RoleInfo({ padRole, padIndex }: {
     connection.sendSetPadConfigCommand(padIndex!, { role: role });
   };
 
-  return <SettingEntryContainer name='Role (Mapping)'>
+  return <SettingEntryContainer name='Role'>
     <Select value={padRole} disabled={padIndex === undefined} size='small'
       onChange={handleSelectChange}
       sx={{color: roles.includes(padRole) ? null : 'red'}}>
@@ -163,7 +163,11 @@ export function RoleInfo({ padRole, padIndex }: {
         !roles.includes(padRole) ? <MenuItem value={padRole} sx={{ color: 'red' }}>{padRole}</MenuItem> : null
       }
       {
-        roles.map((_, index) => <MenuItem key={roles[index]} value={roles[index]}>{roles[index] + (mappingNames[index] ? ` (${mappingNames[index]})` : "")}</MenuItem>)
+        roles.map((role, index) => <MenuItem key={role} value={role}>
+          {mappingNames[index] ? mappingNames[index] : role}
+          &nbsp;
+          <Box component='em' color='grey' fontSize='0.8em'>(ID: {role})</Box>
+        </MenuItem>)
       }
     </Select>
   </SettingEntryContainer>;
