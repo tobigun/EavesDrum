@@ -23,6 +23,7 @@ import { ConfigFilter } from '@/components/component-enums';
 import { ConnectionStateContext } from '@/connection/connection-state';
 import { getSupportedMappingIds } from './mappings-filter';
 import { Typography, TypographyProps } from '@mui/material';
+import { PadTypeSelector } from '../settings/pad-type-selector';
 
 type MappingDisplayNames = {
   [Property in keyof Required<DrumPadMappingValues>]: (props: MappingEntryProps) => string;
@@ -132,6 +133,7 @@ function MappingsCardForPad({ padIndex }: {
         dropProps={{filter: ConfigFilter.Mappings, padRole: padRole}}        
         titleDecorators={<GroupChip group={group} />}
       >
+        <PadTypeSelector padIndex={padIndex}/>
         <MappingsInfo padIndex={padIndex} padRole={padRole} padType={padType} />
         {
           pedalIndex !== undefined && <>
@@ -163,6 +165,7 @@ function MappingsInfo({ padIndex, padRole, padType }: {
   padRole: string,
   padType?: PadType
 }) {
+  useConfig(useShallow(config => padIndex !== undefined && config.pads[padIndex].settings)); // re-render when pad type changes (type, zones, ...)
   const supportedMappingIds = padIndex !== undefined
     ? getSupportedMappingIds(getPadByIndex(padIndex))
     : Object.keys(useConfig.getState().mappings[padRole]) as DrumMappingId[];
