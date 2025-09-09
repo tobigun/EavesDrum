@@ -51,20 +51,13 @@ const CardAccordionSummary = styled(UnstyledCardAccordionSummary)(({ theme }) =>
   },
 }));
 
-interface CardProps {
-    name: ReactNode | string;
-    size?: CardSize;
-    titleDecorators?: React.ReactNode;
-    edgeDecorators?: React.ReactNode;
-    dropProps?: ConfigDropProps;
-    headerBackground?: string;
-    onRename?: (name: string) => void;
-}
-export function Card(props: AccordionProps & CardProps) {
+function EditableCardHeader({name, onRename}: {
+  name: ReactNode | string,
+  onRename?: (name: string) => void
+}) {
   const [editMode, setEditMode] = useState(false);
-  const onRename = props.onRename;
-  const editModeSupported = onRename !== undefined;
   const inputRef = useRef<HTMLInputElement>(null);
+  const editModeSupported = onRename !== undefined;
 
   function handleRenameClick(event: any) {
     event.stopPropagation();
@@ -76,7 +69,7 @@ export function Card(props: AccordionProps & CardProps) {
     setEditMode(false);
 
     const newName = inputRef?.current?.value;
-    if (newName && newName !== "") {
+    if (newName && newName !== "" && newName !== name) {
       onRename?.(newName);
     }
   }
@@ -86,6 +79,41 @@ export function Card(props: AccordionProps & CardProps) {
     setEditMode(false);
   }
 
+  return <>
+    {
+      (editModeSupported && editMode)
+        ? <Input inputRef={inputRef} defaultValue={name} onClick={(event) => event.stopPropagation()} />
+        : <Typography variant="h5">{name}</Typography>
+    }
+    {
+      !editModeSupported ? null : ( editMode ?
+        <>
+          <IconButton component="span" size="small" onClick={handleRenameDone} color="primary" >
+            <RenameDoneIcon />
+          </IconButton>
+          <IconButton component="span" size="small" onClick={handleRenameCancelled} color="primary" >
+            <RenameCancelIcon />
+          </IconButton>
+        </>
+        :
+        <IconButton component="span" size="small" onClick={handleRenameClick} color="primary" sx={{display: 'none', '.Mui-expanded &': {display: 'block'}}} >
+          <RenameIcon />
+        </IconButton>
+      )
+    }
+  </>;
+}
+
+interface CardProps {
+    name: ReactNode | string;
+    size?: CardSize;
+    titleDecorators?: React.ReactNode;
+    edgeDecorators?: React.ReactNode;
+    dropProps?: ConfigDropProps;
+    headerBackground?: string;
+    onRename?: (name: string) => void;
+}
+export function Card(props: AccordionProps & CardProps) {
   return (
     <CardAccordion
       defaultExpanded={props.defaultExpanded}
@@ -96,31 +124,11 @@ export function Card(props: AccordionProps & CardProps) {
       <Stack direction='row' alignItems='center' sx={{background: props.headerBackground}}>
         <CardAccordionSummary sx={{ paddingRight: 0 }}>
           <Stack direction="row" spacing={1} alignItems='center'>
-            {
-              (editModeSupported && editMode)
-                ? <Input inputRef={inputRef} defaultValue={props.name} onClick={(event) => event.stopPropagation()} />
-                : <Typography variant="h5">{props.name}</Typography>
-            }
+            <EditableCardHeader name={props.name} onRename={props.onRename} />
             {props.titleDecorators}
           </Stack>
         </CardAccordionSummary>
         <Stack spacing={1} direction="row" alignItems='center' sx={{ paddingRight: 2 }}>
-          {
-            !editModeSupported ? null : ( editMode ?
-              <>
-                <IconButton size="small" onClick={handleRenameDone} color="primary" >
-                  <RenameDoneIcon />
-                </IconButton>
-                <IconButton size="small" onClick={handleRenameCancelled} color="primary" >
-                  <RenameCancelIcon />
-                </IconButton>
-              </>
-              :
-              <IconButton size="small" onClick={handleRenameClick} color="primary" sx={{display: 'none', '.Mui-expanded &': {display: 'block'}}} >
-                <RenameIcon />
-              </IconButton>
-            )
-          }
           {props.edgeDecorators}
         </Stack>
       </Stack>
