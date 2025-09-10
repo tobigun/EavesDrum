@@ -76,29 +76,24 @@ export function MappingsPage() {
   ));
   const invalidPadIndexList = [...Array(padCount).keys()].filter(index => !validPadIndexList.includes(index));
 
+  const columns = { xs: 1, sm: 2, md: 3, lg: 4, xl: 5 };
+
   return (
     <>
-      <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}>
-        {
-          validPadIndexList.map(padIndex => <MappingsCardForPad key={padIndex} padIndex={padIndex} />)
-        }
+      <Masonry columns={columns}>
+        { validPadIndexList.map(padIndex => <MappingsCardGroupForPad key={padIndex} padIndex={padIndex} />) }
       </Masonry>
-      {
-        invalidPadIndexList.length > 0 ? <MappingSectionHeader name="Invalid Mappings" color="white" bgcolor="rgb(157, 67, 67)" /> : null
-      }
-      <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}>
-        {
-          invalidPadIndexList.map(padIndex => <MappingsCardForPad key={padIndex} padIndex={padIndex} />)
-        }
+      
+      { invalidPadIndexList.length > 0 ? <MappingSectionHeader name="Invalid Mappings" color="white" bgcolor="rgb(157, 67, 67)" /> : null }
+      
+      <Masonry columns={columns}>
+        { invalidPadIndexList.map(padIndex => <MappingsCardGroupForPad key={padIndex} padIndex={padIndex} />) }
       </Masonry>      
-      {
-        unusedRoles.length > 0 ? <MappingSectionHeader name="Unused Roles" color="black" /> : null
-      }
-      <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}>
-        {
-          unusedRoles.map(role =>
-            <MappingsCardForRole key={role} padRole={role} />)
-        }
+      
+      { unusedRoles.length > 0 ? <MappingSectionHeader name="Unused Roles" color="black" /> : null }
+      
+      <Masonry columns={columns}>
+        { unusedRoles.map(role => <MappingsCardForRole key={role} padRole={role} />) }
       </Masonry>
     </>
   );
@@ -112,16 +107,12 @@ export function MappingSectionHeader(props: TypographyProps & { name: string }) 
   );
 }
 
-function MappingsCardForPad({ padIndex }: {
+function MappingsCardGroupForPad({ padIndex }: {
   padIndex: number
 }) {
-  const padName = useConfig(config => config.pads[padIndex].name);
-  const padRole = useConfig(config => config.pads[padIndex].role);
-  const group = useConfig(config => config.pads[padIndex].group);
   const pedalName = useConfig(config => config.pads[padIndex].pedal);
   const pedalIndex = pedalName ? getPadIndexByName(pedalName) : undefined;
   const padType = useConfig(config => config.pads[padIndex].settings.padType);
-  const headerBackground = getHeaderBackground(padType);
 
   if (padType == PadType.Pedal) {
     return null;
@@ -129,19 +120,46 @@ function MappingsCardForPad({ padIndex }: {
 
   return (
     <Box>
+      <MappingsCardForPad padIndex={padIndex} padType={padType} />
+      {
+        pedalIndex !== undefined && <MappingsCardForPad padIndex={pedalIndex} padType={PadType.Pedal} />
+      }
+    </Box>
+  );
+}
+
+function MappingsCardForPad({ padIndex, padType }: {
+  padIndex: number,
+  padType: PadType
+}) {
+  const padName = useConfig(config => config.pads[padIndex].name);
+  const group = useConfig(config => config.pads[padIndex].group);
+  const padRole = useConfig(config => config.pads[padIndex].role);
+  const padRoleName = useConfig(config => config.mappings[padRole].name);
+  const headerBackground = getHeaderBackground(padType);
+  
+  function handlePadRename(name: string) {
+    connection.sendSetPadConfigCommand(padIndex, {name: name});
+  }
+
+  return (
+    <Box>
       <Card name={padName}
+        secondaryTitle={
+          <table>
+            <tbody>
+              <tr><td align='right'>Role:</td><td align='left'>{padRoleName ? padRoleName : padRole}</td></tr>
+              <tr><td align='right'>ID:</td><td align='left'>{padRole}</td></tr>
+            </tbody>
+          </table>
+        }
         headerBackground={headerBackground}
         dropProps={{filter: ConfigFilter.Mappings, padRole: padRole}}        
         titleDecorators={<GroupChip group={group} />}
+        onRename={handlePadRename}
       >
         <PadTypeSelector padIndex={padIndex}/>
         <MappingsInfo padIndex={padIndex} padRole={padRole} padType={padType} />
-        {
-          pedalIndex !== undefined && <>
-            <Box padding={1} width='100%' />
-            <MappingsInfo padIndex={pedalIndex} padRole={getPadByIndex(pedalIndex).role} padType={PadType.Pedal} />
-          </>
-        }
       </Card>
     </Box>
   );
@@ -152,15 +170,21 @@ function MappingsCardForRole({ padRole }: {
 }) {
   const roleName = useConfig(config => config.mappings[padRole].name);
 
+  function handleRoleRename(name: string) {
+    updateConfig(config => config.mappings[padRole] = {
+      ...config.mappings[padRole],
+      name: name
+    });
+    connection.sendSetRoleMappingsCommand(padRole, {name: name});
+  }
+
   return (
     <Box>
-      <Card name={<>
-        <span>{(roleName ? roleName : padRole)}</span>
-        &nbsp;
-        <Box component="em" color='grey' fontSize="0.7em">(ID: {padRole})</Box>
-      </>}
-      color='rgba(42, 64, 86, 1)'
-      dropProps={{filter: ConfigFilter.Mappings, padRole: padRole}}
+      <Card name={(roleName ? roleName : padRole)}
+        secondaryTitle={`ID: ${padRole}`}
+        onRename={handleRoleRename}
+        color='rgba(42, 64, 86, 1)'
+        dropProps={{filter: ConfigFilter.Mappings, padRole: padRole}}
       >
         <MappingsInfo padRole={padRole} />
       </Card>

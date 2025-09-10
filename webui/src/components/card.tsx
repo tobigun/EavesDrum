@@ -17,7 +17,7 @@ import RenameDoneIcon from "@mui/icons-material/Done";
 import RenameCancelIcon from "@mui/icons-material/Close";
 
 import { CardConfigDropOverlay, ConfigDropProps } from './file-upload';
-import { Button, ButtonProps, IconButton, Input } from '@mui/material';
+import { Box, Button, ButtonProps, IconButton, Input } from '@mui/material';
 import { CardSize } from './component-enums';
 
 const CardAccordion = styled((props: AccordionProps) => (
@@ -105,7 +105,8 @@ function EditableCardHeader({name, onRename}: {
 }
 
 interface CardProps {
-    name: ReactNode | string;
+    name: string;
+    secondaryTitle?: ReactNode;
     size?: CardSize;
     titleDecorators?: React.ReactNode;
     edgeDecorators?: React.ReactNode;
@@ -123,9 +124,15 @@ export function Card(props: AccordionProps & CardProps) {
     >
       <Stack direction='row' alignItems='center' sx={{background: props.headerBackground}}>
         <CardAccordionSummary sx={{ paddingRight: 0 }}>
-          <Stack direction="row" spacing={1} alignItems='center'>
-            <EditableCardHeader name={props.name} onRename={props.onRename} />
-            {props.titleDecorators}
+          <Stack direction="row" alignItems='center' flexGrow={1}>
+            <Stack direction="row" spacing={1} alignItems='center'>
+              <EditableCardHeader name={props.name} onRename={props.onRename} />
+              {props.titleDecorators}
+            </Stack>
+            {
+              props.secondaryTitle &&
+                <Box component="em" display='flex' flexGrow={1} justifyContent='right' color='lightgrey' fontSize="0.9rem">{props.secondaryTitle}</Box>
+            }
           </Stack>
         </CardAccordionSummary>
         <Stack spacing={1} direction="row" alignItems='center' sx={{ paddingRight: 2 }}>

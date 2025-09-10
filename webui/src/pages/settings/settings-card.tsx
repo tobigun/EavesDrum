@@ -36,7 +36,7 @@ export function SettingsCardGroup({ padIndex }: {
     <Box>
       <SettingsCard padIndex={padIndex} padType={padType} />
       {
-        pedalIndex && <SettingsCard padIndex={pedalIndex} padType={PadType.Pedal} />
+        pedalIndex !== undefined && <SettingsCard padIndex={pedalIndex} padType={PadType.Pedal} />
       }
     </Box>
   );

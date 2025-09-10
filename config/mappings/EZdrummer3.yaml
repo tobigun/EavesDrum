@@ -59,7 +59,6 @@ mappings:
     # Tight Edge: 62
   HiHatPedal:
     name: Hi-Hat Pedal
-    pedalChickEnabled: true
     noteMain: 21 # Pedal Closed
     # Pedal Open: 23
   Ride1:

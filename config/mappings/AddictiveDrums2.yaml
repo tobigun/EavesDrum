@@ -48,7 +48,6 @@ mappings:
     # Closed2 Shaft: 52
   HiHatPedal:
     name: Hi-Hat Pedal
-    pedalChickEnabled: true
     noteMain: 48 # Foot Close
     # Foot Splash: 59
   Ride1:

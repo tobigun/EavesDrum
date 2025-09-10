@@ -76,7 +76,6 @@ mappings:
     # Choke: 33
   HiHatPedal: 
     name: Hi-Hat Pedal
-    pedalChickEnabled: true
     noteMain: 32 # Pedal
     # Splash: 31
   Ride1:

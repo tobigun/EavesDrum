@@ -32,7 +32,6 @@ mappings:
     noteCloseCup: 53 # n/a
   HiHatPedal:
     name: Hi-Hat Pedal
-    pedalChickEnabled: true
     noteMain: 65 # Chick
   Ride1:
     name: Ride

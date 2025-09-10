@@ -53,7 +53,6 @@ mappings:
     # Shank Closed Tight: 60
   HiHatPedal:
     name: Hi-Hat Pedal
-    pedalChickEnabled: true
     noteMain: 44 # Pedal
     # Footsplash: 73
   Ride1:
