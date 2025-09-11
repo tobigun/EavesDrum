@@ -124,7 +124,7 @@ public:
   DrumSettings& getSettings() { return settings; }
   const DrumSettings& getSettings() const { return settings; }
 
-  const DrumMappings& getMappings() const { return mappings ? *mappings : defaultMappings; }
+  const DrumMappings& getMappings() const { return mappings ? *mappings : fallbackMappings; }
   void setMappings(DrumMappings* mappings) { this->mappings = mappings; }
 
   bool const areMappingsAssigned() const { return mappings != nullptr; }
@@ -201,7 +201,7 @@ private:
   SensingState sensingState = SensingState::PeakDetect;
 
   DrumMappings* mappings = nullptr;
-  static DrumMappings defaultMappings;
+  static DrumMappings fallbackMappings;
 
 private:
   friend class ControllerSensing;

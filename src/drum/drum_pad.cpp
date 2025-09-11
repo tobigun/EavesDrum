@@ -8,10 +8,7 @@
 #include "sensing/piezo.h"
 #include "sensing/piezo_switch.h"
 
-DrumMappings DrumPad::defaultMappings = {
-  .role = "None",
-  .name = "Default",
-};
+DrumMappings DrumPad::fallbackMappings("None");
 
 void DrumPad::init() {
   if (pedalPad && pedalPad->getPadType() != PadType::Pedal) {

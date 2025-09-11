@@ -31,7 +31,11 @@ void DrumConfigMapper::applyDrumKitConfig(DrumKit& drumKit, const JsonDocument& 
   addPadsToDrumKit(drumKit, padsNode);
 
   JsonObjectConst mappingsNode = configNode[MAPPINGS_SECTION];
-  applyDrumKitMappings(drumKit, mappingsNode);
+  if (!mappingsNode) {
+    eventLog.log(Level::ERROR, "Config: mappings node missing");
+  } else {
+    applyDrumKitMappings(drumKit, mappingsNode, false);
+  }
 
   drumKit.init();
 
@@ -52,25 +56,34 @@ void DrumConfigMapper::applyGeneralConfig(DrumKit& drumKit, JsonObjectConst gene
   }
 }
 
-void DrumConfigMapper::applyDrumKitMappings(DrumKit& drumKit, JsonObjectConst mappingsNode) {
-  if (!mappingsNode) {
-    eventLog.log(Level::ERROR, "Config: mappings node missing");
-    return;
-  }
-
+/**
+ * Applies mappings from JSON to the drum kit. Existing mapping entries are either merged with or replaced by the new ones.
+ * Note that this does not modify or remove mappings for roles that are not contained in this request, but it can add new roles.
+ * 
+ * @param replace if true, the mappings for the roles contained in this request will be replaced with defaults before applying the new values.
+ *  If false, for each role contained in this request the new mappings will be applied on top of the existing ones, effectively merging old and new values.
+ */
+void DrumConfigMapper::applyDrumKitMappings(DrumKit& drumKit, JsonObjectConst mappingsNode, bool replace) {
   for (JsonPairConst mappingsKeyValuePair : mappingsNode) {
     String role = mappingsKeyValuePair.key().c_str();
-    DrumMappings& mappings = drumKit.getOrCreateMappings(role);
+    DrumMappings* mappings = drumKit.getOrCreateMappings(role);
+    if (!mappings) { // mapping not found and could not be created
+      continue;
+    }
+
+    if (replace) {
+      *mappings = DrumMappings(role); // replace existing mappings with defaults
+    }
 
     JsonObjectConst mappingValuesNode = mappingsKeyValuePair.value();
-    DrumConfigMapper::applyMappings(mappings, mappingValuesNode);
-    
+    DrumConfigMapper::applyMappings(*mappings, mappingValuesNode);
+
     DrumPad* pad = drumKit.getPadByRole(role);
     if (!pad) {
       // Note: not all roles have to be used, so this is just a warning
       eventLog.log(Level::INFO, String("Config: unused mappings with role: ") + role);
     } else {
-      pad->setMappings(&mappings);
+      pad->setMappings(mappings);
     }
   }
 }

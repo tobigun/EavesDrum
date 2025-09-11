@@ -58,14 +58,14 @@ function applyPadOrAllMappings(configNode: any, padRole?: string): boolean {
   }
 
   if (!padRole) { // mapping was dropped on overall config upload area -> use all applicable mappings
-    connection.sendSetMappingsCommand(mappingsNode);
+    connection.sendSetMappingsCommand(mappingsNode, true);
     return true;
   }
 
   // mappings were dropped on a pad -> apply settings for role of selected pad only
   const roleMappingsNode = mappingsNode[padRole];
   if (roleMappingsNode) { // uploaded config must contain mappings for selected pad
-    connection.sendSetRoleMappingsCommand(padRole, roleMappingsNode);
+    connection.sendSetRoleMappingsCommand(padRole, roleMappingsNode, true);
     return true; // Note: we do not check yet if backend accepted the mappings (i.e. upload might still have failed)
   }
 

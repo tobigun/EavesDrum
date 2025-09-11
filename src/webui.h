@@ -25,10 +25,10 @@ private:
   void serve();
   void onWsEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len);
 
-  void handleCommand(String cmd, JsonObjectConst& argsNode, AsyncWebSocketClient* client);
+  void handleCommand(String cmd, JsonObject& argsNode, AsyncWebSocketClient* client);
   
   void handleSetSettingsRequest(AsyncWebSocketClient* client, JsonObjectConst configNode);
-  void handleSetMappingsRequest(JsonObjectConst mappingsNode);
+  void handleSetMappingsRequest(JsonObject mappingsNode);
   void handleSetGeneralConfigRequest(JsonObjectConst generalConfigNode);
   void handleSetMonitor(JsonObjectConst configNode);
   void handleSetPadConfig(JsonObjectConst configNode, AsyncWebSocketClient* client);
@@ -36,9 +36,9 @@ private:
   void handleSaveConfigRequest(AsyncWebSocketClient* client);
   void handleRestoreConfigRequest(AsyncWebSocketClient* client);
   void handleGetConfigRequest(AsyncWebSocketClient* client);
-  void handlePlayNote(JsonObjectConst& argsNode);
+  void handlePlayNote(JsonObjectConst argsNode);
   void handleEventLogRequest(AsyncWebSocketClient* client);
-  void handleLatencyTestRequest(JsonObjectConst& argsNode, AsyncWebSocketClient* client);
+  void handleLatencyTestRequest(JsonObjectConst argsNode, AsyncWebSocketClient* client);
   void handleStatsRequest(AsyncWebSocketClient* client);
 
   void sendConfig(AsyncWebSocketClient* client);

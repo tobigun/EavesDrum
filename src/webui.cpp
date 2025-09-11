@@ -18,6 +18,8 @@
 #define CONFIG_MONITOR_PAD "padIndex"
 #define CONFIG_MONITOR_TRIGGERED_BY_ALL_PADS "triggeredByAllPads"
 
+#define CONFIG_MAPPINGS_REPLACE_PROP "_replace"
+
 #define CONFIG_NAME_PROP "name"
 #define CONFIG_ROLE_PROP "role"
 #define CONFIG_CONNECTOR_PROP "connector"
@@ -183,8 +185,22 @@ void WebUI::handleSetSettingsRequest(AsyncWebSocketClient* client, JsonObjectCon
   }
 }
 
-void WebUI::handleSetMappingsRequest(JsonObjectConst mappingsNode) {
-  DrumConfigMapper::applyDrumKitMappings(*drumKit, mappingsNode);
+void WebUI::handleSetMappingsRequest(JsonObject mappingsNode) {
+  // if the replace property is set, replace existing mappings instead of merging them
+  bool replace = mappingsNode[CONFIG_MAPPINGS_REPLACE_PROP].as<bool>();
+  if (replace) { // remove UI specific property
+    mappingsNode.remove(CONFIG_MAPPINGS_REPLACE_PROP);
+  }
+
+  // if there is more than one mapping we assume that the user wants to replace all mappings (e.g. EZDrummer by Addictive Drums).
+  // We have to delete all existing mappings first as not all old roles might be defined in the new config
+  bool replaceAll = replace && (mappingsNode.size() - 1) > 1;
+  if (replaceAll) {
+    drumKit->deleteAllMappings();
+    replace = false; // no need to replace individual mappings as we already deleted everything
+  }
+
+  DrumConfigMapper::applyDrumKitMappings(*drumKit, mappingsNode, replace);
   isConfigDirty = true;
 }
 
@@ -197,7 +213,7 @@ void WebUI::handleTriggerMonitor() {
   drumKit->getMonitor().triggerMonitor();
 }
 
-void WebUI::handlePlayNote(JsonObjectConst& argsNode) {
+void WebUI::handlePlayNote(JsonObjectConst argsNode) {
   midi_note_t midiNote = argsNode["note"];
   drumKit->sendMidiNoteOnOffMessage(midiNote, 100);
 }
@@ -243,7 +259,7 @@ void WebUI::handleRestoreConfigRequest(AsyncWebSocketClient* client) {
   handleGetConfigRequest(client);
 }
 
-void WebUI::handleLatencyTestRequest(JsonObjectConst& argsNode, AsyncWebSocketClient* client) {
+void WebUI::handleLatencyTestRequest(JsonObjectConst argsNode, AsyncWebSocketClient* client) {
   DrumMonitor& monitor = drumKit->getMonitor();
   bool enabled = argsNode["enabled"];
   if (enabled) {
@@ -262,7 +278,7 @@ void WebUI::handleLatencyTestRequest(JsonObjectConst& argsNode, AsyncWebSocketCl
   }
 }
 
-void WebUI::handleCommand(String cmd, JsonObjectConst& argsNode, AsyncWebSocketClient* client) {
+void WebUI::handleCommand(String cmd, JsonObject& argsNode, AsyncWebSocketClient* client) {
   if (cmd == "getConfig") {
     handleGetConfigRequest(client);
   } else if (cmd == "setSettings") {
@@ -321,9 +337,9 @@ void WebUI::onWsEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsE
       return;
     }
 
-    for (auto cmdNode : doc.as<JsonObjectConst>()) {
+    for (auto cmdNode : doc.as<JsonObject>()) {
       const String cmd = cmdNode.key().c_str();
-      JsonObjectConst cmdArgsNode = cmdNode.value();
+      JsonObject cmdArgsNode = cmdNode.value();
       handleCommand(cmd, cmdArgsNode, client);
     }
 

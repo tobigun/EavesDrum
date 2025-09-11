@@ -6,6 +6,11 @@
 #include "types.h"
 
 struct DrumMappings {
+  DrumMappings() = default;
+  
+  DrumMappings(String role):
+    role(role) {}
+
   String role = nullptr;
   String name = nullptr;
 

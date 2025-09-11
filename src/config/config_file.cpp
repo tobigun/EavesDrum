@@ -30,6 +30,7 @@ JsonDocument DrumConfigMapper::loadDrumKitConfig() {
     noInterrupts();
   
     fs::File localeFile = LittleFS.open(CONFIG_FILE_PATH, "w");
+    localeFile.print("# yaml-language-server: $schema=./config.jsonc"); // Note: no newline, as YAMLduino already adds one
     serializeYml(doc, localeFile);
     localeFile.close();
   

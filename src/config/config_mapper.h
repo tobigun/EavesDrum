@@ -42,7 +42,7 @@ public:
 
   static JsonDocument getDrumKitConfigAsJson(const DrumKit& drumKit);
   
-  static void applyDrumKitMappings(DrumKit& drumKit, JsonObjectConst mappingsNode);
+  static void applyDrumKitMappings(DrumKit& drumKit, JsonObjectConst mappingsNode, bool replace);
   static void applyGeneralConfig(DrumKit& drumKit, JsonObjectConst generalNode);
   static void applyPadSettings(DrumPad& pad, JsonObjectConst settingsNode);
 

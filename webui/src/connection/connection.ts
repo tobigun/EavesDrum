@@ -127,12 +127,12 @@ export class Connection {
     this.sendSetSettingsCommand({[padIndex]: { ...values }});
   }
 
-  sendSetMappingsCommand(values: any) {
-    this.sendCommandWithDirtyFlag(DrumCommand.setMappings, { ...values }, true);
+  sendSetMappingsCommand(values: any, replace = false) {
+    this.sendCommandWithDirtyFlag(DrumCommand.setMappings, { ...values, _replace: replace }, true);
   }
 
-  sendSetRoleMappingsCommand(padRole: string, values: Partial<DrumPadMappings>) {
-    this.sendSetMappingsCommand({[padRole]: { ...values }});
+  sendSetRoleMappingsCommand(padRole: string, values: Partial<DrumPadMappings>, replace = false) {
+    this.sendSetMappingsCommand({[padRole]: { ...values }}, replace);
   }
 
   sendLatencyTestOnCommand(mode: 'preview' | 'test', threshold: number, midiNote?: number) {

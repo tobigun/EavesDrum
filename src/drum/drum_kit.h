@@ -86,18 +86,37 @@ public:
     return nullptr;
   }
 
-  DrumMappings& getOrCreateMappings(String role) {
+  // returns nullptr if the mappings could not be found and could not be created
+  DrumMappings* getOrCreateMappings(String role) {
     DrumMappings* searchResult = getMappings(role);
     if (searchResult) {
-      return *searchResult;
+      return searchResult;
+    }
+
+    if (mappingsCount >= MAX_MAPPINGS_COUNT) {
+      eventLog.log(Level::ERROR, String("Cannot create mappings, maximum count reached: ") + MAX_MAPPINGS_COUNT);
+      return nullptr;
     }
     
-    DrumMappings& newMappings = mappings[mappingsCount++];
-    newMappings.role = role;
+    DrumMappings* newMappings = &mappings[mappingsCount++];
+    *newMappings = DrumMappings(role); // reset mappings to defaults as the slot might already have been used before
     return newMappings;
   }
 
   mappings_size_t getMappingsCount() const { return mappingsCount; }
+
+  /**
+   * Deletes all mappings and resets the mappings assigned to pads.
+   */
+  void deleteAllMappings() {
+    // clear all mappings
+    mappingsCount = 0;
+
+    // reset mapping assigned to pads
+    for (auto& pad : pads) {
+      pad.setMappings(nullptr);
+    }
+  }
 
   // Mux
 
