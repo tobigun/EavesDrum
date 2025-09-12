@@ -52,13 +52,17 @@ export function RoleInfo({ padRole, padIndex }: {
   </SettingEntryContainer>;
 }
 
-function EditableSelect(props: SelectProps<string> & {
+function EditableSelect({
+  editableValue,
+  onRename,
+  ...selectProps
+} : SelectProps<string> & {
   editableValue: string,
   onRename?: (name: string) => void
 }) {
   const [editMode, setEditMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const editModeSupported = props.onRename !== undefined;
+  const editModeSupported = onRename !== undefined;
 
   function handleRenameClick(event: any) {
     event.stopPropagation();
@@ -71,7 +75,7 @@ function EditableSelect(props: SelectProps<string> & {
 
     const newName = inputRef?.current?.value;
     if (newName && newName !== "") {
-      props.onRename?.(newName);
+      onRename?.(newName);
     }
   }
 
@@ -83,8 +87,8 @@ function EditableSelect(props: SelectProps<string> & {
   return <>
     {
       (editModeSupported && editMode)
-        ? <Input inputRef={inputRef} defaultValue={props.editableValue} onClick={(event) => event.stopPropagation()} />
-        : <Select {...props}>{props.children}</Select>
+        ? <Input inputRef={inputRef} defaultValue={editableValue} onClick={(event) => event.stopPropagation()} />
+        : <Select {...selectProps}>{selectProps.children}</Select>
     }
     {
       !editModeSupported ? null : ( editMode ?

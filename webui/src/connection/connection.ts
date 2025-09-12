@@ -5,11 +5,12 @@ import { DrumPadConfig, DrumPadMappings, DrumPadSettings, updateConfig } from '@
 
 export enum DrumCommand {
   getConfig = "getConfig",
+  setConfig = "setConfig",
+  setPadConfig = "setPadConfig",
   setSettings = "setSettings",
   setMappings = "setMappings",
   setGeneral = "setGeneral",
   setMonitor = "setMonitor",
-  setPadConfig = "setPadConfig",
   playNote = "playNote",
   saveConfig = "saveConfig",
   restoreConfig = "restoreConfig",
@@ -113,6 +114,10 @@ export class Connection {
       updateConfig(config => config.isDirty = true);
     }    
     this.sendCommand(command, args);
+  }
+
+  sendSetConfigCommand(values: Partial<DrumPadConfig>) {
+    this.sendCommandWithDirtyFlag(DrumCommand.setConfig, { ...values }, true);
   }
 
   sendSetPadConfigCommand(padIndex: number, values: Partial<DrumPadConfig>) {

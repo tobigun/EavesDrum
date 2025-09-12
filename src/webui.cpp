@@ -185,6 +185,19 @@ void WebUI::handleSetSettingsRequest(AsyncWebSocketClient* client, JsonObjectCon
   }
 }
 
+void WebUI::handleSetConfigRequest(AsyncWebSocketClient* client, JsonObjectConst configNode) {
+  JsonDocument configDoc = DrumConfigMapper::getDrumKitConfigAsJson(*drumKit);
+  for (JsonPairConst keyValuePair : configNode) {
+    configDoc[keyValuePair.key()] = keyValuePair.value();
+  }
+  DrumConfigMapper::writeDrumKitConfig(configDoc);
+  DrumIO::reset();
+
+  // we reach this only if we performed a soft reset (e.g. on PC)
+  isConfigDirty = false;
+  sendConfig(client);
+}
+
 void WebUI::handleSetMappingsRequest(JsonObject mappingsNode) {
   // if the replace property is set, replace existing mappings instead of merging them
   bool replace = mappingsNode[CONFIG_MAPPINGS_REPLACE_PROP].as<bool>();
@@ -248,7 +261,7 @@ void WebUI::handleSaveConfigRequest(AsyncWebSocketClient* client) {
   DrumConfigMapper::saveDrumKitConfig(*drumKit);
   isConfigDirty = false;
 
-  handleGetConfigRequest(client);
+  sendConfig(client);
 }
 
 void WebUI::handleRestoreConfigRequest(AsyncWebSocketClient* client) {
@@ -256,7 +269,7 @@ void WebUI::handleRestoreConfigRequest(AsyncWebSocketClient* client) {
 
   // we reach this only if we performed a soft reset (e.g. on PC)
   isConfigDirty = false;
-  handleGetConfigRequest(client);
+  sendConfig(client);
 }
 
 void WebUI::handleLatencyTestRequest(JsonObjectConst argsNode, AsyncWebSocketClient* client) {
@@ -281,6 +294,8 @@ void WebUI::handleLatencyTestRequest(JsonObjectConst argsNode, AsyncWebSocketCli
 void WebUI::handleCommand(String cmd, JsonObject& argsNode, AsyncWebSocketClient* client) {
   if (cmd == "getConfig") {
     handleGetConfigRequest(client);
+  } else if (cmd == "setConfig") {
+    handleSetConfigRequest(client, argsNode);
   } else if (cmd == "setSettings") {
     handleSetSettingsRequest(client, argsNode);
   } else if (cmd == "setMappings") {

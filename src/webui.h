@@ -27,6 +27,7 @@ private:
 
   void handleCommand(String cmd, JsonObject& argsNode, AsyncWebSocketClient* client);
   
+  void handleSetConfigRequest(AsyncWebSocketClient* client, JsonObjectConst configNode);
   void handleSetSettingsRequest(AsyncWebSocketClient* client, JsonObjectConst configNode);
   void handleSetMappingsRequest(JsonObject mappingsNode);
   void handleSetGeneralConfigRequest(JsonObjectConst generalConfigNode);

@@ -25,7 +25,7 @@ export function GeneralCard() {
 }
 
 export function GateTime() {
-  const gateTimeMs = useConfig(config => config.general.gateTimeMs);
+  const gateTimeMs = useConfig(config => config.general?.gateTimeMs ?? 0);
   const connected = useContext(ConnectionStateContext);
 
   const converter = createFractionConverter(1000);
@@ -35,7 +35,10 @@ export function GateTime() {
       const newValue = converter.toConfig(value);
       const newGateTimeMs = Math.max(0, Math.min(newValue, MAX_GATE_TIME_MS));
       if (newGateTimeMs !== gateTimeMs) {        
-        updateConfig(config => { config.general.gateTimeMs = newGateTimeMs; });
+        updateConfig(config => config.general = {
+          ...config.general,
+          gateTimeMs: newGateTimeMs
+        });
         connection.sendCommand(DrumCommand.setGeneral, {
           gateTimeMs: newGateTimeMs
         });

@@ -9,6 +9,12 @@ import { UploadFile } from "@mui/icons-material";
 import { useDropzone } from "react-dropzone";
 import { ConfigFilter } from "./component-enums";
 
+const SECTION_GENERAL = "general";
+const SECTION_MUX = "mux";
+const SECTION_CONNECTORS = "connectors";
+const SECTION_PADS = "pads";
+const SECTION_MAPPINGS = "mappings";
+
 export interface ConfigDropProps {
   filter?: ConfigFilter,
   padIndex?: number,
@@ -16,27 +22,45 @@ export interface ConfigDropProps {
 }
 
 function applyConfig(configNode: any, dropProps: ConfigDropProps) : boolean {
-  let success = false;
   const filter = dropProps.filter;
 
-  if (filter === undefined || filter === ConfigFilter.Settings) {
-    if (applyPadSettings(configNode, dropProps.padIndex)) {
-      success = true;
-    }
+  if (filter === undefined && containsNonMappingSection(configNode)) {
+    // config with at least one non-mapping section was dropped on overall config upload area -> replace sections
+    connection.sendSetConfigCommand(configNode);
+    return true;
   }
-
+  
+  if (filter === ConfigFilter.Settings) {
+    return applyPadSettings(configNode, dropProps.padIndex);
+  }
+  
   if (filter === undefined || filter === ConfigFilter.Mappings) {
-    if (applyPadOrAllMappings(configNode, dropProps.padRole)) {
-      success = true;
-    }
+    return applyRoleMappings(configNode, dropProps.padRole);
   }
 
-  return success;
+  return false;
 }
 
-// returns true if a config was applied
+function containsNonMappingSection(configNode: any) {
+  const sections = [SECTION_GENERAL, SECTION_MUX, SECTION_CONNECTORS, SECTION_PADS];
+  return (sections.some(section =>
+    Object.prototype.hasOwnProperty.call(configNode, section)));
+}
+
+/**
+ * Applies the given settings to the pad defined by padIndex.
+ * 
+ * Example:
+ * ---------------------------
+ * settings:
+ *   padType: Drum
+ *   zonesType: Zones3_Piezos
+ *   ...
+ * ---------------------------
+ * @returns true if the pad settings were applied
+ */ 
 function applyPadSettings(configNode: any, padIndex?: number): boolean {
-  const padSettingsNode = configNode['settings'];
+  const padSettingsNode = configNode["settings"];
   if (!padSettingsNode) {
     return false;
   }
@@ -50,9 +74,21 @@ function applyPadSettings(configNode: any, padIndex?: number): boolean {
   return true; // Note: we do not check yet if backend accepted the settings (i.e. upload might still have failed)
 }
 
-// returns true if a config was applied
-function applyPadOrAllMappings(configNode: any, padRole?: string): boolean {
-  const mappingsNode = configNode['mappings'];
+/**
+ * Applies mappings for a single or multiple roles. If a role was selected, then only mappings for this role are applied.
+ * 
+ * Example:
+ * ---------------------------
+ * mappings: 
+ *   Snare: 
+ *     noteMain: 38
+ *   Tom 1:
+ *     ...
+ * ---------------------------
+ * @returns true if mappings for at least one role were applied
+ */
+function applyRoleMappings(configNode: any, padRole?: string): boolean {
+  const mappingsNode = configNode[SECTION_MAPPINGS];
   if (!mappingsNode) {
     return false;
   }
@@ -87,7 +123,9 @@ function handleConfigDrop(file: File, dropProps: ConfigDropProps, setMessage: (m
       const yaml = reader.result as string;
       const configNode = parse(yaml);
       if (!applyConfig(configNode, dropProps)) {
-        setMessage({message: 'No valid config entry found', severity: 'error'});
+        const configType = dropProps.filter == ConfigFilter.Settings ? "settings entry" :
+          (dropProps.filter == ConfigFilter.Mappings ? "mappings entry" : "config or mappings");
+        setMessage({message: `No valid ${configType} found`, severity: 'error'});
       } else {
         connection.sendCommand(DrumCommand.getConfig);
         setMessage({message: 'Config applied', severity: 'success'});

@@ -135,7 +135,7 @@ function MappingsCardForPad({ padIndex, padType }: {
   const padName = useConfig(config => config.pads[padIndex].name);
   const group = useConfig(config => config.pads[padIndex].group);
   const padRole = useConfig(config => config.pads[padIndex].role);
-  const padRoleName = useConfig(config => config.mappings[padRole].name);
+  const padRoleName = useConfig(config => config.mappings[padRole]?.name);
   const headerBackground = getHeaderBackground(padType);
   
   function handlePadRename(name: string) {

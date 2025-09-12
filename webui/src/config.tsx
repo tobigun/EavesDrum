@@ -13,7 +13,6 @@ export const MAX_SENSOR_VALUE = 1023;
 export const MAX_GATE_TIME_MS = 30_000;
 
 export const useConfig = create<Config>(() => ({
-  general: { gateTimeMs: 0 },
   pads: [],
   connectors: {},
   mappings: {},
@@ -46,7 +45,7 @@ export function isPadPinConnectedToMux(pin: number, padIndex?: number): boolean 
 }
 
 export interface Config {
-  general: GeneralConfig;
+  general?: GeneralConfig;
   pads: DrumPadConfig[];
   connectors: Record<ConnectorId, ConnectorConfig>;
   mappings: Record<PadRole, DrumPadMappings>;

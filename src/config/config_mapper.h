@@ -76,6 +76,8 @@ private:
   static void convertMappingsToJson(const DrumMappings& mappings, JsonObject& mappingsNode);
 
   // Low level
-  static JsonDocument loadDrumKitConfig();
+public:
   static void writeDrumKitConfig(JsonDocument doc);
+private:
+  static JsonDocument loadDrumKitConfig();
 };
