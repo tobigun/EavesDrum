@@ -11,8 +11,8 @@ struct DrumMappings {
   DrumMappings(String role):
     role(role) {}
 
-  String role = nullptr;
-  String name = nullptr;
+  String role = String((const char *) nullptr);
+  String name = String((const char *) nullptr);
 
   midi_note_t noteMain = MIDI_NOTE_UNASSIGNED;
   midi_note_t noteRim = MIDI_NOTE_UNASSIGNED;
