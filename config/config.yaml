@@ -78,12 +78,40 @@ connectors:
   Jack9: 
     pins: 
       - mux: 1
+        channel: 3
+      - mux: 1
+        channel: 4
+      - mux: 1
+        channel: 5
+  Jack10: 
+    pins: 
+      - mux: 1
+        channel: 6
+      - mux: 1
         channel: 7
       - mux: 1
         channel: 8
+  Jack11: 
+    pins: 
       - mux: 1
         channel: 9
-  Jack10: 
+      - mux: 1
+        channel: 10
+  Jack12: 
+    pins: 
+      - mux: 1
+        channel: 11
+      - mux: 1
+        channel: 12
+  Jack13: 
+    pins: 
+      - mux: 1
+        channel: 13
+      - mux: 1
+        channel: 14
+      - mux: 1
+        channel: 15
+  Jack-Pedal: 
     pins: 
     - 28
 pads: 
@@ -159,6 +187,42 @@ pads:
       crossNoteEnabled: false
       headRimBias: 0
     connector: Jack4
+  - name: Tom 4
+    role: Tom4
+    group: Toms
+    enabled: false
+    settings: 
+      padType: Drum
+      zonesType: Zones2_Piezos
+      curveType: Linear
+      scanTimeUs: 3000
+      maskTimeMs: 30
+      zoneThresholds: 
+        - min: 511
+          max: 1023
+        - min: 258
+          max: 1023
+      crossNoteEnabled: false
+      headRimBias: 0
+    connector: Jack11
+  - name: Tom 5
+    role: Tom5
+    group: Toms
+    enabled: false
+    settings: 
+      padType: Drum
+      zonesType: Zones2_Piezos
+      curveType: Linear
+      scanTimeUs: 3000
+      maskTimeMs: 30
+      zoneThresholds: 
+        - min: 511
+          max: 1023
+        - min: 258
+          max: 1023
+      crossNoteEnabled: false
+      headRimBias: 0
+    connector: Jack12
   - name: Kick
     role: Kick
     enabled: true
@@ -174,6 +238,7 @@ pads:
     connector: Jack5
   - name: Ride
     role: Ride1
+    group: Cymbals
     enabled: true
     settings: 
       padType: Cymbal
@@ -190,6 +255,7 @@ pads:
     connector: Jack6
   - name: Cymbal 1
     role: Cymbal1
+    group: Cymbals
     enabled: true
     settings: 
       padType: Cymbal
@@ -206,6 +272,7 @@ pads:
     connector: Jack7
   - name: Cymbal 2
     role: Cymbal2
+    group: Cymbals
     enabled: true
     settings: 
       padType: Cymbal
@@ -220,6 +287,40 @@ pads:
         - min: 273
         - min: 511
     connector: Jack8
+  - name: Cymbal 3
+    role: Cymbal3
+    group: Cymbals
+    enabled: false
+    settings: 
+      padType: Cymbal
+      zonesType: Zones3_PiezoAndSwitches_2TRS
+      chokeType: Switch_Edge
+      curveType: Linear
+      scanTimeUs: 3000
+      maskTimeMs: 30
+      zoneThresholds: 
+        - min: 110
+          max: 670
+        - min: 273
+        - min: 511
+    connector: Jack9
+  - name: Cymbal 4
+    role: Cymbal4
+    group: Cymbals
+    enabled: false
+    settings: 
+      padType: Cymbal
+      zonesType: Zones3_PiezoAndSwitches_2TRS
+      chokeType: Switch_Edge
+      curveType: Linear
+      scanTimeUs: 3000
+      maskTimeMs: 30
+      zoneThresholds: 
+        - min: 110
+          max: 670
+        - min: 273
+        - min: 511
+    connector: Jack13
   - name: Hi-Hat
     role: HiHat
     enabled: true
@@ -236,9 +337,9 @@ pads:
         - min: 386
         - min: 511
     pedal: Hi-Hat Pedal
-    connector: Jack9
+    connector: Jack10
   - name: Hi-Hat Pedal
-    role: HiHatPedal
+    role: HiHat-Pedal
     enabled: true
     settings: 
       padType: Pedal
@@ -251,7 +352,7 @@ pads:
       moveDetectTolerance: 20
       chickDetectTimeoutMs: 13
       curveType: Linear
-    connector: Jack10
+    connector: Jack-Pedal
 mappings: 
   Snare: 
     noteMain: 38
@@ -293,7 +394,7 @@ mappings:
     noteCloseMain: 11
     noteCloseRim: 22
     noteCloseCup: 53
-  HiHatPedal: 
+  HiHat-Pedal: 
     name: Hi-Hat Pedal
     noteMain: 21
   Ride1: 
