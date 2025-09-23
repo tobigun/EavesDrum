@@ -125,13 +125,13 @@ pads:
       scanTimeUs: 3000
       maskTimeMs: 30
       zoneThresholds: 
-        - min: 110
+        - min: 102
           max: 670
-        - min: 141
+        - min: 102
           max: 572
-        - min: 511
-          max: 1023
-      headRimBias: 0
+        - min: 102
+          max: 636
+      headRimBias: 25
     connector: Jack1
   - name: Tom 1
     role: Tom1
@@ -144,10 +144,10 @@ pads:
       scanTimeUs: 3000
       maskTimeMs: 30
       zoneThresholds: 
-        - min: 511
-          max: 1023
-        - min: 165
-          max: 1023
+        - min: 61
+          max: 614
+        - min: 164
+          max: 614
       crossNoteEnabled: false
       headRimBias: 0
     connector: Jack2
@@ -162,10 +162,10 @@ pads:
       scanTimeUs: 3000
       maskTimeMs: 30
       zoneThresholds: 
-        - min: 511
-          max: 1023
-        - min: 196
-          max: 1023
+        - min: 61
+          max: 614
+        - min: 164
+          max: 614
       crossNoteEnabled: false
       headRimBias: 0
     connector: Jack3
@@ -180,12 +180,12 @@ pads:
       scanTimeUs: 3000
       maskTimeMs: 30
       zoneThresholds: 
-        - min: 511
-          max: 1023
-        - min: 258
-          max: 1023
+        - min: 51
+          max: 614
+        - min: 31
+          max: 256
       crossNoteEnabled: false
-      headRimBias: 0
+      headRimBias: 10
     connector: Jack4
   - name: Tom 4
     role: Tom4
@@ -233,8 +233,8 @@ pads:
       scanTimeUs: 3000
       maskTimeMs: 30
       zoneThresholds: 
-        - min: 204
-          max: 700
+        - min: 102
+          max: 614
     connector: Jack5
   - name: Ride
     role: Ride1
@@ -248,10 +248,10 @@ pads:
       scanTimeUs: 3000
       maskTimeMs: 30
       zoneThresholds: 
-        - min: 151
-          max: 720
-        - min: 280
-        - min: 270
+        - min: 31
+          max: 358
+        - min: 307
+        - min: 307
     connector: Jack6
   - name: Cymbal 1
     role: Cymbal1
@@ -265,10 +265,10 @@ pads:
       scanTimeUs: 3000
       maskTimeMs: 30
       zoneThresholds: 
-        - min: 110
-          max: 670
-        - min: 273
-        - min: 511
+        - min: 31
+          max: 409
+        - min: 307
+        - min: 307
     connector: Jack7
   - name: Cymbal 2
     role: Cymbal2
@@ -282,10 +282,10 @@ pads:
       scanTimeUs: 3000
       maskTimeMs: 30
       zoneThresholds: 
-        - min: 110
-          max: 670
-        - min: 273
-        - min: 511
+        - min: 51
+          max: 563
+        - min: 307
+        - min: 307
     connector: Jack8
   - name: Cymbal 3
     role: Cymbal3
@@ -332,10 +332,10 @@ pads:
       scanTimeUs: 3000
       maskTimeMs: 30
       zoneThresholds: 
-        - min: 82
-          max: 819
-        - min: 386
-        - min: 511
+        - min: 31
+          max: 307
+        - min: 307
+        - min: 307
     pedal: Hi-Hat Pedal
     connector: Jack10
   - name: Hi-Hat Pedal
@@ -347,10 +347,10 @@ pads:
       zoneThresholds: 
         - min: 205
           max: 819
-      almostClosedThreshold: 68
-      closedThreshold: 93
+      almostClosedThreshold: 70
+      closedThreshold: 85
       moveDetectTolerance: 20
-      chickDetectTimeoutMs: 13
+      chickDetectTimeoutMs: 20
       curveType: Linear
     connector: Jack-Pedal
 mappings: 
@@ -421,7 +421,7 @@ mappings:
     name: Crash 4
     noteMain: 96
     noteRim: 98
-    noteCup: 53
+    noteCup: 5
   Effect1: 
     name: Tambourine / Shaker / One Shot
     noteMain: 3
