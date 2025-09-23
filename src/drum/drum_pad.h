@@ -20,6 +20,14 @@
 
 #define UNKNOWN_PAD 0xFF
 
+struct InputFlags {
+  enum Value {
+    NONE = 0,
+    AUTO_CALIBRATE = 1 << 0,
+    INVERT = 1 << 1
+  };
+};
+
 enum class HiHatState {
   Open,
   AlmostClosed,
@@ -161,7 +169,7 @@ private:
    * 
    * If autoCalibrate is true the internal offset of the pin will be adjusted.
    */
-  static sensor_value_t readInput(DrumPin& pin, bool autoCalibrate = false);
+  static sensor_value_t readInput(DrumPin& pin, InputFlags::Value flags = InputFlags::NONE);
 
 public: // state
   struct HiHatData {

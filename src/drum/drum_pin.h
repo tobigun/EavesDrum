@@ -42,10 +42,6 @@ struct DrumPin {
     return index != PIN_UNUSED;
   }
 
-  // TODO: required if hihat controller is directly connected to ADC.
-  // No use case at the moment, as hi-hat controllers are now also connected to a muxer by default
-  bool isInverted() const { return false; }
-
   /**
    * Returns the signal type.
    * @return either Normal or VoltageOffset.

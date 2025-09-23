@@ -17,7 +17,8 @@ void PiezoSensing::sense(time_us_t senseTimeUs) {
 
   const zone_size_t zoneCount = pad.getActiveZoneCount();
   for (zone_size_t zone = 0; zone < zoneCount; ++zone) {
-    pad.sensorValues[zone] = pad.readInput(pad.connector->getPin(zone), pad.autoCalibrate);
+    pad.sensorValues[zone] = pad.readInput(pad.connector->getPin(zone),
+      pad.autoCalibrate ? InputFlags::AUTO_CALIBRATE : InputFlags::NONE);
     pad.hits[zone] = false;
     pad.hitVelocities[zone] = 0;
   }

@@ -42,16 +42,6 @@ sensor_value_t readMuxChannel(channel_size_t channel, pin_size_t analogInPin) {
   return ZERO_OFFSET;
 }
 
-static sensor_value_t invertValue(sensor_value_t value) {
-  return MAX_SENSOR_VALUE - value;
-}
-
-static sensor_value_t adjustValue(sensor_value_t value, const DrumPin& pin) {
-  return (pin.isInverted())
-    ? invertValue(value)
-    : value;
-}
-
 void setPadPinValue(const DrumPad& pad, zone_size_t zone, sensor_value_t value) {
   DrumConnector* connector = pad.getConnector();
   if (connector && zone < connector->getPinCount()) {
@@ -59,7 +49,7 @@ void setPadPinValue(const DrumPad& pad, zone_size_t zone, sensor_value_t value) 
     if (pin.getSignalType() == SignalType::VoltageOffset) {
       muxInValues[pin.muxIndex][pin.index] = ZERO_OFFSET + value / 2;
     } else {
-      analogInValues[pin.index] = adjustValue(value, pin);
+      analogInValues[pin.index] = value;
     }  
   }
 }

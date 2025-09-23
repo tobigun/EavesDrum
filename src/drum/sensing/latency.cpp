@@ -11,7 +11,7 @@ void LatencySensing::sense(time_us_t senseTimeUs, LatencyTestInfo& info) {
 
   resetState();
 
-  pad.sensorValues[0] = pad.readInput(pad.connector->getPin(0), true);
+  pad.sensorValues[0] = pad.readInput(pad.connector->getPin(0), InputFlags::AUTO_CALIBRATE);
 
   if (info.state != WAIT_FOR_HIT) {
     return; // do not update latency info with newer hit

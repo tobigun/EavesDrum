@@ -21,13 +21,13 @@ void DrumPad::init() {
   }
 }
 
-sensor_value_t DrumPad::readInput(DrumPin& pin, bool autoCalibrate) {
+sensor_value_t DrumPad::readInput(DrumPin& pin, InputFlags::Value flags) {
   sensor_value_t result = pin.mux
       ? pin.mux->readChannel(pin.index)
       : DrumIO::readAnalogInPin(pin.index);
 
   if (pin.getSignalType() == SignalType::VoltageOffset) {
-    if (autoCalibrate) {
+    if (flags & InputFlags::AUTO_CALIBRATE) {
       sensor_value_t offset = pin.updateOffset(result);
       result = (result > offset)
         ? (uint32_t)(result - offset) * MAX_SENSOR_VALUE / (MAX_SENSOR_VALUE - offset)
@@ -37,7 +37,7 @@ sensor_value_t DrumPad::readInput(DrumPin& pin, bool autoCalibrate) {
     }
   }
 
-  if (pin.isInverted()) {
+  if (flags & InputFlags::INVERT) {
     result = (MAX_SENSOR_VALUE - result);
   }
 

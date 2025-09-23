@@ -12,7 +12,7 @@ void ControllerSensing::sense(time_us_t senseTimeUs) {
     return;
   }
 
-  sensor_value_t rawInputValue = pad.readInput(pad.connector->getPin(0));
+  sensor_value_t rawInputValue = pad.readInput(pad.connector->getPin(0), InputFlags::INVERT);
   sensor_value_t oldDenoisedInputValue = pad.sensorValues[0];
   sensor_value_t denoisedInputValue = reduceNoise(rawInputValue, oldDenoisedInputValue, pad.settings.moveDetectTolerance);
   pad.sensorValues[0] = denoisedInputValue;
