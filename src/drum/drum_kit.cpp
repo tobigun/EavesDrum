@@ -89,13 +89,13 @@ void DrumKit::evaluateDrum(const DrumPad& pad) {
   const DrumMappings& mappings = pad.getMappings();
 
   if (pad.hits[0]) {
-    EDRUM_DEBUG("hit: %d\n", pad.hitVelocities[0]);
+    EDRUM_DEBUG("%s hit main: %d\n", pad.getName().c_str(), pad.hitVelocities[0]);
     sendMidiNoteOnMessage(mappings.noteMain, pad.hitVelocities[0]);
   } else if (pad.hits[1]) {
-    EDRUM_DEBUG("hit rim: %d\n", pad.hitVelocities[1]);
+    EDRUM_DEBUG("%s hit rim: %d\n", pad.getName().c_str(), pad.hitVelocities[1]);
     sendMidiNoteOnMessage(mappings.noteRim, pad.hitVelocities[1]);
   } else if (pad.hits[2]) {
-    EDRUM_DEBUG("hit side rim / cross-stick: %d\n", pad.hitVelocities[2]);
+    EDRUM_DEBUG("%s hit side rim / cross-stick: %d\n", pad.getName().c_str(), pad.hitVelocities[2]);
     sendMidiNoteOnMessage(mappings.noteCross, pad.hitVelocities[2]);
   }
 }
@@ -129,12 +129,16 @@ void DrumKit::evaluateCymbal(const DrumPad& pad) {
 
 void DrumKit::evaluateCymbalWithNotes(const DrumPad& pad, const midi_note_t* notes) {
   if (pad.hits[0]) { // bow
+    EDRUM_DEBUG("%s hit bow: %d\n", pad.getName().c_str(), pad.hitVelocities[0]);
     sendMidiNoteOnMessage(notes[0], pad.hitVelocities[0]);
   } else if (pad.hits[1]) { // edge
+    EDRUM_DEBUG("%s hit edge: %d\n", pad.getName().c_str(), pad.hitVelocities[1]);
     sendMidiNoteOnMessage(notes[1], pad.hitVelocities[1]);
   } else if (pad.hits[2]) { // cup
+    EDRUM_DEBUG("%s hit cup: %d\n", pad.getName().c_str(), pad.hitVelocities[2]);
     sendMidiNoteOnMessage(notes[2], pad.hitVelocities[2]);
   } else if (pad.cymbal.isChoked) {
+    EDRUM_DEBUG("%s choked\n", pad.getName().c_str());
     sendChokeMessage(pad, notes);
   }
 }
