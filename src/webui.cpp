@@ -366,7 +366,7 @@ void WebUI::onWsEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsE
   }
 }
 
-void WebUI::serve() {
+void WebUI::initHttpServer() {
   server = new AsyncWebServer(80);
   ws = new AsyncWebSocket("/ws");
 
@@ -396,7 +396,7 @@ void WebUI::serve() {
 
 void WebUI::setup(DrumKit& drumKit) {
   this->drumKit = &drumKit;
-  serve();
+  initHttpServer();
 }
 
 void WebUI::sendTextToWebSocket(const String& text) {

@@ -4,7 +4,8 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Popover } from "@mui/material";
 import { ReactNode, useCallback, useContext, useState } from "react";
 import { VersionInfo } from "./version-info";
-import { useConfig } from "@config";
+import { Config, useConfig } from "@config";
+import { stringify } from 'yaml';
 
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 import SaveIcon from '@mui/icons-material/SdCard';
@@ -25,18 +26,42 @@ export function IconBar({ setFileUploadDialogOpen }: {
   
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
 
-  const onSaveConfig = useCallback(() => {
+  const handleSaveConfig = useCallback(() => {
     connection.sendCommand(DrumCommand.saveConfig);
   }, []);
 
-  const onRestoreDialogAccept = useCallback(() => {
+  const handleRestoreDialogAccept = useCallback(() => {
     connection.sendCommand(DrumCommand.restoreConfig);
     setRestoreDialogOpen(false);
   }, []);
 
+  const handleDownloadCurrentConfig = () => {
+    const configState = useConfig.getState();
+
+    // ignore sections that are UI specific (like isDirty or version)
+    const config : Config = {
+      general: configState.general,
+      mux: configState.mux,
+      connectors: configState.connectors,
+      pads: configState.pads,
+      mappings: configState.mappings
+    };
+
+    const configContent = stringify(config);
+    const schema = "# yaml-language-server: $schema=./config.jsonc\n";
+
+    // simulate a click on an anchor element
+    const element = document.createElement("a");
+    const downloadFile = new Blob([schema, configContent], {type: 'application/json'});
+    element.href = URL.createObjectURL(downloadFile);
+    element.download = "config.yaml";
+    document.body.appendChild(element);
+    element.click(); // required for firefox
+  };
+
   return (
     <Box display='flex'>
-      <IconButton onClick={onSaveConfig} title='Save configuration' disabled={!isDirty} size={iconSize} sx={{ color: iconColor }}>
+      <IconButton onClick={handleSaveConfig} title='Save configuration' disabled={!isDirty} size={iconSize} sx={{ color: iconColor }}>
         <SaveIcon />
       </IconButton>
           
@@ -52,11 +77,11 @@ export function IconBar({ setFileUploadDialogOpen }: {
         </DialogContent>
         <DialogActions>
           <Button variant="outlined" onClick={() => setRestoreDialogOpen(false)}>Abort</Button>
-          <Button variant="contained" onClick={onRestoreDialogAccept} autoFocus>Ok</Button>
+          <Button variant="contained" onClick={handleRestoreDialogAccept} autoFocus>Ok</Button>
         </DialogActions>
       </Dialog>
 
-      <IconButton href="config.yaml" download="config.yaml" title='Download last saved configuration' size={iconSize} sx={{ color: iconColor }}>
+      <IconButton onClick={handleDownloadCurrentConfig} title='Download current configuration' size={iconSize} sx={{ color: iconColor }}>
         <DownloadIcon />
       </IconButton>
 

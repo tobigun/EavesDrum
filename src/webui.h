@@ -22,7 +22,7 @@ public:
   void sendTextToWebSocket(const String& text);
 
 private:
-  void serve();
+  void initHttpServer();
   void onWsEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len);
 
   void handleCommand(String cmd, JsonObject& argsNode, AsyncWebSocketClient* client);

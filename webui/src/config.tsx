@@ -13,8 +13,9 @@ export const MAX_SENSOR_VALUE = 1023;
 export const MAX_GATE_TIME_MS = 30_000;
 
 export const useConfig = create<Config>(() => ({
-  pads: [],
+  mux: [],
   connectors: {},
+  pads: [],
   mappings: {},
 }));
 
@@ -46,8 +47,9 @@ export function isPadPinConnectedToMux(pin: number, padIndex?: number): boolean 
 
 export interface Config {
   general?: GeneralConfig;
-  pads: DrumPadConfig[];
+  mux: Mux[];
   connectors: Record<ConnectorId, ConnectorConfig>;
+  pads: DrumPadConfig[];
   mappings: Record<PadRole, DrumPadMappings>;
   monitor?: MonitorConfig;
   isDirty?: boolean; // false if not present
@@ -56,6 +58,15 @@ export interface Config {
 
 export interface GeneralConfig {
   gateTimeMs: number; // 0 .. MAX_GATE_TIME_MS
+}
+
+export interface Mux {
+  type: string; // e.g. "HC4067"
+  pins: {
+    analogIn: number,
+    enable: number,
+    select: number[]
+  }
 }
 
 export interface ConnectorConfig {
