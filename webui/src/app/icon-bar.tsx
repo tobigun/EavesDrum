@@ -4,8 +4,6 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Popover } from "@mui/material";
 import { ReactNode, useCallback, useContext, useState } from "react";
 import { VersionInfo } from "./version-info";
-import { Config, useConfig } from "@config";
-import { stringify } from 'yaml';
 
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 import SaveIcon from '@mui/icons-material/SdCard';
@@ -14,6 +12,8 @@ import UploadFile from '@mui/icons-material/UploadFile';
 import InfoIcon from '@mui/icons-material/InfoOutline';
 import { connection, DrumCommand } from "@/connection/connection";
 import { ConnectionStateContext } from "@/connection/connection-state";
+import { downloadCurrentConfig } from "@/components/config-helper";
+import { useConfig } from "@/config";
 
 const iconSize = 'large';
 const iconColor = 'rgb(0, 0, 0)';
@@ -36,27 +36,7 @@ export function IconBar({ setFileUploadDialogOpen }: {
   }, []);
 
   const handleDownloadCurrentConfig = () => {
-    const configState = useConfig.getState();
-
-    // ignore sections that are UI specific (like isDirty or version)
-    const config : Config = {
-      general: configState.general,
-      mux: configState.mux,
-      connectors: configState.connectors,
-      pads: configState.pads,
-      mappings: configState.mappings
-    };
-
-    const configContent = stringify(config);
-    const schema = "# yaml-language-server: $schema=./config.jsonc\n";
-
-    // simulate a click on an anchor element
-    const element = document.createElement("a");
-    const downloadFile = new Blob([schema, configContent], {type: 'application/json'});
-    element.href = URL.createObjectURL(downloadFile);
-    element.download = "config.yaml";
-    document.body.appendChild(element);
-    element.click(); // required for firefox
+    downloadCurrentConfig();
   };
 
   return (

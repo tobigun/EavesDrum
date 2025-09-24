@@ -11,8 +11,8 @@ import { VersionInfo } from './src/version';
 import { simpleGit } from 'simple-git';
 import tsconfigPaths from "vite-tsconfig-paths";
 
-//const websocketProxyUrl = 'ws://192.168.7.1:80/'; // real device
-const websocketProxyUrl = 'ws://127.0.0.1:80/'; // simulation
+//const proxyHost = '192.168.7.1:80'; // real device
+const proxyHost = '127.0.0.1:80'; // simulation
 
 const commitHash = await simpleGit('..').revparse(['--short', 'HEAD']);
 const buildTime = new Date().toISOString().split('.')[0] + "Z";
@@ -48,8 +48,10 @@ export default defineConfig(({ mode }) => {
       port: 8080,
       strictPort: true,
       proxy: {
+        '/config.jsonc': `http://${proxyHost}`,
+        '/config.yaml': `http://${proxyHost}`,
         '/ws': {
-          target: websocketProxyUrl,
+          target: `ws://${proxyHost}/`,
           ws: true,
           secure: false,
           rewriteWsOrigin: true,

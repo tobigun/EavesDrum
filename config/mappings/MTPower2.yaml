@@ -8,17 +8,14 @@ mappings:
     name: Tom Hi
     noteMain: 48
     noteRim: 48 # n/a
-    crossNoteEnabled: false
   Tom2:
     name: Tom Mid
     noteMain: 45
     noteRim: 45 # n/a
-    crossNoteEnabled: false
   Tom3:
     name: Tom Low
     noteMain: 41
     noteRim: 41 # n/a
-    crossNoteEnabled: false
   Kick:
     noteMain: 36
   HiHat:

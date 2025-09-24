@@ -12,27 +12,22 @@ mappings:
     name: Tom 1
     noteMain: 71 # Center
     noteRim: 72 # Rimshot
-    crossNoteEnabled: false
   Tom2:
     name: Tom 2
     noteMain: 69 # Center
     noteRim: 70 # Rimshot
-    crossNoteEnabled: false
   Tom3:
     name: Tom 3
     noteMain: 67 # Center
     noteRim: 68 # Rimshot
-    crossNoteEnabled: false
   Tom4:
     name: Tom 4
     noteMain: 65 # Center
     noteRim: 66 # Rimshot
-    crossNoteEnabled: false
   Kick:
     noteMain: 36 # Hit
   HiHat:
     name: Hi-Hat
-    closedNotesEnabled: false
     noteMain: 8 # Tip (CC)
     noteCloseMain: 49 # Closed1 Tip
     noteRim: 7 # Shaft (CC)

@@ -5,38 +5,32 @@ mappings:
   Snare: 
     noteMain: 38 # Hit
     noteRim: 40 # Rim Shot
-    crossNoteEnabled: false
     noteCross: 37 # Side Stick
     # Rim Click: 76
   Tom1:
     name: High Tom 1
     noteMain: 47 # Hit
     noteRim: 80 # Rim Shot
-    crossNoteEnabled: false
     noteCross: 79 # Rim Click
   Tom2:
     name: High Tom 2
     noteMain: 48 # Hit
     noteRim: 82 # Rim Shot
-    crossNoteEnabled: false
     noteCross: 81 # Rim Click
   Tom3:
     name: Mid Tom
     noteMain: 45 # Hit
     noteRim: 78 # Rim Shot
-    crossNoteEnabled: false
     noteCross: 77 # Rim Click
   Tom4: 
     name: Floor Tom 1
     noteMain: 43 # Hit
     noteRim: 75 # Rim Shot
-    crossNoteEnabled: false
     noteCross: 74 # Rim Click
   Tom5: 
     name: Floor Tom 2
     noteMain: 41 # Hit
     noteRim: 73 # Rim Shot
-    crossNoteEnabled: false
     noteCross: 72 # Rim Click
   Kick: 
     noteMain: 35 # Hit

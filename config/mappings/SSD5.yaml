@@ -13,22 +13,18 @@ mappings:
     name: Rack Tom 1
     noteMain: 48 # Center
     noteRim: 19 # Rimclick
-    crossNoteEnabled: false
   Tom2:
     name: Rack Tom 2
     noteMain: 47 # Center
     noteRim: 17 # Rimclick
-    crossNoteEnabled: false
   Tom3:
     name: Floor Tom 1
     noteMain: 43 # Center
     noteRim: 14 # Rimclick
-    crossNoteEnabled: false
   Tom4:
     name: Floor Tom 2
     noteMain: 41 # Center
     noteRim: 12 # Rimclick
-    crossNoteEnabled: false
   Kick:
     noteMain: 36 # Center
     # Double: 35

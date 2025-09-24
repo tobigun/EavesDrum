@@ -36,19 +36,21 @@ static AsyncWebSocket* getWebSocket(struct mg_connection* connection) {
 }
 
 static void logMessage(char c, void* param) {
-  printf("%c", c);
-  fflush(stdout);
+  Serial.printf("Web: %c", c);
 }
 
 static void handleEvent(struct mg_connection* connection, int ev, void* ev_data) {
   if (ev == MG_EV_OPEN) {
-    // TODO: implement static file request handling
+    Serial.printf("Web: Connection %lu opened\n", connection->id);
   } else if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message* hm = (struct mg_http_message*)ev_data;
     if (mg_match(hm->uri, mg_str("/ws"), NULL)) {
       // Upgrade to websocket. From now on, a connection is a full-duplex
       // Websocket connection, which will receive MG_EV_WS_MSG events.
       mg_ws_upgrade(connection, hm, NULL);
+    } else if (mg_match(hm->uri, mg_str("/config.jsonc"), NULL) || mg_match(hm->uri, mg_str("/config.yaml"), NULL)) {
+      const struct mg_http_serve_opts serveOpts = {.root_dir = "./config/"};
+      mg_http_serve_dir(connection, hm, &serveOpts);
     } else { // Serve static files
       const struct mg_http_serve_opts serveOpts = {.root_dir = "./data/"};
       mg_http_serve_dir(connection, hm, &serveOpts);
@@ -56,6 +58,7 @@ static void handleEvent(struct mg_connection* connection, int ev, void* ev_data)
   } else if (ev == MG_EV_WS_MSG || ev == MG_EV_WS_OPEN) {
     AsyncWebSocket* socket = getWebSocket(connection);
     if (!socket->hasClient(connection->id)) {
+      Serial.printf("Web: Connection %lu opened as websocket\n", connection->id);
       socket->client(connection->id) = new AsyncWebSocketClient(connection);
     }
     AsyncWebSocketClient* client = socket->client(connection->id);
@@ -66,8 +69,10 @@ static void handleEvent(struct mg_connection* connection, int ev, void* ev_data)
         NULL,
         (uint8_t*)wm->data.buf, wm->data.len);
   } else if (ev == MG_EV_CLOSE) {
+    Serial.printf("Web: Connection %lu closed\n", connection->id);
     AsyncWebSocket* socket = getWebSocket(connection);
     if (socket->hasClient(connection->id)) {
+      Serial.printf("Web: Websocket on connection %lu closed\n", connection->id);
       AsyncWebSocketClient* client = socket->client(connection->id);
       socket->_handler(socket, client, WS_EVT_DISCONNECT, NULL, NULL, 0);
       socket->removeClient(connection->id);
@@ -82,8 +87,7 @@ void AsyncWebServer::begin() {
   String url = String("http://0.0.0.0:") + _port;
   mg_connection* conn = mg_http_listen(&manager, url.c_str(), handleEvent, this);
   if (!conn) {
-    fprintf(stderr, "Could not listen to port %d\n", _port);
-    fflush(stderr);
+    Serial.printf("Web: Error: Could not listen to port %d\n", _port);
   }
 }
 

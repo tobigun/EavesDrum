@@ -8,6 +8,8 @@ import { Alert, AlertColor, Box, Dialog, DialogProps, Snackbar, SnackbarCloseRea
 import { UploadFile } from "@mui/icons-material";
 import { useDropzone } from "react-dropzone";
 import { ConfigFilter } from "./component-enums";
+import { loadJsonSchema } from "./config-helper";
+import { Validator } from "jsonschema";
 
 const SECTION_GENERAL = "general";
 const SECTION_MUX = "mux";
@@ -15,30 +17,40 @@ const SECTION_CONNECTORS = "connectors";
 const SECTION_PADS = "pads";
 const SECTION_MAPPINGS = "mappings";
 
+interface FileUploadMessage {
+  message: string;
+  severity: AlertColor
+}
+
+type SetMessageFunction = (message: FileUploadMessage | undefined) => void;
+
 export interface ConfigDropProps {
   filter?: ConfigFilter,
   padIndex?: number,
   padRole?: string
 }
 
-function applyConfig(configNode: any, dropProps: ConfigDropProps) : boolean {
+async function applyConfig(configNode: any, dropProps: ConfigDropProps) : Promise<boolean> {
   const filter = dropProps.filter;
 
   if (filter === undefined && containsNonMappingSection(configNode)) {
+    await validateConfig(configNode);
     // config with at least one non-mapping section was dropped on overall config upload area -> replace sections
     connection.sendSetConfigCommand(configNode);
     return true;
   }
   
   if (filter === ConfigFilter.Settings) {
+    await validateSettings(configNode);
     return applyPadSettings(configNode, dropProps.padIndex);
   }
   
   if (filter === undefined || filter === ConfigFilter.Mappings) {
+    await validateConfig(configNode);
     return applyRoleMappings(configNode, dropProps.padRole);
   }
 
-  return false;
+  throw "Unsupported config upload";
 }
 
 function containsNonMappingSection(configNode: any) {
@@ -108,37 +120,59 @@ function applyRoleMappings(configNode: any, padRole?: string): boolean {
   return false;
 }
 
-
-interface FileUploadMessage {
-  message: string;
-  severity: AlertColor
+async function validateConfig(configNode: any) {
+  const schema = await loadJsonSchema();
+  schema.required = []; // disable required check as missing sections will be used from old config
+  const validationResult = new Validator().validate(configNode, schema);
+  if (!validationResult.valid) {
+    throw "Invalid config:\n" + validationResult.toString();
+  }
 }
 
-function handleConfigDrop(file: File, dropProps: ConfigDropProps, setMessage: (message: FileUploadMessage) => void) {
+async function validateSettings(settingsNode: any) {
+  const schema = await loadJsonSchema();
+  const settingsSchema = {
+    type: "object",
+    properties: {
+      "settings": schema.properties.pads.items.properties.settings
+    },
+    required: ["settings"]
+  };
+  const validationResult = new Validator().validate(settingsNode, settingsSchema);
+  if (!validationResult.valid) {
+    throw "Invalid settings:\n" + validationResult.toString();
+  }
+}
+
+async function handleUploadedConfigLoaded(yaml: string, dropProps: ConfigDropProps, setMessage: SetMessageFunction) {
+  try {
+    const configNode = parse(yaml);
+    const success = await applyConfig(configNode, dropProps);
+    if (!success) {
+      const configType = dropProps.filter == ConfigFilter.Settings ? "settings entry" :
+        (dropProps.filter == ConfigFilter.Mappings ? "mappings entry" : "config or mappings");
+      setMessage({message: `No valid ${configType} found`, severity: 'error'});
+    } else {
+      connection.sendCommand(DrumCommand.getConfig);
+      setMessage({message: 'Config applied', severity: 'success'});
+    }
+  } catch(error) {
+    if (typeof error === "string") {
+      setMessage({message: error as string, severity: 'error'});
+    } else if (error instanceof Error) {
+      setMessage({message: (error as Error).message, severity: 'error'});
+    }        
+    console.log(error);
+  }        
+}
+
+function handleConfigDrop(file: File, dropProps: ConfigDropProps, setMessage: SetMessageFunction) {
   const reader = new FileReader();
+  
   reader.onabort = () => setMessage({message: 'File reading was aborted', severity: 'error'});
   reader.onerror = () => setMessage({message: 'File reading has failed', severity: 'error'});
-  reader.onload = () => {
-    try {
-      const yaml = reader.result as string;
-      const configNode = parse(yaml);
-      if (!applyConfig(configNode, dropProps)) {
-        const configType = dropProps.filter == ConfigFilter.Settings ? "settings entry" :
-          (dropProps.filter == ConfigFilter.Mappings ? "mappings entry" : "config or mappings");
-        setMessage({message: `No valid ${configType} found`, severity: 'error'});
-      } else {
-        connection.sendCommand(DrumCommand.getConfig);
-        setMessage({message: 'Config applied', severity: 'success'});
-      }
-    } catch(error) {
-      if (typeof error === "string") {
-        setMessage({message: error as string, severity: 'error'});
-      } else if (error instanceof Error) {
-        setMessage({message: (error as Error).message, severity: 'error'});
-      }        
-      console.log(error);
-    }
-  };
+  reader.onload = () => handleUploadedConfigLoaded(reader.result as string, dropProps, setMessage);
+  
   reader.readAsText(file);
 }
 
@@ -185,7 +219,7 @@ export function CardConfigDropOverlay(props: {
 
 function FileUploadSnackbar({ message, setMessage } : {
     message: FileUploadMessage | undefined,
-    setMessage: (message: FileUploadMessage | undefined) => void
+    setMessage: SetMessageFunction
 }) {
   const handleClose = useCallback((_event?: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
     if (reason === 'clickaway') {

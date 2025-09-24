@@ -37,13 +37,17 @@ def create_version_header():
     with open(headerFile, 'w+') as file:
         file.write(contents)
 
+def copy_config():
+    print("Copy config/config.yaml to data directory...")
+    shutil.copy('config/config.yaml', 'data/config.yaml')
+    shutil.copy('config/config.jsonc', 'data/config.jsonc')
+
 def before_littlefs(source, target, env):
     print("Building UI...")
     if env.Execute("npm run --prefix webui build"):
         print("UI build failed: npm returned an error", file=sys.stderr)
         Exit(1)
-    print("Copy config/config.yaml to data directory...")
-    shutil.copy('config/config.yaml', 'data/config.yaml')
+    copy_config()
 
 create_version_header()
 env.AddPreAction("$BUILD_DIR/littlefs.bin", before_littlefs)
