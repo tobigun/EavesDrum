@@ -1,130 +1,130 @@
 # yaml-language-server: $schema=./config.jsonc
-general: 
+general:
   gateTimeMs: 0
-mux: 
+mux:
   - type: HC4067
-    pins: 
+    pins:
       analogIn: 26
       enable: 10
-      select: 
-      - 6
-      - 7
-      - 8
-      - 9
+      select:
+        - 6
+        - 7
+        - 8
+        - 9
   - type: HC4067
-    pins: 
+    pins:
       analogIn: 26
       enable: 15
-      select: 
-      - 11
-      - 12
-      - 13
-      - 14
-connectors: 
-  Jack1: 
-    pins: 
+      select:
+        - 11
+        - 12
+        - 13
+        - 14
+connectors:
+  Jack1:
+    pins:
       - mux: 0
         channel: 0
       - mux: 0
         channel: 1
       - mux: 0
         channel: 2
-  Jack2: 
-    pins: 
+  Jack2:
+    pins:
       - mux: 0
         channel: 3
       - mux: 0
         channel: 4
-  Jack3: 
-    pins: 
+  Jack3:
+    pins:
       - mux: 0
         channel: 5
       - mux: 0
         channel: 6
-  Jack4: 
-    pins: 
+  Jack4:
+    pins:
       - mux: 0
         channel: 7
       - mux: 0
         channel: 8
-  Jack5: 
-    pins: 
+  Jack5:
+    pins:
       - mux: 0
         channel: 9
-  Jack6: 
-    pins: 
+  Jack6:
+    pins:
       - mux: 0
         channel: 10
       - mux: 0
         channel: 11
       - mux: 0
         channel: 12
-  Jack7: 
-    pins: 
+  Jack7:
+    pins:
       - mux: 0
         channel: 13
       - mux: 0
         channel: 14
       - mux: 0
         channel: 15
-  Jack8: 
-    pins: 
+  Jack8:
+    pins:
       - mux: 1
         channel: 0
       - mux: 1
         channel: 1
       - mux: 1
         channel: 2
-  Jack9: 
-    pins: 
+  Jack9:
+    pins:
       - mux: 1
         channel: 3
       - mux: 1
         channel: 4
       - mux: 1
         channel: 5
-  Jack10: 
-    pins: 
+  Jack10:
+    pins:
       - mux: 1
         channel: 6
       - mux: 1
         channel: 7
       - mux: 1
         channel: 8
-  Jack11: 
-    pins: 
+  Jack11:
+    pins:
       - mux: 1
         channel: 9
       - mux: 1
         channel: 10
-  Jack12: 
-    pins: 
+  Jack12:
+    pins:
       - mux: 1
         channel: 11
       - mux: 1
         channel: 12
-  Jack13: 
-    pins: 
+  Jack13:
+    pins:
       - mux: 1
         channel: 13
       - mux: 1
         channel: 14
       - mux: 1
         channel: 15
-  Jack-Pedal: 
-    pins: 
-    - 28
-pads: 
+  Jack-Pedal:
+    pins:
+      - 28
+pads:
   - name: Snare
     role: Snare
     enabled: true
-    settings: 
+    settings:
       padType: Drum
       zonesType: Zones3_Piezos
       curveType: Linear
       scanTimeUs: 3000
       maskTimeMs: 30
-      zoneThresholds: 
+      zoneThresholds:
         - min: 102
           max: 670
         - min: 102
@@ -137,13 +137,13 @@ pads:
     role: Tom1
     group: Toms
     enabled: true
-    settings: 
+    settings:
       padType: Drum
       zonesType: Zones2_Piezos
       curveType: Linear
       scanTimeUs: 3000
       maskTimeMs: 30
-      zoneThresholds: 
+      zoneThresholds:
         - min: 61
           max: 614
         - min: 164
@@ -155,13 +155,13 @@ pads:
     role: Tom2
     group: Toms
     enabled: true
-    settings: 
+    settings:
       padType: Drum
       zonesType: Zones2_Piezos
       curveType: Linear
       scanTimeUs: 3000
       maskTimeMs: 30
-      zoneThresholds: 
+      zoneThresholds:
         - min: 61
           max: 614
         - min: 164
@@ -173,13 +173,13 @@ pads:
     role: Tom3
     group: Toms
     enabled: true
-    settings: 
+    settings:
       padType: Drum
       zonesType: Zones2_Piezos
       curveType: Linear
       scanTimeUs: 3000
       maskTimeMs: 30
-      zoneThresholds: 
+      zoneThresholds:
         - min: 51
           max: 614
         - min: 31
@@ -191,13 +191,13 @@ pads:
     role: Tom4
     group: Toms
     enabled: false
-    settings: 
+    settings:
       padType: Drum
       zonesType: Zones2_Piezos
       curveType: Linear
       scanTimeUs: 3000
       maskTimeMs: 30
-      zoneThresholds: 
+      zoneThresholds:
         - min: 511
           max: 1023
         - min: 258
@@ -209,13 +209,13 @@ pads:
     role: Tom5
     group: Toms
     enabled: false
-    settings: 
+    settings:
       padType: Drum
       zonesType: Zones2_Piezos
       curveType: Linear
       scanTimeUs: 3000
       maskTimeMs: 30
-      zoneThresholds: 
+      zoneThresholds:
         - min: 511
           max: 1023
         - min: 258
@@ -226,13 +226,13 @@ pads:
   - name: Kick
     role: Kick
     enabled: true
-    settings: 
+    settings:
       padType: Drum
       zonesType: Zones1_Piezo
       curveType: Linear
       scanTimeUs: 3000
       maskTimeMs: 30
-      zoneThresholds: 
+      zoneThresholds:
         - min: 102
           max: 614
     connector: Jack5
@@ -240,14 +240,14 @@ pads:
     role: Ride1
     group: Cymbals
     enabled: true
-    settings: 
+    settings:
       padType: Cymbal
       zonesType: Zones3_PiezoAndSwitches_2TRS
       chokeType: Switch_Edge
       curveType: Linear
       scanTimeUs: 3000
       maskTimeMs: 30
-      zoneThresholds: 
+      zoneThresholds:
         - min: 31
           max: 358
         - min: 307
@@ -257,14 +257,14 @@ pads:
     role: Cymbal1
     group: Cymbals
     enabled: true
-    settings: 
+    settings:
       padType: Cymbal
       zonesType: Zones3_PiezoAndSwitches_2TRS
       chokeType: Switch_Edge
       curveType: Linear
       scanTimeUs: 3000
       maskTimeMs: 30
-      zoneThresholds: 
+      zoneThresholds:
         - min: 31
           max: 409
         - min: 307
@@ -274,14 +274,14 @@ pads:
     role: Cymbal2
     group: Cymbals
     enabled: true
-    settings: 
+    settings:
       padType: Cymbal
       zonesType: Zones3_PiezoAndSwitches_2TRS
       chokeType: Switch_Edge
       curveType: Linear
       scanTimeUs: 3000
       maskTimeMs: 30
-      zoneThresholds: 
+      zoneThresholds:
         - min: 51
           max: 563
         - min: 307
@@ -291,14 +291,14 @@ pads:
     role: Cymbal3
     group: Cymbals
     enabled: false
-    settings: 
+    settings:
       padType: Cymbal
       zonesType: Zones3_PiezoAndSwitches_2TRS
       chokeType: Switch_Edge
       curveType: Linear
       scanTimeUs: 3000
       maskTimeMs: 30
-      zoneThresholds: 
+      zoneThresholds:
         - min: 110
           max: 670
         - min: 273
@@ -308,14 +308,14 @@ pads:
     role: Cymbal4
     group: Cymbals
     enabled: false
-    settings: 
+    settings:
       padType: Cymbal
       zonesType: Zones3_PiezoAndSwitches_2TRS
       chokeType: Switch_Edge
       curveType: Linear
       scanTimeUs: 3000
       maskTimeMs: 30
-      zoneThresholds: 
+      zoneThresholds:
         - min: 110
           max: 670
         - min: 273
@@ -324,14 +324,14 @@ pads:
   - name: Hi-Hat
     role: HiHat
     enabled: true
-    settings: 
+    settings:
       padType: Cymbal
       zonesType: Zones3_PiezoAndSwitches_2TRS
       chokeType: Switch_Edge
       curveType: Linear
       scanTimeUs: 3000
       maskTimeMs: 30
-      zoneThresholds: 
+      zoneThresholds:
         - min: 31
           max: 307
         - min: 307
@@ -341,10 +341,10 @@ pads:
   - name: Hi-Hat Pedal
     role: HiHat-Pedal
     enabled: true
-    settings: 
+    settings:
       padType: Pedal
       zonesType: Zones1_Controller
-      zoneThresholds: 
+      zoneThresholds:
         - min: 205
           max: 819
       almostClosedThreshold: 70
@@ -353,39 +353,39 @@ pads:
       chickDetectTimeoutMs: 20
       curveType: Linear
     connector: Jack-Pedal
-mappings: 
-  Snare: 
+mappings:
+  Snare:
     noteMain: 38
     noteRim: 40
     noteCross: 37
-  Tom1: 
+  Tom1:
     name: Rack Tom 1
     noteMain: 48
     noteRim: 82
     noteCross: 81
-  Tom2: 
+  Tom2:
     name: Rack Tom 2
     noteMain: 47
     noteRim: 80
     noteCross: 79
-  Tom3: 
+  Tom3:
     name: Rack Tom 3
     noteMain: 45
     noteRim: 78
     noteCross: 77
-  Tom4: 
+  Tom4:
     name: Floor Tom 1
     noteMain: 43
     noteRim: 75
     noteCross: 74
-  Tom5: 
+  Tom5:
     name: Floor Tom 2
     noteMain: 41
     noteRim: 73
     noteCross: 72
-  Kick: 
+  Kick:
     noteMain: 36
-  HiHat: 
+  HiHat:
     name: Hi-Hat
     noteMain: 19
     noteRim: 7
@@ -394,35 +394,35 @@ mappings:
     noteCloseMain: 11
     noteCloseRim: 22
     noteCloseCup: 53
-  HiHat-Pedal: 
+  HiHat-Pedal:
     name: Hi-Hat Pedal
     noteMain: 21
-  Ride1: 
+  Ride1:
     name: Ride
     noteMain: 51
     noteRim: 52
     noteCup: 53
-  Cymbal1: 
+  Cymbal1:
     name: Crash 1
     noteMain: 87
     noteRim: 86
     noteCup: 53
-  Cymbal2: 
+  Cymbal2:
     name: Crash 2
     noteMain: 27
     noteRim: 28
     noteCup: 53
-  Cymbal3: 
+  Cymbal3:
     name: Crash 3
     noteMain: 31
     noteRim: 32
     noteCup: 53
-  Cymbal4: 
+  Cymbal4:
     name: Crash 4
     noteMain: 96
     noteRim: 98
     noteCup: 5
-  Effect1: 
+  Effect1:
     name: Tambourine / Shaker / One Shot
     noteMain: 3
     noteRim: 2
