@@ -38,7 +38,7 @@ public:
   }
 
   void updateDrums();
-
+  
   // Pad
 
   DrumPad* getPad(pad_size_t index) { return (index < padsCount) ? &pads[index] : nullptr; }
@@ -180,9 +180,14 @@ private:
   void evaluateHiHat(const DrumPad& pad, const DrumPad& pedal);
   void evaluateCymbal(const DrumPad& pad);
   void evaluateCymbalWithNotes(const DrumPad& pad, const midi_note_t* notes);
+  
   void sendMidiNoteOnMessage(midi_note_t note, midi_velocity_t velocity);
   void sendPendingMidiNoteOffMessages();
   void sendMidiNoteOnWithDelayedOffMessage(midi_note_t note, midi_velocity_t velocity);
+
+  void readMultiplexers(time_us_t senseTimeUs);
+  void stabilizeMultiplexerOffsetVoltage(time_us_t senseTimeUs);
+  void flushMultiplexers();
 
 private:
   /**
@@ -211,7 +216,7 @@ private:
 
   DrumMonitor drumMonitor;
 
-  time_us_t last_hit_time_us = 0;
+  time_us_t lastHitTimeUs = 0;
 
 public:
   struct {

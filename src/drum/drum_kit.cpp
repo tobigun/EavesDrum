@@ -18,9 +18,10 @@
 void DrumKit::updateDrums() {
   static time_us_t lastStatisticsResetTimeUs = 0;
   static uint32_t updateCountPer30s = 0;
+  
   time_us_t senseTimeUs = micros();
 
-  if (senseTimeUs - last_hit_time_us > HIT_INDICATOR_DELAY_US) {
+  if (senseTimeUs - lastHitTimeUs > HIT_INDICATOR_DELAY_US) {
     DrumIO::led(LED_HIT_INDICATOR, false);
   }
 
@@ -33,9 +34,7 @@ void DrumKit::updateDrums() {
 
   sendPendingMidiNoteOffMessages();
 
-  for (mux_size_t i = 0; i < muxCount; ++i) {
-    mux[i].scan();
-  }
+  readMultiplexers(senseTimeUs);
   
   if (drumMonitor.isLatencyTestActive()) {
     drumMonitor.updateLatencyTest(senseTimeUs);
@@ -51,6 +50,51 @@ void DrumKit::updateDrums() {
 
   drumMonitor.checkAndSendMonitoredPadHitInfo();
   drumMonitor.checkAndSendNonMonitoredPadHitInfo();
+}
+
+void DrumKit::readMultiplexers(time_us_t senseTimeUs) {
+  stabilizeMultiplexerOffsetVoltage(senseTimeUs);
+
+  for (mux_size_t i = 0; i < muxCount; ++i) {
+    mux[i].scan();
+  }
+}
+
+/**
+ * If the multiplexers are not read for a longer time (e.g. because the main loop is busy with webui tasks),
+ * the line capacitance of the multiplexer input pins can cause wrong readings as the voltage drops to 0V and
+ * needs to be stabilized to the bias voltage first (~1.5V if no pad is hit or switch is pressed).
+ * This should only be necessary if the UI is used and not in normal operation.
+ */
+void DrumKit::stabilizeMultiplexerOffsetVoltage(time_us_t senseTimeUs) {
+  static time_us_t lastMuxReadTimeUs = 0;
+  
+  // Note: do not make this too short as the monitor messages take about 600-700us and we do not want them
+  // to cause a flush as we might miss a hit then.
+  // On the opposite side, a blockage of 5ms already caused false hit triggers. So values between 1-4ms should be fine.
+  const time_us_t flushTimeUs = 2 * 1000; // 2ms seems to be a good compromise
+  bool needsFlush = senseTimeUs - lastMuxReadTimeUs > flushTimeUs;
+  if (!needsFlush) {
+    lastMuxReadTimeUs = senseTimeUs;
+    return;
+  }
+
+  SerialDebug.printf("Flush Mux: %d ms\n", senseTimeUs - lastMuxReadTimeUs);
+  flushMultiplexers();
+  lastMuxReadTimeUs = micros();
+}
+
+/**
+ * This method reads the multiplexers for a short time to to establish the voltage bias on the input lines.
+ * This will take longer the higher the capitance and resistance of a line is.
+ */
+void DrumKit::flushMultiplexers() {
+  time_ms_t startTimeMs = millis();
+  do {
+    for (mux_size_t i = 0; i < muxCount; ++i) {
+      mux[i].scan();
+    }
+  } while (millis() - startTimeMs < 100); // assume that 100ms is enough to stabilize the voltage
 }
 
 static void sendChokeMessage(const DrumPad& pad, const midi_note_t* notes) {
@@ -168,7 +212,7 @@ void DrumKit::sendMidiNoteOnWithDelayedOffMessage(midi_note_t note, midi_velocit
 
 void DrumKit::sendMidiNoteOnMessage(midi_note_t note, midi_velocity_t velocity) {
   DrumIO::led(LED_HIT_INDICATOR, true);
-  last_hit_time_us = micros();
+  lastHitTimeUs = micros();
 
   if (note == MIDI_NOTE_UNASSIGNED) {
     return;
