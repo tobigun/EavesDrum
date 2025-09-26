@@ -3,7 +3,7 @@
 
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Popover } from "@mui/material";
 import { ReactNode, useCallback, useContext, useState } from "react";
-import { VersionInfo } from "./version-info";
+import { VersionInfo } from "../components/version-info";
 
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 import SaveIcon from '@mui/icons-material/SdCard';

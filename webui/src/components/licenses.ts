@@ -79,6 +79,9 @@ export const licenses = {
       name: "react-dropzone",
       license: "MIT License (Copyright: Param Aggarwal)",
     }, {
+      name: "tdegrunt/jsonschema",
+      license: "MIT License (Copyright: Tom de Grunt <tom@degrunt.nl>)",
+    }, {
       name: "use-immer",
       license: "MIT License (Copyright: Michel Weststrate)",
     }, {
