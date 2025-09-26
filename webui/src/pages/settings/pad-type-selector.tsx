@@ -150,8 +150,11 @@ function getZonesTypeItems(padType: PadType, zoneCount: number): NestedListItemI
 }
 
 function getChokeTypeItems(padType: PadType, zoneCount: number): NestedListItemInfo[] {
+  if (padType != PadType.Cymbal || zoneCount < 2) {
+    return []; // No choke for toms/snares and 1-zone cymbals
+  }
   return Object.values(ChokeType)
-    .filter(() => padType == PadType.Cymbal && zoneCount > 1)
+    .filter(chokeType => zoneCount >= 3 || chokeType !== ChokeType.Switch_Cup) // Cup choke only for 3-zone cymbals
     .map(chokeType => ({
       value: chokeType,
       name: formatChokeTypeNames(chokeType),
