@@ -53,7 +53,9 @@ void DrumKit::updateDrums() {
 }
 
 void DrumKit::readMultiplexers(time_us_t senseTimeUs) {
+#ifndef SIMULATE_IO
   stabilizeMultiplexerOffsetVoltage(senseTimeUs);
+#endif
 
   for (mux_size_t i = 0; i < muxCount; ++i) {
     mux[i].scan();
