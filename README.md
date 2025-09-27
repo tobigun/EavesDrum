@@ -27,8 +27,13 @@
       - [Voltage Divider / DC voltage offset generator](#voltage-divider--dc-voltage-offset-generator)
       - [Example](#example)
 - [Configuration](#configuration)
+  - [Calibration](#calibration)
   - [Settings](#settings)
+    - [Generic settings](#generic-settings)
+    - [Pedal settings](#pedal-settings)
+    - [Apply presets](#apply-presets)
   - [Mappings](#mappings)
+  - [Apply a whole configuration](#apply-a-whole-configuration)
   - [Understand and reduce latency](#understand-and-reduce-latency)
 - [Firmware Development](#firmware-development)
   - [How to build the UI](#how-to-build-the-ui)
@@ -54,7 +59,28 @@ The configuration of the module is made simple and user-friendly through a built
 
 The trigger module acts as a USB MIDI device - so simply connect it to your Notebook and use a drum software of your choice (EZdrummer, Addictive Drums, SSD5, ...) to convert your notebook into a complete drum module.
 
-<img src="doc/latency.svg" width="90%"/>
+<figure>
+  <img src="doc/images/module.jpg" height="400px"/>
+  <figcaption>The EavesDrum Trigger Module</figcaption>
+</figure>
+<figure>
+  <img src="doc/images/drumkit-diy.jpg" width="600px"/>
+  <figcaption>DIY ultra-low-volume metal-mesh cymbal setup</figcaption>
+</figure>
+<div style="display: flex; gap: 20px;">
+<figure>
+  <img src="doc/images/drumkit.jpg" width="600px"/>
+  <figcaption>Conventional rubber-cymbal setup</figcaption>
+</figure>
+<figure>
+  <img src="doc/images/drum-kit-low-volume.jpg" width="600px"/>
+  <figcaption>Low-volume mesh setup</figcaption>
+</figure>
+</div>
+<figure>
+  <img src="doc/latency.svg" width="60%"/>
+  <figcaption>System overview</figcaption>
+</figure>
 
 ## Features
 
@@ -116,6 +142,7 @@ The trigger module acts as a USB MIDI device - so simply connect it to your Note
 - need more / additional trigger inputs to those that standard drum kits support
 - want to mix drums from different vendors as most drum kits only work well with their own pads
 - want to start drumming and do not want to pay a fortune for a drum kit
+- want to diagnose or improve the trigger behavior of your drum pad
 - have fun making stuff and just want to build your own drum kit or implement your own drum module features
 
 **EavesDrum might not be for you, if you:**
@@ -155,11 +182,11 @@ All you need is:
      - the static IP <a href="http://192.168.7.1">http://192.168.7.1</a> or
      - the DNS name <a href="http://eaves.drum/">http://eaves.drum</a>
 4. **Calibrate:**<br/>
-   - Calibrate the voltage offset with the UI Wizard
+   - [Calibrate the voltage offset with the UI Wizard](#calibration)
 5. **Connect Drums:**<br/>
    - Connect your drum pads or triggers to the EavesDrum hardware
 6. **Configuration:**<br/>
-   - Adjust settings and MIDI mappings
+   - Adjust [settings](#settings) and [MIDI mappings](#mappings)
 7. **Play:**<br/>
    - Once configured, start playing and enjoy!
 
@@ -330,9 +357,113 @@ Here is a simple example with a high intensity hit on a snare drum: The left sho
 
 ## Configuration
 
+### Calibration
+Before you can start you have to first adjust the DC voltage offset so that the signal level is at 0% when no pad is hit. But no panic - the process is easy and only has to be done once.
+
+For this open the WebUI, open the settings page (should be open by default) and click on `Calibrate` in the `Monitor` panel and follow the instructions.
+
+At the beginning the signal graph will probably look like this, with a signal level above 0% (here 10%):
+<img src="doc/images/calibration1.png" height="200px"/>
+
+Now turn the potentiometer labeled `ADC0 DC offset` (R3) with a screwdriver. Only if turned in the correct direction, the signal level will decrease, otherwise it will increase. So turn the potentiometer until the signal level reaches 0%. If you turned too much, the signal level will increase again - in this case turn in the opposite direction.
+
+<img src="doc/images/calibration-poti.jpg" height="200px"/>
+
+
+The signal graph should now look like this - with a signal level of 0%:
+<img src="doc/images/calibration2.png" height="200px"/>
+
+Now the calibration is completed.
+
+> [!INFO]
+> Do not worry if the signal is not totally clean and has a bit of a ripple in the 1% or 2% range. This can be compensated with the thresholds later.
+> If you do not reach the 0% level at all, your trigger module might be faulty.
+
 ### Settings
 
+To optimize the trigger behavior for your pad, go to the settings page and open the panel of the pad you want to adjust.
+
+First assure that the Drum type (here: Drum / 3-Zones / 3 Piezos) is correct. If you are not sure, check [the section about the different pad connectors](#pad-connectors) to see what the type should be.
+
+<img src="doc/images/settings.png" width="60%"/>
+
+Mark the pad as monitored (the record button on the right top of the pad's panel). This way you can see the signal graph (left) and hit graph (right) in the `Monitor` panel whenever you hit the monitored pad. Right next to the hit graph is the hit history which shows you the last hits. You can also click on one of the last hits to see the graphs again.
+
+If you click on `Show All Pads` on the top, you can see hits on every pad, no matter if it is monitored or not.
+
+#### Generic settings
+
+- **Main/Head/Rim/Edge/Cup/... Range**: trigger range for each zone
+  - The **min. value of the range** specifies the sensitivity.
+    - You should set it as low as possible without having the pad trigger when you do not hit it.
+  - The **max. value of the range** specifies the signal level that marks 100%.
+    - Set it in a way that you can reach a signal level of 100% when you hit the pad the hardest way you would in your playing style.
+    - If you set the max. too low, the detected signal level will be 100% even if you did not hit the pad with the highest intensity.
+  - If you enable monitoring for the pad it should be easy to find the correct values.
+  - For cymbals with switched for edge and cup you will only have a **minimum threshold** for each switch instead of a range.
+    - This determines at which level the switch is considered to be closed or opened.
+
+- **Scan Time** determines the time to search for a peak
+- **Mask Time** can be used to reduce false retriggers
+- **Curve Type** lets you change the trigger behavior for low or high intensity hits, i.e. you can shift the sensitivy more to the lower or higher intensities
+- **Head/Rim Bias** is only for drums (i.e. snares and toms) with at least two zones. If you move the bias more to the rim (i.e. to the right), the rim zone will more likely be triggered if both zones were hit at ones. This is useful to assure that rimshots trigger the rim sound.
+
+> [!IMPORTANT]
+> When you change settings they will be applied immediately but they will be reset to the old values when EavesDrum reboots or looses power. To keep the settings you have to save them with the "Save" Button (SD-Card icon) in the top Icon Bar.
+
+#### Pedal settings
+The settings for the Hi-Hat pedal are different from the settings of the pads.
+<img src="doc/images/settings-pedal.png" width="20%"/>
+
+To see the effect of the settings, monitor the pedal with the record button
+<img src="doc/images/settings-pedal2.png" width="50%"/>
+
+- **Pedal Range**: determines the offset and threshold for the lowest and highest signal level
+  - To not touch the Hi-Hat pedal for the open position.
+  - Adjust the **min value** of the `Pedal Range` so that the corresponging marker in the monitor's signal graph is slightly above the current pedal signal and the Pedal value in the hit graph is at 0%.
+  - Now close the Hi-Hat pedal.
+  - Now adjust the **max value** of the `Pedal Range`, so that the corresponging marker in the monitor's signal graph is slightly below the current signal and the hit graph shows 100%
+  - When you move the pedal now, you should get the full range between 0% and 100% in the hit graph and it should stay at 0% when open and at 100% when closed.
+- **Move Detection Tolerance** this determines how much the pedal has to be moved to change its value. A smaller tolerance gives you a higher resolution but is more prone to noise in the signal.
+  - Press the Hi-Hat pedal to a position between open and closed. Try to keep this position - the value in the hit graph should not change. If it does though, you might decrease the tolerance until the hit graph value is stable.
+- **Pedal State Thresholds** and **Chick Detect Timeout**:
+  - when the pedal travels from the "Almost Closed" position to the "Closed Position" a "Chick" Sound detection takes place.
+  - The faster the pedal moved from "Almost Closed" to "Closed", the higher the intensity of the "Chick" sound will be.
+  - If the time between the both states is higher than **Chick Detect Timeout**, then no sound will be played
+  - If you do not want a "Chick" sound, you can disable it on the Mappings Page by setting the sound for the "Chick" to "None"
+
+#### Apply presets
+In the folder `config/presets` you can find some presets for some pads. You can apply them by dragging them from Windows Explorer to the settings panel of a pad.
+
+<img src="doc/images/apply-presets.png" width="50%"/>
+
 ### Mappings
+
+With the Mappings page you can change the MIDI mappings of each pad.
+<img src="doc/images/pad-mappings.png" width="30%"/>
+
+Select the MIDI note of the zone to the desired value. You can trigger the note via the UI by pressing the "Play" button to preview the sound.
+
+> [!IMPORTANT]
+> When you change mappings they will be applied immediately but they will be reset to the old values when EavesDrum reboots or looses power. To keep the settings you have to save them with the "Save" Button (SD-Card icon) in the top Icon Bar.
+
+**Apply Drum-Kit Mappings**
+You can change the mappings of all pads in the drum-kit at ones if you drag & drop a mapping file (see folder `/config/mappings`) to top border (aka the Icon Bar) of the UI. This way you can switch between the mappings of the drum softwares easily.
+<img src="doc/images/apply-mappings-kit.png" width="30%"/>
+
+Alternatively you can also click on the "Apply Config File" button in the top Icon Bar to open the same file drop area that appears if you drag & drop a file.
+
+If you drag & drop the mappings file onto a pad instead of the top bar, only this pad's mappings will be changed:
+<img src="doc/images/apply-mappings-pad.png" width="30%"/>
+
+
+**Roles**
+Note that the mappings are assigned to a `role` (e.g. Snare, Tom1, ...) and not to a pad directly. As the drum kits differ in number and type of pads it would be rather difficult to have generic mapping files if there is no common denominator for every drum. This is what the role is for: it specifies the role of the drum in the drum kit, so that you have the correct mappings assigned to the drum when you switch from one mapping file to another.
+
+### Apply a whole configuration
+If you want to have more control over a configuration you can download the active configuration with the "Download" icon in the top Icon Bar. Then do you modifications on the downloaded YAML file and upload it again by either clicking on the "Apply Config File" button in the Icon Bar or by Drag & Drop of the config to the Icon Bar.
+
+This way you can Backup & Restore your config whenever you do a firmware update.
 
 <a id="latency"></a> 
 
@@ -374,7 +505,7 @@ To reduce the latency, use a decent Audio interface, use dedicated ASIO drivers,
 You can test the latency of your system with the latency measurement feature, built into the UI. Open the `Settings` page and click on `Check Latency` on top of the `Monitor` panel. The wizard will guide you through the procedure.
 
 <img src="doc/images/latency-measurement.png" width="80%"/>
-<img src="doc/latency/test-setup.jpg" width="40%"/>
+<img src="doc/latency/test-setup.jpg" height="600px"/>
 <img src="doc/latency/umc204hd.png" width="80%"/>
 
 ---
@@ -384,21 +515,24 @@ Below are the measurement results from the audio interfaces that I own. Maybe it
 |------|-----------|-----------|-----------|-------|-------|
 |Behringer UMC204HD|**48kHz**|32 (0.7ms)|UMC ASIO|5.7ms||
 |Behringer UMC204HD|**96kHz**|32 (0.3ms)|UMC ASIO|5.2ms||
-|NUX Mighty Plug (Pro)|48kHz|8 (0.2ms)|NUX Audio|6.9ms||
+|NUX Mighty Plug (Pro)|48kHz|8 (0.2ms)|NUX Audio|6.9ms|A guitar effect plug, so maybe not what you want.|
 |Terratec Aureon 5.1 USB MK.2|48kHz|64 (1.3ms)|ASIO4All|5.9ms||
 |Conrad UA0078 (CMedia CM108 chip)|48kHz|64 (1.3ms)|ASIO4All|6.6ms||
-|Realtek HD Audio (HW Dev-ID 0x0293)|44.1kHz|64 (1.5ms)|ASIO4All|6.4ms|Could be an ALC293. The latency was not constant between tests and reached in a few instances 12, 23 and even 40ms. Realteks ASIO driver was not available.|
-|EFNote 3 as Audio Interface|48kHz|32 (0.7ms)|EFNOTE|8.2ms|Got about 13ms on my newer Notebook with the same setup.|
+|Realtek HD Audio (HW Dev-ID 0x0293)|44.1kHz|64 (1.5ms)|ASIO4All|6.4ms|Could be an ALC293. The latency was not constant between tests and reached in a few instances 12, 23 and even 40ms. Realteks ASIO driver was not available on the computer.|
+|EFNote 3 as Audio Interface|48kHz|32 (0.7ms)|EFNOTE|8.2ms|Measured with my 9 year old Notebook. Got about 13ms on my newer Notebook with the same setup.|
 |Noname USB-C headphone adapter (AB13X)|44.1kHz|64 (1.5ms)|ASIO4All|23.8ms||
 |Realtek HD Audio (HW Dev-ID 0x0294)|44.1kHz|64 (1.5ms)|ASIO4All|34.9ms|Could be an ALC294. Realtek's ASIO driver crashed, so I had to use ASIO4All|
 
-- The only dedicated device (Behringer UMC204HD) performed best.
-  - Focusrite Scarlett Solo 3rd / 4th Gen also comes with ASIO drivers and might work as well
-  - You can PM me your results. Would be quite interesting
-- The results can vary between Computers and sometimes an older Computer can even give you better results (see EFNOTE 3)
-- Although some ASIO4All performed quite well and I did not notice any crackling during the test, I would not recommend them, as crackling is still likely with them.
-- The folder `doc/latency` contains screenshots of all tests
-- The measurements varied slightly (~0.5 - 1ms) between tests. I took a result with an average value.
+*Notes*:
+* The folder `doc/latency` contains screenshots of all tests
+* The measurements were performed multiple times and the results varied slightly (~0.5 - 1ms) between tests. I took a result with a representative value.
+
+**Conclusion**
+> - The only dedicated device (Behringer UMC204HD) performed best.
+>   - Focusrite Scarlett Solo 3rd / 4th Gen also comes with ASIO drivers and might work as well
+>   - You can PM me your results. Would be quite interesting
+> - The results can vary between Computers and sometimes a 9 year old Computer can give you better results than a new one (see EFNOTE 3)
+> - Although some ASIO4All performed quite well and I did not notice any crackling during the short test, I would not recommend them, as crackling is still likely with them. But it might be a start if you already own them.
 
 ## Firmware Development
 EavesDrum already comes with pre-built releases. So you do not need to build it yourself. In case you want to change the code, here are the steps to build the firmware yourself.
