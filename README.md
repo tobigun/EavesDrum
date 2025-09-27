@@ -15,32 +15,32 @@
 <!-- vscode-markdown-toc -->
 - [Welcome to EavesDrum!](#welcome-to-eavesdrum)
 - [Features](#features)
-- [Before you start: is EavesDrum what you need?](#before-you-start-is-eavesdrum-what-you-need)
+- [Before You Start: Is EavesDrum What You Need?](#before-you-start-is-eavesdrum-what-you-need)
 - [Getting Started](#getting-started)
-- [Build your own EavesDrum trigger module](#build-your-own-eavesdrum-trigger-module)
-  - [Use the reference design](#use-the-reference-design)
-    - [Connector harness](#connector-harness)
-      - [Wiring the single Pad connectors](#wiring-the-single-pad-connectors)
-  - [Make your own design](#make-your-own-design)
-    - [How the circuit works](#how-the-circuit-works)
-      - [Over-Voltage protection](#over-voltage-protection)
-      - [Voltage Divider / DC voltage offset generator](#voltage-divider--dc-voltage-offset-generator)
+- [Build Your Own EavesDrum Trigger Module](#build-your-own-eavesdrum-trigger-module)
+  - [Use the Reference Design](#use-the-reference-design)
+    - [Connector Harness](#connector-harness)
+      - [Wiring the Single Pad Connectors](#wiring-the-single-pad-connectors)
+  - [Make Your Own Design](#make-your-own-design)
+    - [How the Circuit Works](#how-the-circuit-works)
+      - [Over-Voltage Protection](#over-voltage-protection)
+      - [Voltage Divider / DC Voltage Offset Generator](#voltage-divider--dc-voltage-offset-generator)
       - [Example](#example)
 - [Configuration](#configuration)
   - [Calibration](#calibration)
   - [Settings](#settings)
-    - [Generic settings](#generic-settings)
-    - [Pedal settings](#pedal-settings)
-    - [Apply presets](#apply-presets)
+    - [Generic Settings](#generic-settings)
+    - [Pedal Settings](#pedal-settings)
+    - [Apply Presets](#apply-presets)
   - [Mappings](#mappings)
-  - [Apply a whole configuration](#apply-a-whole-configuration)
-  - [Understand and reduce latency](#understand-and-reduce-latency)
+  - [Apply a Whole Configuration](#apply-a-whole-configuration)
+  - [Understand and Reduce Latency](#understand-and-reduce-latency)
 - [Firmware Development](#firmware-development)
-  - [How to build the UI](#how-to-build-the-ui)
-  - [How to build the backend and firmware](#how-to-build-the-backend-and-firmware)
-  - [How to simulate a drum-kit on a PC](#how-to-simulate-a-drum-kit-on-a-pc)
-- [About this project](#about-this-project)
-- [Other related projects](#other-related-projects)
+  - [How to Build the UI](#how-to-build-the-ui)
+  - [How to Build the Backend and Firmware](#how-to-build-the-backend-and-firmware)
+  - [How to Simulate a Drum-Kit on a PC](#how-to-simulate-a-drum-kit-on-a-pc)
+- [About This Project](#about-this-project)
+- [Other Related Projects](#other-related-projects)
 - [License](#license)
 
 <!-- vscode-markdown-toc-config
@@ -96,7 +96,7 @@ The trigger module acts as a USB MIDI device - simply connect it to your noteboo
     - Hi-Hat (1x TRS for bow/edge + 1x TS for cup)
     - Hi-Hat Pedal resistive or optical (connected to a dedicated connector with 3.3V or 5V supply voltage)
 - **Compatibility:**
-  -  EavesDrum is compatible with a wide range of [Roland (only non-USB), Yamaha, ATV and EFNOTE pads](#pad-connectors)
+  -  EavesDrum is compatible with a wide range of [Roland (only non-USB), Yamaha, ATV and EFNOTE pads](#pad-connectors).
   -  The following pads were tested:
      - ATV XD-P10M/P13M 2-zone Drums
      - ATV aD-C14/C16/C18 3-zone Cymbals
@@ -107,8 +107,10 @@ The trigger module acts as a USB MIDI device - simply connect it to your noteboo
      - Zeitgeist ZG CAD Cymbals (although the edge triggers unreliably due to the switch design)
      - Zeitgeist ZG ZKD7 Kick Pad
      - Drum-tec Hi-Hat controller (resistive)
-     - DIY optical sensor (TCRT5000 based). See sections below for schematics and Gerber files
-     - DIY drums and cymbals. See sections below for schematics and Gerber files
+     - DIY optical sensor (TCRT5000 based)
+       - See sections below for schematics and Gerber files.
+     - DIY drums and cymbals
+       - See sections below for schematics and Gerber files.
 - **MIDI Mappings:** <a id="midi-mappings"></a>
   - Mappings are freely customizable via the UI.
   - It already contains Midi-Mappings for:
@@ -119,14 +121,14 @@ The trigger module acts as a USB MIDI device - simply connect it to your noteboo
     - Steven Slate Drums 5 (SSD5)
 - **Low Latency:**
   - Latency is mainly determined by your audio interface and the selected scan time. With a decent audio interface, you can [reach a total latency of about 8ms](#latency).
-  - You can measure the latency of your setup with the latency measurement feature built into the UI
+  - You can measure the latency of your setup with the latency measurement feature built into the UI.
 - **Affordable:** you might be able to make an assembled trigger module for approx. 20€.
-  - See the section [Build your own EavesDrum trigger module](#use-the-reference-design)
-- **Supported Microncontrollers:**
-  - Raspberry Pi Pico 2 (recommended)
-  - Raspberry Pi Pico
-  - A port for the Waveshare ESP32-S3 Pico with Wifi UI and BLE MIDI was started but not finished.
-    - As the Pico (2)W also supports Wifi and BLE (not implemented yet) the only relevant difference to the Pico is that the ESP32-S3 has two instead of one ADC. In turn USB Network needs is more difficult than with Pico due to the TinyUSB implementation.
+  - See the section [Build your own EavesDrum trigger module](#use-the-reference-design).
+- **Supported Microcontrollers:**
+  - Raspberry Pi Pico 2 (recommended).
+  - Raspberry Pi Pico.
+  - A port for the Waveshare ESP32-S3 Pico with Wi-Fi UI and BLE MIDI was started but not finished.
+    - As the Pico (2)W also supports Wi-Fi and BLE (not implemented yet), the only relevant difference to the Pico is that the ESP32-S3 has two instead of one ADC. In turn, USB network is more difficult than with Pico due to the TinyUSB implementation.
 
 - **Open Source:** Source code and PCB Gerber files are available for customization and extension.
 - **WebUI Configuration:** Browser-based interface for setting up and tweaking trigger parameters such as sensitivity, threshold, retrigger prevention, and more. No app required as the UI runs directly on the trigger module.
@@ -137,19 +139,19 @@ The trigger module acts as a USB MIDI device - simply connect it to your noteboo
   - Mappings can be adjusted individually or for the whole kit.
   <img alt="UI Mappings" src="doc/images/ui-mappings.png" width="900px"/>
 
-## Before you start: is EavesDrum what you need?
+## Before You Start: Is EavesDrum What You Need?
 **EavesDrum is for you if you:**
-- need more / additional trigger inputs to those that standard drum kits support
-- want to mix drums from different vendors as most drum kits only work well with their own pads
-- want to start drumming and do not want to pay a fortune for a drum kit
-- want to diagnose or improve the trigger behavior of your drum pad
-- have fun making stuff and just want to build your own drum kit or implement your own drum module features
+  - need more / additional trigger inputs to those that standard drum kits support.
+  - want to mix drums from different vendors as most drum kits only work well with their own pads.
+  - want to start drumming and do not want to pay a fortune for a drum kit.
+  - want to diagnose or improve the trigger behavior of your drum pad.
+  - have fun making stuff and just want to build your own drum kit or implement your own drum module features.
 
 **EavesDrum might not be for you if you:**
-- want to use the module for live performances as it does not give any guarantee error-free operation at all times or conditions
-- want a drum module that works standalone without a Notebook
-- want a drum module that works out-of-the-box, as you will have to tweak the settings according to your pads via the UI
-- need cross-talk cancelation, positional sensing or decay curves, as these features are not implemented (yet)
+  - want to use the module for live performances as it does not give any guarantee error-free operation at all times or conditions.
+  - want a drum module that works standalone without a Notebook.
+  - want a drum module that works out-of-the-box, as you will have to tweak the settings according to your pads via the UI.
+  - need cross-talk cancelation, positional sensing or decay curves, as these features are not implemented (yet).
 
 > [!IMPORTANT]
 > **Disclaimer:** Although EavesDrum has been tested with various drum pads and setups, it remains a DIY hardware project and may behave differently depending on your specific configuration. Connecting this module to your equipment is done at your own risk. I cannot be held liable for any damage, malfunction, or injury resulting from its use. Please ensure compatibility and take appropriate precautions before integrating it into your setup.
@@ -159,13 +161,13 @@ The trigger module acts as a USB MIDI device - simply connect it to your noteboo
 
 0. **Prerequisites:**
 All you need is:
-    - a computer with a drum software (see [MIDI Mappings](#midi-mappings) to give you a short overview)
-      - a PC or Mac is recommended
-        - although there is no minimum requirement, a slow CPU might increase the [Latency](#latency)
-      - an Apple iPad with Garage Band might also work, but you need an Apple Camera Connection Kit if your iPad still has a lightning but no USB-C connector. BLE Midi is not yet supported.
-      - an Android smartphone / tablet is not recommended due to the lack of good drumming apps
-    - a decent audio interface with low latency, preferably one with dedicated ASIO drivers. See [the section about latency](#latency) for more information.
-    - something to drum on, i.e. drum pads, cymbals and a Hi-Hat pedal. Or just a cheap piezo if you want to DIY your own drum.
+    - A computer with a drum software (see [MIDI Mappings](#midi-mappings) to give you a short overview).
+      - A PC or Mac is recommended.
+        - although there is no minimum requirement, a slow CPU might increase the [Latency](#latency).
+      - An Apple iPad with Garage Band might also work, but you need an Apple Camera Connection Kit if your iPad still has a lightning but no USB-C connector. BLE Midi is not yet supported.
+      - An Android smartphone / tablet is not recommended due to the lack of good drumming apps.
+    - A decent audio interface with low latency, preferably one with dedicated ASIO drivers. See [the section about latency](#latency) for more information.
+    - Something to drum on, i.e. drum pads, cymbals and a Hi-Hat pedal. Or just a cheap piezo if you want to DIY your own drum.
 
 1. **Build the EavesDrum trigger module:**<br/>
    - Either built it yourself or order it via a PCB manufacturer of your choice
@@ -190,8 +192,8 @@ All you need is:
 7. **Play:**<br/>
    - Once configured, start playing and enjoy!
 
-## Build your own EavesDrum trigger module
-### Use the reference design
+## Build Your Own EavesDrum Trigger Module
+### Use the Reference Design
 **Schematics of the trigger module with 32 inputs:**
 
 <a href="doc/schematics/module/schematic.png"><img alt="Basic circuit" src="doc/schematics/module/schematic.png" width="500px"/></a>
@@ -231,7 +233,7 @@ You can also let JLCPCB or PCBWay assemble the PCB if you already ordered the PC
 
 **TODO**: Gerber files
 
-#### Connector harness
+#### Connector Harness
 
 In addition to the trigger module you will have to build your own adapter to connect the drum pads. Here is the pin out of the D-Sub 37 connector:
 
@@ -263,7 +265,7 @@ This is the default configuration for the outputs:
 
 <a id="pad-connectors"></a>
 
-##### Wiring the single Pad connectors
+##### Wiring the Single Pad Connectors
 
 The wiring of **Snares and Toms** is straightforward in most cases
 - Almost all companies use the Roland style 2-Piezo 1xTRS layout
@@ -317,7 +319,7 @@ See also:
 - [Yamaha compatibility matrix](https://de.yamaha.com/de/download/files/2094396/) for an overview of the Tom and Cymbal models
 
 
-### Make your own design
+### Make Your Own Design
 
 In case you do not want to use the reference design or you just need a few inputs, you can also design your own trigger module and just use the firmware.
 The base circuit for each input consists of the following parts:
@@ -326,10 +328,10 @@ The base circuit for each input consists of the following parts:
 
 You might also be able to build this on a breadboard for first experimentation.
 
-#### How the circuit works
+#### How the Circuit Works
 Skip this section if you are not interested in the electronic background of the circuit.
 
-##### Over-Voltage protection
+##### Over-Voltage Protection
 - Two clamping diodes restrict the signal to the range between 0V - 3.3V
   - Protects the ADC input pins of the microcontroller
   - Prevents cross-talk between inputs if a Multiplexer (e.g. 74HC4067) is used
@@ -337,7 +339,7 @@ Skip this section if you are not interested in the electronic background of the 
   - They react faster than a conventional (Silicon P-N-junction) diode to over voltage spikes
   - The BAT85, BAS85 (SMD variant of the BAT85) and BAT54S (two diodes in one SMD package) diodes work fine
 
-##### Voltage Divider / DC voltage offset generator
+##### Voltage Divider / DC Voltage Offset Generator
 - The resistors R1 and R2 form a voltage divider that halfs the operation voltage (Vcc=3.3V) to generate a ~1.65V DC offset voltage
   - This is necessary to sample the full signal with its positive and negative half-wave
   - Note that R1 is a variable resistor (potentiometer) as the circuit is usually not that perfect that R1=R2 gives you half the operation voltage as it should in theory
@@ -391,7 +393,7 @@ Mark the pad as monitored (the record button on the right top of the pad's panel
 
 If you click on `Show All Pads` on the top, you can see hits on every pad, no matter if it is monitored or not.
 
-#### Generic settings
+#### Generic Settings
 
 - **Main/Head/Rim/Edge/Cup/... Range**: trigger range for each zone
   - The **min. value of the range** specifies the sensitivity.
@@ -411,7 +413,7 @@ If you click on `Show All Pads` on the top, you can see hits on every pad, no ma
 > [!IMPORTANT]
 > When you change settings they will be applied immediately but they will be reset to the old values when EavesDrum reboots or loses power. To keep the settings you have to save them with the "Save" Button (SD-Card icon) in the top Icon Bar.
 
-#### Pedal settings
+#### Pedal Settings
 The settings for the Hi-Hat pedal are different from the settings of the pads.
 <img src="doc/images/settings-pedal.png" width="20%"/>
 
@@ -432,7 +434,7 @@ To see the effect of the settings, monitor the pedal with the record button
   - If the time between both states is higher than **Chick Detect Timeout**, then no sound will be played.
   - If you do not want a "Chick" sound, you can disable it on the Mappings Page by setting the sound for the "Chick" to `None`.
 
-#### Apply presets
+#### Apply Presets
 In the folder `config/presets` you can find some presets for some pads. You can apply them by dragging them from Windows Explorer to the settings panel of a pad.
 
 <img src="doc/images/apply-presets.png" width="50%"/>
@@ -460,14 +462,14 @@ If you drag & drop the mappings file onto a pad instead of the top bar, only thi
 **Roles**
 Note that the mappings are assigned to a `role` (e.g. Snare, Tom1, ...) and not to a pad directly. As the drum kits differ in number and type of pads it would be rather difficult to have generic mapping files if there is no common denominator for every drum. This is what the role is for: it specifies the role of the drum in the drum kit, so that you have the correct mappings assigned to the drum when you switch from one mapping file to another.
 
-### Apply a whole configuration
+### Apply a Whole Configuration
 If you want to have more control over a configuration you can download the active configuration with the "Download" icon in the top Icon Bar. Then do you modifications on the downloaded YAML file and upload it again by either clicking on the "Apply Config File" button in the Icon Bar or by Drag & Drop of the config to the Icon Bar.
 
 This way you can Backup & Restore your config whenever you do a firmware update.
 
 <a id="latency"></a> 
 
-### Understand and reduce latency
+### Understand and Reduce Latency
 At a speed of sound of about 343 m/s, the sound travels 34 cm in 1 ms, so a little less then the length of a drum stick. It seems that everything up to [5 ms is not noticeable and most drummers still have no problem with 10 ms](https://forums.steinberg.net/t/ab-welcher-latenz-bemerkt-ihr-eine-verzogerung-und-ab-wann-stort-die-euch/105517/45). So you want the latency to be as low as possible or at least below 10 ms.
 
 If you look at the signal path there a quite some components involved from the hit to the drum until you hear the sound from the speaker. This is round trip time (RTT) of your system which defines the latency of your signal.
@@ -485,7 +487,7 @@ If you look at the signal path there a quite some components involved from the h
    - The bigger the buffer the less error-prone is the playback, even if the CPU is currently doing some other stuff. But every buffer and every byte in the buffer will increase the latency.
    - So the best way to reduce latency is to reduce the buffer sizes. The goal is a latency of 5-6 ms for this part. On windows this is only possible without crackling and dropouts with ASIO drivers. So make sure your audio device has dedicated ASIO drivers.
      - Do not waste your time with WASAPI or DirectSound drivers. WASAPI (Low-Latency) resulted in 69ms, WASAPI (Exclusive Mode) in 34.9ms. DirectSound was even worse. Same device with ASIO was about 6ms.
-     - You can try [ASIO4All](https://asio4all.org/) if you want to start with an existing interface that does not come with ASIO drivers - but keep your expectations low. With the Realtek soundcard built-into one of my notebooks I could not get the latency below 35 ms with ASIO4All which is unusable.
+     - You can try [ASIO4All](https://asio4all.org/) if you want to start with an existing interface that does not come with ASIO drivers - but keep your expectations low. With the Realtek soundcard built into one of my notebooks I could not get the latency below 35 ms with ASIO4All which is unusable.
    - Select ASIO as the output type in your drum software and start with the lowest audio buffer size.
      - Trigger the pads really quick and try every pads if you hear some crackling or dropouts on any of them.
      - Also check if the audio quality is still ok or if it sounds muffled, ...
@@ -539,7 +541,7 @@ EavesDrum already comes with pre-built releases. So you do not need to build it 
 
 <a id="how-to-build-ui"></a> 
 
-### How to build the UI
+### How to Build the UI
 - Install [NodeJS](https://nodejs.org/en)
 - Open the project directory in a terminal (cmd or git bash)
 - Change directory to the `webui` directory
@@ -553,7 +555,7 @@ EavesDrum already comes with pre-built releases. So you do not need to build it 
 
 <a id="how-to-build-fw"></a>
 
-### How to build the backend and firmware
+### How to Build the Backend and Firmware
 - Download and install [Visual Studio Code](https://code.visualstudio.com/)
 - Open Visual Studio Code and install the [PlatformIO](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide) extension
 - Download the EavesDrum code from this repository via Git or zip
@@ -569,7 +571,7 @@ EavesDrum already comes with pre-built releases. So you do not need to build it 
 
 <a id='simulate'></a> 
 
-### How to simulate a drum-kit on a PC
+### How to Simulate a Drum-Kit on a PC
 There is also a simulation of a drum kit for PC in case you do not want to test on real hardware.
 
 **Build the simulation:**
@@ -589,20 +591,20 @@ There is also a simulation of a drum kit for PC in case you do not want to test 
   - Press `#` to select the amount of Jitter in the signal of the monitored pad. This is useful to simulate noise in a pad's signal or fluctuations in pedal presses
   - Press any other key to trigger a hit of the monitored pad
 
-## About this project
+## About This Project
 Originally I started EavesDrum as I wanted to improve my Guitar Hero Drum Kit and make it less noisy. So I built my own mesh drum for this kit out of tin cookie jars, some pollen screen (which is better suited than fly screen) and some piezos. Although it might not give you the feel and rebound of a real drum, it was at least very quiet ;-)
 
-The next step was to try my DIY drums with a software drum module but I soon discovered that drum gear (especially drum modules) is just too expensive for experimentation. So I build my own trigger module. First I started with [Hello Drum](https://github.com/RyoKosaka/HelloDrum-arduino-Library) but as it did not work as expected I wrote my own firmware from scratch.
+The next step was to try my DIY drums with a software drum module but I soon discovered that drum gear (especially drum modules) is just too expensive for experimentation. So I built my own trigger module. First I started with [Hello Drum](https://github.com/RyoKosaka/HelloDrum-arduino-Library) but as it did not work as expected I wrote my own firmware from scratch.
 
 Over the course of a year, I continuously improved and redesigned the hardware and software. Whenever there was a discount I bought "real" drum pads to test it. After some time I had a full drum kit mixed with a lot of drums and cymbals (rubber and low volume) from different vendors (a Frankenstein drum kit so to speak).
 
-In my opinion most drum modules and kits are a bit too pricey for what they offer (as the cost of a piezo is below 1€) - especially if you just want to start drumming. So I open sourced the project to minimize the entry barrier into this nice hobby.
+In my opinion, most drum modules and kits are a bit too pricey for what they offer (as the cost of a piezo is below 1€) - especially if you just want to start drumming. So I open sourced the project to minimize the entry barrier into this nice hobby.
 
 Note that this project is not meant to compete with drum modules or gear from drum manufacturers like Roland, EFNote or Yamaha. It is more an addition for makers who like DIY. If you want to perform live you want the safety that your gear works at all times - something that this project cannot offer. As I work in the embedded industry I know that reliability needs a lot of testing and experience - so this costs a lot of money that you pay in the end when you buy a product.
 
 So if you have the money, give a little love to the drum vendors and buy some original equipment in addition to your DIY stuff.
 
-## Other related projects
+## Other Related Projects
 - [Hello Drum](https://github.com/RyoKosaka/HelloDrum-arduino-Library) by  Ryo Kosaka
   - A nice Open Source trigger module for ESP32 and Arduino with DIY drum pads (https://open-e-drums.com/)
   - Unfortunately the last commit is 5 years old and it did not work with my cymbals
