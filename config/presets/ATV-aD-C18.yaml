@@ -1,0 +1,12 @@
+settings:
+  padType: Cymbal
+  zonesType: Zones3_PiezoAndSwitches_2TRS
+  chokeType: Switch_Edge
+  curveType: Linear
+  scanTimeUs: 3000
+  maskTimeMs: 30
+  zoneThresholds:
+    - min: 31
+      max: 358
+    - min: 307
+    - min: 307

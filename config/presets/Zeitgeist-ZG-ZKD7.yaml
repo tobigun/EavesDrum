@@ -1,12 +1,9 @@
 settings: 
-  padType: Cymbal
-  zonesType: Zones3_PiezoAndSwitches_2TRS
-  chokeType: Switch_Edge
+  padType: Drum
+  zonesType: Zones1_Piezo
   curveType: Linear
   scanTimeUs: 3000
   maskTimeMs: 30
-  zoneThresholds: 
-    - min: 151
-      max: 720
-    - min: 280
-    - min: 270
+  zoneThresholds:
+    - min: 102
+      max: 614

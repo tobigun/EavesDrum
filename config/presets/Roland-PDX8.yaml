@@ -1,12 +1,12 @@
-settings: 
+settings:
   padType: Drum
   zonesType: Zones2_Piezos
   curveType: Linear
   scanTimeUs: 3000
   maskTimeMs: 30
   zoneThresholds:
-    - min: 51
+    - min: 61
       max: 614
-    - min: 31
-      max: 256
-  headRimBias: 10
+    - min: 164
+      max: 614
+  headRimBias: 0

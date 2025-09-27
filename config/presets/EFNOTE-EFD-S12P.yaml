@@ -4,10 +4,12 @@ settings:
   curveType: Linear
   scanTimeUs: 3000
   maskTimeMs: 30
-  zoneThresholds: 
-    - min: 110
-      max: 894
-    - min: 47
-      max: 292
+  zoneThresholds:
     - min: 102
-      max: 781
+      max: 670
+    - min: 102
+      max: 572
+    - min: 102
+      max: 636
+  headRimBias: 25
+  

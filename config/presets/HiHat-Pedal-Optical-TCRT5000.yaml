@@ -1,0 +1,11 @@
+settings:
+  padType: Pedal
+  zonesType: Zones1_Controller
+  zoneThresholds:
+    - min: 205
+      max: 819
+  almostClosedThreshold: 70
+  closedThreshold: 85
+  moveDetectTolerance: 20
+  chickDetectTimeoutMs: 20
+  curveType: Linear
