@@ -94,7 +94,7 @@ The trigger module acts as a USB MIDI device - so simply connect it to your Note
     - Ride (1x TRS for bow/edge + 1x TS for cup)
     - 4x Cymbals (each with 1x TRS for bow/edge + 1x TS for cup)
     - Hi-Hat (1x TRS for bow/edge + 1x TS for cup)
-    - Hi-Hat Pedal resitive or optical (connected to a dedicated connector with 3.3V or 5V supply voltage)
+    - Hi-Hat Pedal resistive or optical (connected to a dedicated connector with 3.3V or 5V supply voltage)
 - **Compatibility:**
   -  EavesDrum is compatible with a wide range of [Roland (only non-USB), Yamaha, ATV and EFNOTE pads](#pad-connectors)
   -  The following pads were tested:
@@ -130,7 +130,7 @@ The trigger module acts as a USB MIDI device - so simply connect it to your Note
 
 - **Open Source:** Source code and PCB Gerber files are available for customization and extension.
 - **WebUI Configuration:** Browser-based interface for setting up and tweaking trigger parameters such as sensitivity, threshold, retrigger prevention, and more. No app required as the UI runs directly on the trigger module.
-  - Monitor the signal of your drum pads in real time so that you can see the efefct of your settings:
+  - Monitor the signal of your drum pads in real time so that you can see the effect of your settings:
   <img alt="UI Monitor" src="doc/images/ui-monitor.png" width="900px"/>
   - Provides extensive settings options within a (hopefully) user-friendly layout:
   <img alt="UI Settings" src="doc/images/ui-settings.png" width="900px"/>
@@ -400,16 +400,16 @@ If you click on `Show All Pads` on the top, you can see hits on every pad, no ma
     - Set it in a way that you can reach a signal level of 100% when you hit the pad the hardest way you would in your playing style.
     - If you set the max. too low, the detected signal level will be 100% even if you did not hit the pad with the highest intensity.
   - If you enable monitoring for the pad it should be easy to find the correct values.
-  - For cymbals with switched for edge and cup you will only have a **minimum threshold** for each switch instead of a range.
+  - For cymbals with switches for edge and cup you will only have a **minimum threshold** for each switch instead of a range.
     - This determines at which level the switch is considered to be closed or opened.
 
 - **Scan Time** determines the time to search for a peak
 - **Mask Time** can be used to reduce false retriggers
-- **Curve Type** lets you change the trigger behavior for low or high intensity hits, i.e. you can shift the sensitivy more to the lower or higher intensities
-- **Head/Rim Bias** is only for drums (i.e. snares and toms) with at least two zones. If you move the bias more to the rim (i.e. to the right), the rim zone will more likely be triggered if both zones were hit at ones. This is useful to assure that rimshots trigger the rim sound.
+- **Curve Type** lets you change the trigger behavior for low or high intensity hits, i.e. you can shift the sensitivity more to the lower or higher intensities
+- **Head/Rim Bias** is only for drums (i.e. snares and toms) with at least two zones. If you move the bias more to the rim (i.e. to the right), the rim zone will more likely be triggered if both zones were hit at once. This is useful to assure that rimshots trigger the rim sound.
 
 > [!IMPORTANT]
-> When you change settings they will be applied immediately but they will be reset to the old values when EavesDrum reboots or looses power. To keep the settings you have to save them with the "Save" Button (SD-Card icon) in the top Icon Bar.
+> When you change settings they will be applied immediately but they will be reset to the old values when EavesDrum reboots or loses power. To keep the settings you have to save them with the "Save" Button (SD-Card icon) in the top Icon Bar.
 
 #### Pedal settings
 The settings for the Hi-Hat pedal are different from the settings of the pads.
@@ -420,9 +420,9 @@ To see the effect of the settings, monitor the pedal with the record button
 
 - **Pedal Range**: determines the offset and threshold for the lowest and highest signal level
   - To not touch the Hi-Hat pedal for the open position.
-  - Adjust the **min value** of the `Pedal Range` so that the corresponging marker in the monitor's signal graph is slightly above the current pedal signal and the Pedal value in the hit graph is at 0%.
+  - Adjust the **min value** of the `Pedal Range` so that the corresponding marker in the monitor's signal graph is slightly above the current pedal signal and the Pedal value in the hit graph is at 0%.
   - Now close the Hi-Hat pedal.
-  - Now adjust the **max value** of the `Pedal Range`, so that the corresponging marker in the monitor's signal graph is slightly below the current signal and the hit graph shows 100%
+  - Now adjust the **max value** of the `Pedal Range`, so that the corresponding marker in the monitor's signal graph is slightly below the current signal and the hit graph shows 100%
   - When you move the pedal now, you should get the full range between 0% and 100% in the hit graph and it should stay at 0% when open and at 100% when closed.
 - **Move Detection Tolerance** this determines how much the pedal has to be moved to change its value. A smaller tolerance gives you a higher resolution but is more prone to noise in the signal.
   - Press the Hi-Hat pedal to a position between open and closed. Try to keep this position - the value in the hit graph should not change. If it does though, you might decrease the tolerance until the hit graph value is stable.
@@ -445,7 +445,7 @@ With the Mappings page you can change the MIDI mappings of each pad.
 Select the MIDI note of the zone to the desired value. You can trigger the note via the UI by pressing the "Play" button to preview the sound.
 
 > [!IMPORTANT]
-> When you change mappings they will be applied immediately but they will be reset to the old values when EavesDrum reboots or looses power. To keep the settings you have to save them with the "Save" Button (SD-Card icon) in the top Icon Bar.
+> When you change mappings they will be applied immediately but they will be reset to the old values when EavesDrum reboots or loses power. To keep the settings you have to save them with the "Save" Button (SD-Card icon) in the top Icon Bar.
 
 **Apply Drum-Kit Mappings**
 You can change the mappings of all pads in the drum-kit at ones if you drag & drop a mapping file (see folder `/config/mappings`) to top border (aka the Icon Bar) of the UI. This way you can switch between the mappings of the drum softwares easily.
@@ -474,10 +474,10 @@ If you look at the signal path there a quite some components involved from the h
 
 <img src="doc/latency.svg" width="40%"/>
 
-1. The *hit detection* by the trigger module will take a fixed time - the scan time that you selected in the pad's settings and that is by default 3 ms. You can try to reduce this time but if you take a look at the screenshot of the Monitor below you might notice that the piezo signal for some pads reaches its peaks only after 1, 2 or even 3 ms. So if you set the scan time too low, you might get wrong results. The default of 3 ms was choosen so that it will work with most drum pads.
+1. The *hit detection* by the trigger module will take a fixed time - the scan time that you selected in the pad's settings and that is by default 3 ms. You can try to reduce this time but if you take a look at the screenshot of the Monitor below you might notice that the piezo signal for some pads reaches its peaks only after 1, 2 or even 3 ms. So if you set the scan time too low, you might get wrong results. The default of 3 ms was chosen so that it will work with most drum pads.
 <img alt="Basic circuit" src="doc/images/trigger2.png" width="40%"/>
 
-2. The time it takes the trigger module to generate the MIDI message and to transfer it to the computer via USB is negligably as it is only a small fraction of a ms.
+2. The time it takes the trigger module to generate the MIDI message and to transfer it to the computer via USB is negligible as it is only a small fraction of a ms.
 3. Although the sound processing might also take some time I did not notice a vast differences between the drum softwares.
 4. The audio latency from your drum software to the audio is the biggest contributor to latency.
    - It depends on the number of buffers the software, drivers and audio interface uses and the buffer size.
@@ -495,8 +495,8 @@ If you look at the signal path there a quite some components involved from the h
        - Although my old Intel Core i7-7500U (2.7 GHz) Ultrabook CPU from 2016 works fine as drum computer most of the time, it seems to stutter sometimes if I select the lowest buffer size. Something I have not noticed with my newer Intel Core i7-1260P (2.1 GHz, 12 Cores) from 2022.
        - If you have a modern i7 (and probably i5) CPU you should be fine. Same with an Apple M1 CPU.
      - If you still notice audio problems increase the sample size step by step until you get a stable output.
-   - Note that the latencies that your ASIO driver displays for each buffer size (e.g. 64 samples -> 1.5 ms) is only the theoretic minimum with this setting. In reality the value is much higher (e.g. for my device 5 ms instead of the 1.5 ms). You can measure the system latency if you want to be sure (see below)
-   - Sometimes you can further reduce the latency by increeasing the sample rate (so 192kHz, 96kHz or at least 48kHz instead of 44.1kHz), but this might not always give you the expected result.
+   - Note that the latencies that your ASIO driver displays for each buffer size (e.g. 64 samples -> 1.5 ms) is only the theoretical minimum with this setting. In reality the value is much higher (e.g. for my device 5 ms instead of the 1.5 ms). You can measure the system latency if you want to be sure (see below)
+   - Sometimes you can further reduce the latency by increasing the sample rate (so 192kHz, 96kHz or at least 48kHz instead of 44.1kHz), but this might not always give you the expected result.
    - Last but not least the OS might also be a factor. If you have the choice try Mac OS X or iOS - it might perform better due to its superior audio architecture.
 
 **TL;DR**
@@ -605,7 +605,7 @@ So if you have the money, give a little love to the drum vendors and buy some or
 ## Other related projects
 - [Hello Drum](https://github.com/RyoKosaka/HelloDrum-arduino-Library) by  Ryo Kosaka
   - A nice Open Source trigger module for ESP32 and Arduino with DIY drum pads (https://open-e-drums.com/)
-  - Unfortunateley the last commit is 5 years old and it did not work with my cymbals
+  - Unfortunately the last commit is 5 years old and it did not work with my cymbals
 - [Edrumulus](https://github.com/corrados/edrumulus) by Volker Fischer (corrados)
   - Another Open Source trigger module for ESP32 and Teensy with Positional sensing and Cross talk cancellation
 
