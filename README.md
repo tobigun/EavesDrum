@@ -166,6 +166,7 @@ All you need is:
 ## Build your own EavesDrum trigger module
 ### Use the reference design
 **Schematics of the trigger module with 32 inputs:**
+
 <a href="doc/schematics/module/schematic.png"><img alt="Basic circuit" src="doc/schematics/module/schematic.png" width="500px"/></a>
 
 You can find the schematics and pcb files in the `doc/schematics/module` directory. They can be viewed and edited with [KiCad](https://www.kicad.org/).
@@ -373,7 +374,10 @@ To reduce the latency, use a decent Audio interface, use dedicated ASIO drivers,
 You can test the latency of your system with the latency measurement feature, built into the UI. Open the `Settings` page and click on `Check Latency` on top of the `Monitor` panel. The wizard will guide you through the procedure.
 
 <img src="doc/images/latency-measurement.png" width="80%"/>
+<img src="doc/latency/test-setup.jpg" width="40%"/>
 <img src="doc/latency/umc204hd.png" width="80%"/>
+
+---
 
 Below are the measurement results from the audio interfaces that I own. Maybe it will give you an idea what to expect:
 |Device|Sample Rate|Buffer Size|ASIO driver|Latency|Comment|
@@ -384,13 +388,14 @@ Below are the measurement results from the audio interfaces that I own. Maybe it
 |Terratec Aureon 5.1 USB MK.2|48kHz|64 (1.3ms)|ASIO4All|5.9ms||
 |Conrad UA0078 (CMedia CM108 chip)|48kHz|64 (1.3ms)|ASIO4All|6.6ms||
 |Realtek HD Audio (HW Dev-ID 0x0293)|44.1kHz|64 (1.5ms)|ASIO4All|6.4ms|Could be an ALC293. The latency was not constant between tests and reached in a few instances 12, 23 and even 40ms. Realteks ASIO driver was not available.|
-|EFNote 3 as Audio Interface|48kHz|32 (0.7ms)|EFNOTE|13.1ms|Test repeated multiple times with similar results|
+|EFNote 3 as Audio Interface|48kHz|32 (0.7ms)|EFNOTE|8.2ms|Got about 13ms on my newer Notebook with the same setup.|
 |Noname USB-C headphone adapter (AB13X)|44.1kHz|64 (1.5ms)|ASIO4All|23.8ms||
 |Realtek HD Audio (HW Dev-ID 0x0294)|44.1kHz|64 (1.5ms)|ASIO4All|34.9ms|Could be an ALC294. Realtek's ASIO driver crashed, so I had to use ASIO4All|
 
 - The only dedicated device (Behringer UMC204HD) performed best.
   - Focusrite Scarlett Solo 3rd / 4th Gen also comes with ASIO drivers and might work as well
   - You can PM me your results. Would be quite interesting
+- The results can vary between Computers and sometimes an older Computer can even give you better results (see EFNOTE 3)
 - Although some ASIO4All performed quite well and I did not notice any crackling during the test, I would not recommend them, as crackling is still likely with them.
 - The folder `doc/latency` contains screenshots of all tests
 - The measurements varied slightly (~0.5 - 1ms) between tests. I took a result with an average value.
@@ -469,8 +474,7 @@ So if you have the money, give a little love to the drum vendors and buy some or
   - Unfortunateley the last commit is 5 years old and it did not work with my cymbals
 - [Edrumulus](https://github.com/corrados/edrumulus) by Volker Fischer (corrados)
   - Another Open Source trigger module for ESP32 and Teensy with Positional sensing and Cross talk cancellation
-info-button in the top icon bar.
 
 ## License
 This project is licensed under the [GNU General Public License v3.0](LICENSE.txt).
-The licenses of the used libraries can be viewed by clicking on the 
+The licenses of the used libraries can be viewed by clicking on the info-button in the top icon bar.
