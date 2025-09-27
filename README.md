@@ -124,8 +124,8 @@ The trigger module acts as a USB MIDI device - so simply connect it to your Note
 - want a drum module that works out-of-the-box, as you will have to tweak the settings according to your pads via the UI
 - need cross-talk cancelation, positional sensing or decay curves, as these features are not implemented (yet)
 
-[!IMPORTANT]  
-**Disclaimer:** Although EavesDrum has been tested with various drum pads and setups, it remains a DIY hardware project and may behave differently depending on your specific configuration. Connecting this module to your equipment is done at your own risk. I cannot be held liable for any damage, malfunction, or injury resulting from its use. Please ensure compatibility and take appropriate precautions before integrating it into your setup.
+> [!IMPORTANT]
+> **Disclaimer:** Although EavesDrum has been tested with various drum pads and setups, it remains a DIY hardware project and may behave differently depending on your specific configuration. Connecting this module to your equipment is done at your own risk. I cannot be held liable for any damage, malfunction, or injury resulting from its use. Please ensure compatibility and take appropriate precautions before integrating it into your setup.
 
 
 ## Getting Started
