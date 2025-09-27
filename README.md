@@ -19,6 +19,7 @@
 - [Getting Started](#getting-started)
 - [Build Your Own EavesDrum Trigger Module](#build-your-own-eavesdrum-trigger-module)
   - [Use the Reference Design](#use-the-reference-design)
+    - [PCB Ordering and Assembly](#pcb-ordering-and-assembly)
     - [Connector Harness](#connector-harness)
       - [Wiring the Single Pad Connectors](#wiring-the-single-pad-connectors)
   - [Make Your Own Design](#make-your-own-design)
@@ -63,20 +64,22 @@ The trigger module acts as a USB MIDI device - simply connect it to your noteboo
   <img src="doc/images/module.jpg" height="400px"/>
   <figcaption>The EavesDrum Trigger Module</figcaption>
 </figure>
+
 <figure>
   <img src="doc/images/drumkit-diy.jpg" width="600px"/>
   <figcaption>DIY ultra-low-volume metal-mesh cymbal setup</figcaption>
 </figure>
-<div style="display: flex; gap: 20px;">
+
 <figure>
   <img src="doc/images/drumkit.jpg" width="600px"/>
   <figcaption>Conventional rubber-cymbal setup</figcaption>
 </figure>
+
 <figure>
   <img src="doc/images/drum-kit-low-volume.jpg" width="600px"/>
   <figcaption>Low-volume mesh setup</figcaption>
 </figure>
-</div>
+
 <figure>
   <img src="doc/latency.svg" width="60%"/>
   <figcaption>System overview</figcaption>
@@ -221,17 +224,57 @@ You can find the schematics and pcb files in the `doc/schematics/module` directo
 | Header 2x25 pins (male) | J2 | 1 | 0.33€ | 0.33€ | Optional. Only required if you do not want to use the D-Sub 37 connector.
 | 3-pin Header (male)<br>+ 2-pin Jumpers | JP1 - JP6 | 6 | 0.09€<br>+ 0.02€ | 0.66€ | Instead of 6x 3-pin headers, use a cheaper 40-pin header and brake it into 3-pin pieces. You can also use slide switches instead if you want to change the settings more often.
 | 3-pin Header (female) | J3 | 1 | 0.15€ | 0.15€ | Only required for UART serial debug output.
-| PCB | - | 1 | ~10€ (Germany) | ~10€ | Examples:<ul><li>JLCPCB: 4€ - Coupons + Shipping/Taxes (Germany: Global Standard Direct: 1.50€, EuroPacket: 5.50€, Tax: ~1€)</li><li>PCBWay: 5€ - Coupons + Shipping/Taxes (Germany: ~5€ with Global Direct)</li><li>There is also Aisler (Germany), EuroCircuits (Europe) and probably more if you want to produce your PCB in Europe instead of China. Choose whatever suits you best.</li></ul> Due to the varying discount by coupons, prices of JLCPCB and PCBWay my vary. Check out both.|
+| PCB | - | 1 | ~10€ (Germany) | ~10€ | See the section [PCB Ordering and Assembly](#pcb-ordering-and-assembly) for more info|
 | **Total** |||| 24.66€ || 
 
 If you are located in Germany, check prices at Reichelt (that's where the prices from above are from), Pollin, Conrad. Globally Mouser and Farnell might be your friend.
 
-**Assembly:**
-You can either assemble the PCB on your own by hand-soldering. The only tricky part is the HC4067 SMD packages and the SMD resistors and capacitors. While the latter is quite easy, the HC4067 requires some experience.
+#### PCB Ordering and Assembly
+All you need to order your Trigger Module PCB v1.1 for assembly are the following files:
+- [GERBER File](https://github.com/tobigun/EavesDrum/releases/download/PCB-module-v1.1/GERBER-eavesdrum-module-1.1.zip)
+- [BOM File (Bill of Material)](https://github.com/tobigun/EavesDrum/releases/download/PCB-module-v1.1/BOM-eavesdrum-module-1.1.csv)
+- [CPL File (Component Placement List)](https://github.com/tobigun/EavesDrum/releases/download/PCB-module-v1.1/CPL-eavesdrum-module-1.1.csv)
 
-You can also let JLCPCB or PCBWay assemble the PCB if you already ordered the PCB there. For example with JLCPCB the cost for 5 assembled PCBs including parts is about 90€ (excl. shipping/tax), so approx. 20€ per PCB. Unfortunately the minimum amount of assembled PCBs per order is 2 (in this case ~60€ excl. shipping/tax, i.e. 30€ per board). So in case you want a pre-assembled board it is best to organize a collective order.
+You will also find all files on the [PCB Module 1.1 Release Page](https://github.com/tobigun/EavesDrum/releases/tag/PCB-module-v1.1).
 
-**TODO**: Gerber files
+**To order the PCB:**
+- Open the website of a PCB manufacturer.
+  - The most famous ones are probably JLCPCB and PCBWay from China.
+  - There is also Aisler (Germany), EuroCircuits (Europe) and probably more if you want to produce your PCB in Europe instead of China.
+  - Choose whatever suits you best.
+- Upload the GERBER zip-file. The site should show you a preview of the PCB now.
+- You can leave the default settings.
+  - (Recommended) Change `Surface Finish` from `HASL (with lead)` to `LeadFree HASL` to protect our environment from toxic lead
+- For delivery "EuroPacket" or "Global (Standard) Direct" might be your choice.
+  - Both variants will ship your PCBs together with other PCBs in a big package to an importer in your home country (or a neighbored country). The package will then be split into smaller packages and sent to you. This is cheaper and will probably also save you the hassle of customs as this will be done by the importer.
+  - The shipment time is a bit longer than with other more expensive delivery options. But with all options the parcel will probably spent several days in the customs office, so time savings is not that much noticable.
+
+*Examples:*
+- JLCPCB: 4€ - Coupons + Shipping/Taxes
+  - Shipping to Germany: Global Standard Direct: 1.50€ / EuroPacket: 5.50€ + Tax: ~1€
+- PCBWay: 5€ - Coupons + Shipping/Taxes
+  - Shipping to Germany: ~5€ with Global Direct + Tax: ?
+
+Due to the varying discount by coupons, prices of JLCPCB and PCBWay my vary. So check both.
+
+**Assembly**
+It is possible to assemble the PCB on your own by hand-soldering without special equipment. The only tricky part is the HC4067 SMD packages and the SMD resistors and capacitors. While the latter is quite easy, the HC4067 requires some experience.
+
+
+You can also let JLCPCB or PCBWay assemble the PCB as you already order the PCB there.
+
+*Example:*
+- JLCPCB: 5 assembled PCBs including parts cost about 90€ (excl. shipping/tax), so approx. 20€ per PCB.
+  - Unfortunately the minimum amount of assembled PCBs per order is 2 (in this case ~60€ excl. shipping/tax, so 30€ per board).
+
+If you want an assembled board it is best to organize a collective order to split the cost.
+
+**To order an assembled PCB:**
+- Perform the same steps as for the normal PCB but select "PCB Assembly".
+- If you use JLCPCB in the next step you are asked for the BOM and CPL files that you have to upload.
+- Some parts might currently not be available. There is most likely an identical component / chip from a different vendor that you can select in this case.
+- In the next step check the component placements and submit your order.
+- After a review an engineer might contact you if there are questions about the design (that was the case in my order).
 
 #### Connector Harness
 
@@ -476,30 +519,31 @@ If you look at the signal path there a quite some components involved from the h
 
 <img src="doc/latency.svg" width="40%"/>
 
-1. The *hit detection* by the trigger module will take a fixed time - the scan time that you selected in the pad's settings and that is by default 3 ms. You can try to reduce this time but if you take a look at the screenshot of the Monitor below you might notice that the piezo signal for some pads reaches its peaks only after 1, 2 or even 3 ms. So if you set the scan time too low, you might get wrong results. The default of 3 ms was chosen so that it will work with most drum pads.
+1. The **hit detection** by the trigger module will take a fixed time - the scan time that you selected in the pad's settings and that is by default 3 ms. You can try to reduce this time but if you take a look at the screenshot of the Monitor below you might notice that the piezo signal for some pads reaches its peaks only after 1, 2 or even 3 ms. So if you set the scan time too low, you might get wrong results. The default of 3 ms was chosen so that it will work with most drum pads.
 <img alt="Basic circuit" src="doc/images/trigger2.png" width="40%"/>
 
-2. The time it takes the trigger module to generate the MIDI message and to transfer it to the computer via USB is negligible as it is only a small fraction of a ms.
-3. Although the sound processing might also take some time I did not notice a vast differences between the drum softwares.
-4. The audio latency from your drum software to the audio is the biggest contributor to latency.
-   - It depends on the number of buffers the software, drivers and audio interface uses and the buffer size.
-   - It is greatly dependent on the quality of your audio interface. Dedicated audio interfaces for musicians are optimized for low latency and offer better (ASIO) drivers.
-   - The bigger the buffer the less error-prone is the playback, even if the CPU is currently doing some other stuff. But every buffer and every byte in the buffer will increase the latency.
-   - So the best way to reduce latency is to reduce the buffer sizes. The goal is a latency of 5-6 ms for this part. On windows this is only possible without crackling and dropouts with ASIO drivers. So make sure your audio device has dedicated ASIO drivers.
-     - Do not waste your time with WASAPI or DirectSound drivers. WASAPI (Low-Latency) resulted in 69ms, WASAPI (Exclusive Mode) in 34.9ms. DirectSound was even worse. Same device with ASIO was about 6ms.
-     - You can try [ASIO4All](https://asio4all.org/) if you want to start with an existing interface that does not come with ASIO drivers - but keep your expectations low. With the Realtek soundcard built into one of my notebooks I could not get the latency below 35 ms with ASIO4All which is unusable.
-   - Select ASIO as the output type in your drum software and start with the lowest audio buffer size.
+2. The time it takes the trigger module to **generate and transfer a MIDI message to the computer via USB** is negligible as it is only a small fraction of a ms.
+3. Although the **sound processing** might also take some time I did not notice a vast differences between the drum softwares.
+4. The audio latency from your drum software to the **audio interface** is the biggest contributor to latency.
+   - It depends on the **number of buffers** the software, drivers and audio interface uses and the **buffer size**.
+     - Dedicated audio interfaces for musicians are optimized for low latency and offer better (ASIO) drivers.
+     - The bigger the buffer the less error-prone is the playback, even if the CPU is currently doing some other stuff. But every buffer and every byte in the buffer will increase the latency.
+   - The best way to reduce latency is to **reduce the buffer sizes**. The goal is a **latency of 5-6 ms** for this part of the signal chain.
+     - On **Windows** this is **only possible** without crackling and dropouts **with ASIO drivers**. So make sure your audio device has dedicated ASIO drivers.
+     - Do not waste your time with **WASAPI** or **DirectSound** drivers. WASAPI (Low-Latency) resulted in 69ms, WASAPI (Exclusive Mode) in 34.9ms. DirectSound was even worse. Same device with ASIO was about 6ms.
+     - You can try **[ASIO4All](https://asio4all.org/)** if you want to start with an existing interface that does not come with ASIO drivers - but keep your expectations low. With the Realtek soundcard built into one of my notebooks I could not get the latency below 35 ms with ASIO4All which is unusable.
+   - **Select ASIO as the output type** in your drum software and start with the lowest audio buffer size.
      - Trigger the pads really quick and try every pads if you hear some crackling or dropouts on any of them.
      - Also check if the audio quality is still ok or if it sounds muffled, ...
-     - If you notice audio problems (crackling, muffling, popping, dropouts)
+     - If you notice audio problems (**crackling, muffling, popping, dropouts**)
        - Make sure that no other CPU-intensive software is currently in use.
        - Also make sure that your CPU is suited for the task (i.e. you CPU load is not too high)
        - Although my old Intel Core i7-7500U (2.7 GHz) Ultrabook CPU from 2016 works fine as drum computer most of the time, it seems to stutter sometimes if I select the lowest buffer size. Something I have not noticed with my newer Intel Core i7-1260P (2.1 GHz, 12 Cores) from 2022.
        - If you have a modern i7 (and probably i5) CPU you should be fine. Same with an Apple M1 CPU.
-     - If you still notice audio problems increase the sample size step by step until you get a stable output.
-   - Note that the latencies that your ASIO driver displays for each buffer size (e.g. 64 samples -> 1.5 ms) is only the theoretical minimum with this setting. In reality the value is much higher (e.g. for my device 5 ms instead of the 1.5 ms). You can measure the system latency if you want to be sure (see below)
-   - Sometimes you can further reduce the latency by increasing the sample rate (so 192kHz, 96kHz or at least 48kHz instead of 44.1kHz), but this might not always give you the expected result.
-   - Last but not least the OS might also be a factor. If you have the choice try Mac OS X or iOS - it might perform better due to its superior audio architecture.
+     - If you still notice audio problems **increase the sample size step by step** until you get a stable output.
+   - Note that the latencies that your ASIO driver displays for each buffer size (e.g. 64 samples -> 1.5 ms) is only the **theoretical minimum** with this setting. In reality the value is much higher (e.g. for my device 5 ms instead of the 1.5 ms). You can measure the system latency if you want to be sure (see below)
+   - Sometimes you can further reduce the latency by **increasing the sample rate** (so 192kHz, 96kHz or at least 48kHz instead of 44.1kHz), but this might not always give you the expected result.
+   - Last but not least the **OS** might also be a factor. If you have the choice try Mac OS X or iOS - it might perform better due to its superior audio architecture.
 
 **TL;DR**
 To reduce the latency, use a decent Audio interface, use dedicated ASIO drivers, reduce the sample size and try to increase the sample rate. You should get the output latency of the audio device to about 5-6 ms with ASIO on Windows. So with a scan time of 3 ms this will be 8-9 ms. If you are still not satisfied with this, try to reduce the scan time of the pads.
