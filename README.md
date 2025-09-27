@@ -51,13 +51,13 @@
 
 ## Welcome to EavesDrum!
 
-EavesDrum is an open-source e-drum trigger module project, designed for drummers and makers.
+EavesDrum is an open-source e-drum trigger module project designed for drummers and makers.
 
-It allows you to connect a multitude of drum pads or piezo triggers and converts their signals into MIDI events.
+It allows you to connect a multitude of drum pads or piezo triggers and convert their signals into MIDI events.
 
-The configuration of the module is made simple and user-friendly through a built-in WebUI. You can adjust sensitivity, threshold, and other parameters directly from your browser—no need for complicated software or direct hardware programming.
+The configuration of the module is simple and user-friendly, thanks to a built-in WebUI. You can adjust sensitivity, threshold, and other parameters directly from your browser—no need for complicated software or direct hardware programming.
 
-The trigger module acts as a USB MIDI device - so simply connect it to your Notebook and use a drum software of your choice (EZdrummer, Addictive Drums, SSD5, ...) to convert your notebook into a complete drum module.
+The trigger module acts as a USB MIDI device - simply connect it to your notebook and use drum software of your choice (EZdrummer, Addictive Drums, SSD5, ...) to convert your notebook into a complete drum module.
 
 <figure>
   <img src="doc/images/module.jpg" height="400px"/>
@@ -85,8 +85,8 @@ The trigger module acts as a USB MIDI device - so simply connect it to your Note
 ## Features
 
 - **Drum Trigger Inputs:**
-  - With the EavesDrum PCB, you will be able to connect your drum pads or piezo sensors to 32 analog inputs.
-  - Each input can be mapped individually, e.g. to 16 TRS (3-pin Tip-Ring-Sleeve) connectors or 32 TS (2-pin Tip-Sleeve) connectors.
+  - With the EavesDrum PCB, you can connect your drum pads or piezo sensors to 32 analog inputs.
+  - Each input can be mapped individually, for example to 16 TRS (3-pin Tip-Ring-Sleeve) connectors or 32 TS (2-pin Tip-Sleeve) connectors.
   - The [default configuration](#connector-harness) uses the following drum setup:
     - Snare (1x TRS for head/rim + 1x TS for side-rim)
     - 5x Toms (each with 1 TRS for head/rim)
@@ -118,34 +118,34 @@ The trigger module acts as a USB MIDI device - so simply connect it to your Note
     - MT Power 2
     - Steven Slate Drums 5 (SSD5)
 - **Low Latency:**
-  - Latency is mainly determined by your audio interface and the selected scan time. With a decent audio interface you can [reach a total latency of about 8ms](#latency).
+  - Latency is mainly determined by your audio interface and the selected scan time. With a decent audio interface, you can [reach a total latency of about 8ms](#latency).
   - You can measure the latency of your setup with the latency measurement feature built into the UI
 - **Affordable:** you might be able to make an assembled trigger module for approx. 20€.
-  - See section [Build your own EavesDrum trigger module](#use-the-reference-design)
+  - See the section [Build your own EavesDrum trigger module](#use-the-reference-design)
 - **Supported Microncontrollers:**
   - Raspberry Pi Pico 2 (recommended)
   - Raspberry Pi Pico
-  - A port for the Waveshare ESP32-S3 Pico with Wifi UI and BLE MIDI was started but not finished
+  - A port for the Waveshare ESP32-S3 Pico with Wifi UI and BLE MIDI was started but not finished.
     - As the Pico (2)W also supports Wifi and BLE (not implemented yet) the only relevant difference to the Pico is that the ESP32-S3 has two instead of one ADC. In turn USB Network needs is more difficult than with Pico due to the TinyUSB implementation.
 
 - **Open Source:** Source code and PCB Gerber files are available for customization and extension.
 - **WebUI Configuration:** Browser-based interface for setting up and tweaking trigger parameters such as sensitivity, threshold, retrigger prevention, and more. No app required as the UI runs directly on the trigger module.
-  - Monitor the signal of your drum pads in real time so that you can see the effect of your settings:
+  - Monitor the signal of your drum pads in real time so that you can see the effect of your settings.
   <img alt="UI Monitor" src="doc/images/ui-monitor.png" width="900px"/>
-  - Provides extensive settings options within a (hopefully) user-friendly layout:
+  - Provides extensive settings options within a (hopefully) user-friendly layout.
   <img alt="UI Settings" src="doc/images/ui-settings.png" width="900px"/>
-  - Mappings can be adjusted individually or for the whole kit:
+  - Mappings can be adjusted individually or for the whole kit.
   <img alt="UI Mappings" src="doc/images/ui-mappings.png" width="900px"/>
 
 ## Before you start: is EavesDrum what you need?
-**EavesDrum is for you, if you:**
+**EavesDrum is for you if you:**
 - need more / additional trigger inputs to those that standard drum kits support
 - want to mix drums from different vendors as most drum kits only work well with their own pads
 - want to start drumming and do not want to pay a fortune for a drum kit
 - want to diagnose or improve the trigger behavior of your drum pad
 - have fun making stuff and just want to build your own drum kit or implement your own drum module features
 
-**EavesDrum might not be for you, if you:**
+**EavesDrum might not be for you if you:**
 - want to use the module for live performances as it does not give any guarantee error-free operation at all times or conditions
 - want a drum module that works standalone without a Notebook
 - want a drum module that works out-of-the-box, as you will have to tweak the settings according to your pads via the UI
@@ -419,18 +419,18 @@ To see the effect of the settings, monitor the pedal with the record button
 <img src="doc/images/settings-pedal2.png" width="50%"/>
 
 - **Pedal Range**: determines the offset and threshold for the lowest and highest signal level
-  - To not touch the Hi-Hat pedal for the open position.
+  - Do not touch the Hi-Hat pedal for the open position.
   - Adjust the **min value** of the `Pedal Range` so that the corresponding marker in the monitor's signal graph is slightly above the current pedal signal and the Pedal value in the hit graph is at 0%.
-  - Now close the Hi-Hat pedal.
-  - Now adjust the **max value** of the `Pedal Range`, so that the corresponding marker in the monitor's signal graph is slightly below the current signal and the hit graph shows 100%
-  - When you move the pedal now, you should get the full range between 0% and 100% in the hit graph and it should stay at 0% when open and at 100% when closed.
+  - Next, close the Hi-Hat pedal.
+  - Now adjust the **max value** of the `Pedal Range` so that the corresponding marker in the monitor's signal graph is slightly below the current signal and the hit graph shows 100%.
+  - When you move the pedal now, you should get the full range between 0% and 100% in the hit graph, and it should stay at 0% when open and at 100% when closed.
 - **Move Detection Tolerance** this determines how much the pedal has to be moved to change its value. A smaller tolerance gives you a higher resolution but is more prone to noise in the signal.
-  - Press the Hi-Hat pedal to a position between open and closed. Try to keep this position - the value in the hit graph should not change. If it does though, you might decrease the tolerance until the hit graph value is stable.
+  - Press the Hi-Hat pedal to a position between open and closed. Try to keep this position - the value in the hit graph should not change. If it does, you might decrease the tolerance until the hit graph value is stable.
 - **Pedal State Thresholds** and **Chick Detect Timeout**:
-  - when the pedal travels from the "Almost Closed" position to the "Closed Position" a "Chick" Sound detection takes place.
-  - The faster the pedal moved from "Almost Closed" to "Closed", the higher the intensity of the "Chick" sound will be.
-  - If the time between the both states is higher than **Chick Detect Timeout**, then no sound will be played
-  - If you do not want a "Chick" sound, you can disable it on the Mappings Page by setting the sound for the "Chick" to "None"
+  - When the pedal travels from the `Almost Closed` position to the `Closed Position` a "Chick" sound detection takes place.
+  - The faster the pedal moves from `Almost Closed` to `Closed` the higher the intensity of the "Chick" sound will be.
+  - If the time between both states is higher than **Chick Detect Timeout**, then no sound will be played.
+  - If you do not want a "Chick" sound, you can disable it on the Mappings Page by setting the sound for the "Chick" to `None`.
 
 #### Apply presets
 In the folder `config/presets` you can find some presets for some pads. You can apply them by dragging them from Windows Explorer to the settings panel of a pad.
