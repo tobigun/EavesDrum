@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 # INPUTS
 
 PICO1_BUILD_DIR=${PICO1_BUILD_DIR:-".pio/build/pico"}

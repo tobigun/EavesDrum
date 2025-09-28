@@ -18,7 +18,6 @@ jobs:
       fail-fast: false
       matrix:
         environment: ["pico", "pico2", "esp32"]
-        #os: [ubuntu-latest, windows-latest]  
     runs-on: ubuntu-24.04     
     steps:
       - name: Checkout Code
