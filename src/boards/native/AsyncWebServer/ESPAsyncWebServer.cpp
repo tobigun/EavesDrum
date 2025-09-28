@@ -52,8 +52,17 @@ static void handleEvent(struct mg_connection* connection, int ev, void* ev_data)
       const struct mg_http_serve_opts serveOpts = {.root_dir = "./config/"};
       mg_http_serve_dir(connection, hm, &serveOpts);
     } else { // Serve static files
-      const struct mg_http_serve_opts serveOpts = {.root_dir = "./data/"};
-      mg_http_serve_dir(connection, hm, &serveOpts);
+      String rootDir = "./data/";
+      String filePath = rootDir + String(hm->uri.buf, hm->uri.len);
+      String filePathGz = filePath + ".gz";
+      const struct mg_http_serve_opts serveOpts = {.root_dir = rootDir.c_str()};
+      if (access(filePath.c_str(), F_OK) == 0 || access(filePathGz.c_str(), F_OK) == 0) {
+        mg_http_serve_dir(connection, hm, &serveOpts);
+      } else {
+        AsyncWebServer* server = (AsyncWebServer*) connection->fn_data;
+        Serial.printf("Web: 404 Not Found: %s\n", filePath.c_str());
+        mg_http_reply(connection, 404, "Content-Type: text/plain\r\n", "%s", server->_notFoundContent.c_str());
+      }
     }
   } else if (ev == MG_EV_WS_MSG || ev == MG_EV_WS_OPEN) {
     AsyncWebSocket* socket = getWebSocket(connection);

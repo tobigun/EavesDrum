@@ -31,8 +31,6 @@ class AsyncWebSocket;
 class AsyncWebSocketClient;
 class AsyncWebServer;
 using AsyncStaticWebHandler = AsyncWebServer;
-using AsyncWebServerRequest = AsyncWebServer;
-using ArRequestHandlerFunction = std::function<void(AsyncWebServerRequest* request)>;
 
 typedef enum {
   WS_EVT_CONNECT,
@@ -45,6 +43,17 @@ typedef enum {
 typedef std::function<
     void(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len)>
     AwsEventHandler;
+
+class AsyncWebServerRequest {
+public:
+  void send(int code, const char* content_type = "text/html", const String& content = "") {
+    this->content = content;
+  }
+
+  String content;
+};
+
+using ArRequestHandlerFunction = std::function<void(AsyncWebServerRequest* request)>;
 
 class AsyncWebServer {
 public:
@@ -66,12 +75,11 @@ public:
     _defaultFilename = filename;
     return *this;
   }
-  void onNotFound(ArRequestHandlerFunction onRequest) {
-    // dummy
-  }
 
-  void send(int code, const char* content_type = "text/html", const String& content = "") {
-    // dummy
+  void onNotFound(ArRequestHandlerFunction onRequest) {
+    AsyncWebServerRequest notFoundRequest;
+    onRequest(&notFoundRequest);
+    _notFoundContent = notFoundRequest.content;
   }
 
 private:
@@ -80,6 +88,7 @@ private:
 
 public:
   AsyncWebSocket* _webSocketServer;
+  String _notFoundContent;
 };
 
 class AsyncWebSocketClient {

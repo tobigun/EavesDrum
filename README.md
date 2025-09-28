@@ -519,7 +519,7 @@ At a speed of sound of about 343 m/s, the sound travels 34 cm in 1 ms, so a litt
 
 If you look at the signal path there a quite some components involved from the hit to the drum until you hear the sound from the speaker. This is round trip time (RTT) of your system which defines the latency of your signal.
 
-<img src="doc/latency.svg" width="40%"/>
+<img src="doc/images/latency.svg" width="40%"/>
 
 1. The **hit detection** by the trigger module will take a fixed time - the scan time that you selected in the pad's settings and that is by default 3 ms. You can try to reduce this time but if you take a look at the screenshot of the Monitor below you might notice that the piezo signal for some pads reaches its peaks only after 1, 2 or even 3 ms. So if you set the scan time too low, you might get wrong results. The default of 3 ms was chosen so that it will work with most drum pads.
   <img alt="Basic circuit" src="doc/images/trigger2.png" width="40%"/>

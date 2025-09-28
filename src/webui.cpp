@@ -386,7 +386,7 @@ void WebUI::initHttpServer() {
       .setDefaultFile("index.html");
 
   server->onNotFound([](AsyncWebServerRequest* request) {
-    request->send(404);
+    request->send(404, "text/html", "Resource not found. Did you upload the filesystem content?");
   });
 
   server->begin();
