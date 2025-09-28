@@ -78,7 +78,7 @@ Low-volume cymbal setup:
 
 System overview:
 
-<img src="doc/latency.svg" width="60%"/>
+<img src="doc/images/latency.svg" width="60%"/>
 
 ## Features
 
@@ -660,3 +660,14 @@ So if you have the money, give a little love to the drum vendors and buy some or
 ## License
 This project is licensed under the [GNU General Public License v3.0](LICENSE.txt).
 The licenses of the used libraries can be viewed by clicking on the info-button in the top icon bar.
+
+**Logo Fonts:**
+- Audiowide
+  - https://fonts.google.com/specimen/Audiowide
+  - Copyright (c) 2012, Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com)
+  - SIL Open Font License, Version 1.1
+- Philosopher
+  - https://fonts.google.com/specimen/Philosopher
+  - Designed by Jovanny Lemonad
+  - Copyright 2011 The Philosopher Project Authors (https://github.com/alexeiva/philosopher)
+  - SIL Open Font License, Version 1.1

@@ -30,6 +30,30 @@ export function VersionInfo() {
     
     <p/>
     
+    <Typography>Logo Fonts:</Typography>
+    <Divider />
+    <Box>
+      <ul>
+        <li>
+          Audiowide
+          <ul>
+            <li>https://fonts.google.com/specimen/Audiowide</li>
+            <li>Copyright (c) 2012, Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com)</li>
+            <li>SIL Open Font License, Version 1.1</li>
+          </ul>
+        </li>
+        <li>
+          Philosopher
+          <ul>
+            <li>https://fonts.google.com/specimen/Philosopher</li>
+            <li>Designed by Jovanny Lemonad</li>
+            <li>Copyright 2011 The Philosopher Project Authors (https://github.com/alexeiva/philosopher)</li>
+            <li>SIL Open Font License, Version 1.1</li>
+          </ul>
+        </li>
+      </ul>
+    </Box>
+
     <Typography>Licenses Backend:</Typography>
     <Divider />
     <LicenseInfoBackend />
