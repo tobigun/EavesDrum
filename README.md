@@ -7,8 +7,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/tobigun/EavesDrum"><img alt="GitHub Actions status" src="https://github.com/tobigun/EavesDrum/actions/workflows/build-firmware.yml/badge.svg"/></a>
-  <a href="https://github.com/tobigun/EavesDrum"><img alt="Latest Release" src="https://img.shields.io/github/release/tobigun/EavesDrum.svg?style=flat"/></a>
+  <a href="https://github.com/tobigun/EavesDrum/actions/workflows/build-firmware.yml"><img alt="GitHub Actions status" src="https://github.com/tobigun/EavesDrum/actions/workflows/build-firmware.yml/badge.svg"/></a>
+  <a href="https://github.com/tobigun/EavesDrum/releases/latest"><img alt="Latest Release" src="https://img.shields.io/github/release/tobigun/EavesDrum.svg?style=flat"/></a>
   <a href="https://opensource.org/licenses/"><img alt="GPLv3 License" src="https://img.shields.io/badge/License-GPL%20v3-yellow.svg"/></a>
 </p>
 
@@ -168,25 +168,25 @@ All you need is:
     - Something to drum on, i.e. drum pads, cymbals and a Hi-Hat pedal. Or just a cheap piezo if you want to DIY your own drum.
 
 1. **Build the EavesDrum trigger module:**<br/>
-   - Either built it yourself or order it via a PCB manufacturer of your choice
-   - See section [Build your own EavesDrum trigger module](#use-the-reference-design) for schematics and Gerber files
+   - Either built it yourself or order it via a PCB manufacturer of your choice.
+   - See section [Build your own EavesDrum trigger module](#use-the-reference-design) for schematics and Gerber files.
 
 2. **Download & Flash the firmware:**<br/>
-   - Download the firmware for your Pico board from the Release download section
-   - Press the BOOTSEL while connecting your Pico Board via USB to enter the bootloader mode
-   - The board will now be detected as an USB flash drive
-   - Drag & Drop the firmware .uf2 file onto the drive
+   - [Download the firmware for your Pico board from the Release download section](https://github.com/tobigun/EavesDrum/releases/latest).
+   - Press the BOOTSEL while connecting your Pico Board via USB to enter the bootloader mode.
+   - The board will now be detected as an USB flash drive.
+   - Drag & Drop the firmware .uf2 file onto the drive.
 3. **Start the WebUI:**<br/>
-   - After flashing is done, the device should be detected as an USB network device
+   - After flashing is done, the device should be detected as an USB network device.
    - Open your browser and navigate to the WebUI by entering either
      - the static IP <a href="http://192.168.7.1">http://192.168.7.1</a> or
-     - the DNS name <a href="http://eaves.drum/">http://eaves.drum</a>
+     - the DNS name <a href="http://eaves.drum/">http://eaves.drum</a>.
 4. **Calibrate:**<br/>
    - [Calibrate the voltage offset with the UI Wizard](#calibration)
 5. **Connect Drums:**<br/>
-   - Connect your drum pads or triggers to the EavesDrum hardware
+   - Connect your drum pads or triggers to the EavesDrum hardware.
 6. **Configuration:**<br/>
-   - Adjust [settings](#settings) and [MIDI mappings](#mappings)
+   - Adjust [settings](#settings) and [MIDI mappings](#mappings).
 7. **Play:**<br/>
    - Once configured, start playing and enjoy!
 
@@ -262,7 +262,7 @@ You can also let JLCPCB or PCBWay assemble the PCB as you already order the PCB 
 - JLCPCB: 5 assembled PCBs including parts cost about 90€ (excl. shipping/tax), so approx. 20€ per PCB.
   - Unfortunately the minimum amount of assembled PCBs per order is 2 (in this case ~60€ excl. shipping/tax, so 30€ per board).
 
-If you want an assembled board it is best to organize a collective order to split the cost.
+If you want an assembled board it is best to organize a collective purchase order to split the cost. I created a [forum discussion where you can organize an order](https://github.com/tobigun/EavesDrum/discussions/1).
 
 **To order an assembled PCB:**
 - Perform the same steps as for the normal PCB but select "PCB Assembly".
@@ -572,14 +572,14 @@ Below are the measurement results from the audio interfaces that I own. Maybe it
 |Realtek HD Audio (HW Dev-ID 0x0294)|44.1kHz|64 (1.5ms)|ASIO4All|34.9ms|Could be an ALC294. Realtek's ASIO driver crashed, so I had to use ASIO4All|
 
 *Notes*:
-* The folder `doc/latency` contains screenshots of all tests
+* There is a [forum where you can post your own latency measurements](https://github.com/tobigun/EavesDrum/discussions/2).
+* The folder `doc/latency` contains screenshots of all tests.
 * The measurements were performed multiple times and the results varied slightly (~0.5 - 1ms) between tests. I took a result with a representative value.
 
 **Conclusion**
 > - The only dedicated device (Behringer UMC204HD) performed best.
->   - Focusrite Scarlett Solo 3rd / 4th Gen also comes with ASIO drivers and might work as well
->   - You can PM me your results. Would be quite interesting
-> - The results can vary between Computers and sometimes a 9 year old Computer can give you better results than a new one (see EFNOTE 3)
+>   - Focusrite Scarlett Solo 3rd / 4th Gen also comes with ASIO drivers and might work as well.
+> - The results can vary between Computers and sometimes a 9 year old Computer can give you better results than a new one (see EFNOTE 3).
 > - Although some ASIO4All performed quite well and I did not notice any crackling during the short test, I would not recommend them, as crackling is still likely with them. But it might be a start if you already own them.
 
 ## Firmware Development
