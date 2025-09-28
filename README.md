@@ -61,18 +61,23 @@ The configuration of the module is simple and user-friendly, thanks to a built-i
 The trigger module acts as a USB MIDI device - simply connect it to your notebook and use drum software of your choice (EZdrummer, Addictive Drums, SSD5, ...) to convert your notebook into a complete drum module.
 
 The EavesDrum Trigger Module:
+
 <img src="doc/images/module.jpg" height="400px"/>
 
-DIY ultra-low-volume metal-mesh cymbal setup:
+DIY ultra-low-volume metal mesh cymbal setup:
+
 <img src="doc/images/drumkit-diy.jpg" width="600px"/>
 
-Conventional rubber-cymbal setup:
+Conventional rubber cymbal setup:
+
 <img src="doc/images/drumkit.jpg" width="600px"/>
 
-Low-volume mesh setup:
+Low-volume cymbal setup:
+
 <img src="doc/images/drum-kit-low-volume.jpg" width="600px"/>
 
 System overview:
+
 <img src="doc/latency.svg" width="60%"/>
 
 ## Features
