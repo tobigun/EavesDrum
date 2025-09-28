@@ -5,6 +5,8 @@
 #include <LittleFS.h>
 #include "yaml_parser.h"
 
+#define CONFIG_SCHEMA_URL "https://raw.githubusercontent.com/tobigun/EavesDrum/refs/tags/config-schema-v1.0/config/config.jsonc"
+
 ///////////////////////////// Low-Level file access
 
 static const char* CONFIG_FILE_PATH = "/config.yaml";
@@ -30,7 +32,7 @@ JsonDocument DrumConfigMapper::loadDrumKitConfig() {
     noInterrupts();
   
     fs::File localeFile = LittleFS.open(CONFIG_FILE_PATH, "w");
-    localeFile.print("# yaml-language-server: $schema=./config.jsonc"); // Note: no newline, as YAMLduino already adds one
+    localeFile.print("# yaml-language-server: $schema=" CONFIG_SCHEMA_URL); // Note: no newline, as YAMLduino already adds one
     serializeYml(doc, localeFile);
     localeFile.close();
   

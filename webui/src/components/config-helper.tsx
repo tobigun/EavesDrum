@@ -17,7 +17,8 @@ export function downloadCurrentConfig() {
   };
 
   const configContent = stringify(config);
-  const schema = "# yaml-language-server: $schema=./config.jsonc\n";
+  const schemaUrl = "https://raw.githubusercontent.com/tobigun/EavesDrum/refs/tags/config-schema-v1.0/config/config.jsonc";
+  const schema = "# yaml-language-server: $schema=" + schemaUrl + "\n";
 
   // simulate a click on an anchor element
   const element = document.createElement("a");

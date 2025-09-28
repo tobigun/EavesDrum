@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=./config.jsonc
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tobigun/EavesDrum/refs/tags/config-schema-v1.0/config/config.jsonc
 # BFD Player 1.2
 # https://cdn.inmusicbrands.com/BFD/BFD%20Player%20-%20User%20Guide%20-%20v1.2.0%20-%20RevC.pdf
 mappings:
