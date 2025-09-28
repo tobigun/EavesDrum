@@ -398,6 +398,7 @@ Before you can start you have to first adjust the DC voltage offset so that the 
 For this open the WebUI, open the settings page (should be open by default) and click on `Calibrate` in the `Monitor` panel and follow the instructions.
 
 At the beginning the signal graph will probably look like this, with a signal level above 0% (here 10%):
+
 <img src="doc/images/calibration1.png" height="200px"/>
 
 Now turn the potentiometer labeled `ADC0 DC offset` (R3) with a screwdriver. Only if turned in the correct direction, the signal level will decrease, otherwise it will increase. So turn the potentiometer until the signal level reaches 0%. If you turned too much, the signal level will increase again - in this case turn in the opposite direction.
@@ -406,6 +407,7 @@ Now turn the potentiometer labeled `ADC0 DC offset` (R3) with a screwdriver. Onl
 
 
 The signal graph should now look like this - with a signal level of 0%:
+
 <img src="doc/images/calibration2.png" height="200px"/>
 
 Now the calibration is completed.
@@ -448,9 +450,11 @@ If you click on `Show All Pads` on the top, you can see hits on every pad, no ma
 
 #### Pedal Settings
 The settings for the Hi-Hat pedal are different from the settings of the pads.
+
 <img src="doc/images/settings-pedal.png" width="20%"/>
 
 To see the effect of the settings, monitor the pedal with the record button
+
 <img src="doc/images/settings-pedal2.png" width="50%"/>
 
 - **Pedal Range**: determines the offset and threshold for the lowest and highest signal level
@@ -475,6 +479,7 @@ In the folder `config/presets` you can find some presets for some pads. You can 
 ### Mappings
 
 With the Mappings page you can change the MIDI mappings of each pad.
+
 <img src="doc/images/pad-mappings.png" width="30%"/>
 
 Select the MIDI note of the zone to the desired value. You can trigger the note via the UI by pressing the "Play" button to preview the sound.
@@ -484,11 +489,13 @@ Select the MIDI note of the zone to the desired value. You can trigger the note 
 
 **Apply Drum-Kit Mappings**
 You can change the mappings of all pads in the drum-kit at ones if you drag & drop a mapping file (see folder `/config/mappings`) to top border (aka the Icon Bar) of the UI. This way you can switch between the mappings of the drum softwares easily.
+
 <img src="doc/images/apply-mappings-kit.png" width="30%"/>
 
 Alternatively you can also click on the "Apply Config File" button in the top Icon Bar to open the same file drop area that appears if you drag & drop a file.
 
 If you drag & drop the mappings file onto a pad instead of the top bar, only this pad's mappings will be changed:
+
 <img src="doc/images/apply-mappings-pad.png" width="30%"/>
 
 
