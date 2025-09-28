@@ -131,11 +131,11 @@ System overview:
 - **Open Source:** Source code and PCB Gerber files are available for customization and extension.
 - **WebUI Configuration:** Browser-based interface for setting up and tweaking trigger parameters such as sensitivity, threshold, retrigger prevention, and more. No app required as the UI runs directly on the trigger module.
   - Monitor the signal of your drum pads in real time so that you can see the effect of your settings.
-  <img alt="UI Monitor" src="doc/images/ui-monitor.png" width="900px"/>
+    <img alt="UI Monitor" src="doc/images/ui-monitor.png" width="900px"/>
   - Provides extensive settings options within a (hopefully) user-friendly layout.
-  <img alt="UI Settings" src="doc/images/ui-settings.png" width="900px"/>
+    <img alt="UI Settings" src="doc/images/ui-settings.png" width="900px"/>
   - Mappings can be adjusted individually or for the whole kit.
-  <img alt="UI Mappings" src="doc/images/ui-mappings.png" width="900px"/>
+    <img alt="UI Mappings" src="doc/images/ui-mappings.png" width="900px"/>
 
 ## Before You Start: Is EavesDrum What You Need?
 **EavesDrum is for you if you:**
@@ -522,7 +522,7 @@ If you look at the signal path there a quite some components involved from the h
 <img src="doc/latency.svg" width="40%"/>
 
 1. The **hit detection** by the trigger module will take a fixed time - the scan time that you selected in the pad's settings and that is by default 3 ms. You can try to reduce this time but if you take a look at the screenshot of the Monitor below you might notice that the piezo signal for some pads reaches its peaks only after 1, 2 or even 3 ms. So if you set the scan time too low, you might get wrong results. The default of 3 ms was chosen so that it will work with most drum pads.
-<img alt="Basic circuit" src="doc/images/trigger2.png" width="40%"/>
+  <img alt="Basic circuit" src="doc/images/trigger2.png" width="40%"/>
 
 2. The time it takes the trigger module to **generate and transfer a MIDI message to the computer via USB** is negligible as it is only a small fraction of a ms.
 3. Although the **sound processing** might also take some time I did not notice a vast differences between the drum softwares.
