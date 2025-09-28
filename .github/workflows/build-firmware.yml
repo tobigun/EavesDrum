@@ -136,7 +136,7 @@ jobs:
         run: |
           PICO1_BUILD_DIR=${{ env.PICO1_ARTIFACT }} \
           PICO2_BUILD_DIR=${{ env.PICO2_ARTIFACT }} \
-          UI_IMAGE_DIR=${{ env.FS_ARTIFACT }} \
+          FS_IMAGE_DIR=${{ env.FS_ARTIFACT }} \
           PICOTOOL_DIR=picotool \
           OUTPUT_DIR=output \
           ./combine-uf2.sh
