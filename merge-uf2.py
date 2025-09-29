@@ -58,7 +58,7 @@ class UF2Header:
         return (f"Block {self.blockNo}/{self.numBlocks-1} | Addr=0x{self.targetAddr:08X} | Size={self.payloadSize} | "
                 f"Flags=0x{self.flags:X} | FileID=0x{self.fileSize:X} | NumBlocks={self.numBlocks}")
 
-def merge_uf2(file1: str, file2: str, outfile: str):
+def merge_uf2(fw_uf2: str, fs_uf2: str, outfile: str):
     def read_blocks(filename):
         with open(filename, "rb") as f:
             data = f.read()
@@ -67,14 +67,17 @@ def merge_uf2(file1: str, file2: str, outfile: str):
         return [data[i:i+UF2_BLOCK_SIZE] for i in range(0, len(data), UF2_BLOCK_SIZE)]
 
     # Read both input UF2 files
-    blocks1 = read_blocks(file1)
-    blocks2 = read_blocks(file2)
+    blocks_fw = read_blocks(fw_uf2)
+    blocks_fs = read_blocks(fs_uf2)
 
-    all_blocks = blocks1 + blocks2
+    # merge blocks
+    # Note: although the order should not make a difference there seems to be a problem with Pico 1(W) (Booloader v2 and v3)
+    # but not with Pico2(W) if the FW is flashed first
+    all_blocks = blocks_fs + blocks_fw
     total_blocks = len(all_blocks)
 
-    # the UF2 file has to have the same family ID for the entire file 
-    first_header = UF2Header.from_bytes(all_blocks[0])
+    # the UF2 file has to have the same family ID for the entire file. Take family ID of the firmware UF2
+    first_header = UF2Header.from_bytes(blocks_fw[0])
     chosen_file_id = first_header.fileSize
 
     new_blocks = []
@@ -117,7 +120,7 @@ def merge_firmware_and_filesystem_to_one_uf2(firmware_uf2, filesystem_bin, memma
     filesystem_uf2 = filesystem_bin.replace(".bin", ".uf2")
     convert_bin_to_uf2(filesystem_bin, filesystem_uf2, fs_start_addr)
 
-    num_blocks = merge_uf2(filesystem_uf2, firmware_uf2, target_file)
+    num_blocks = merge_uf2(firmware_uf2, filesystem_uf2, target_file)
     print(f"Built combined UF2 file: {target_file} ({num_blocks} blocks)")
 
 

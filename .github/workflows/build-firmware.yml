@@ -137,7 +137,5 @@ jobs:
           # non-standard repository write access required for creating/updating releases
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
           files: |
-            output/*-universal.uf2
-            output/*-pico1_with_fs.uf2
-            output/*-pico2_with_fs.uf2
+            output/*.uf2
             LICENSE.txt
