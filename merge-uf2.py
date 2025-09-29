@@ -117,7 +117,7 @@ def merge_firmware_and_filesystem_to_one_uf2(firmware_uf2, filesystem_bin, memma
     filesystem_uf2 = filesystem_bin.replace(".bin", ".uf2")
     convert_bin_to_uf2(filesystem_bin, filesystem_uf2, fs_start_addr)
 
-    num_blocks = merge_uf2(firmware_uf2, filesystem_uf2, target_file)
+    num_blocks = merge_uf2(filesystem_uf2, firmware_uf2, target_file)
     print(f"Built combined UF2 file: {target_file} ({num_blocks} blocks)")
 
 
