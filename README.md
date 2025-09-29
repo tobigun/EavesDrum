@@ -208,8 +208,8 @@ You can find the schematics and pcb files in the `doc/schematics/module` directo
 | LED (red) | D3 | 1 | 0.08€ | 0.08€ | Use any color of your choice. THT or SMD 0805 / 0603 packages are supported. |
 | LED (blue) | D4 | 1 | 0.10€ | 0.10€ | Use any color of your choice. THT or SMD 0805 / 0603 packages are supported. |
 | Push Switch | SW1, SW2, SW3 | 3 | 0.15€ | 0.45€ |6x6mm. Only the `RESET` button is used at the moment. |
-| Potentiometer 5k | R3, R6 | 2 | 0.35€ | 0.70€ | Supports Piher PT10 (10mm) / PT5 (5mm) or Bourns TC33 (SMD) |
-| Potentiometer 100k | R11 | 1 | 0.35€ | 0.35€ | Supports Piher PT10 (10mm) / PT5 (5mm) or Bourns TC33 (SMD) |
+| Potentiometer 5k | R3, R6 | 2 | 0.35€ | 0.70€ | Supports Piher PT10 (10mm) / PT6 (6mm) or Bourns TC33 (SMD) |
+| Potentiometer 100k | R11 | 1 | 0.35€ | 0.35€ | Supports **only** Piher PT6 (6mm) or Bourns TC33 (SMD) |
 | Resistor 330 Ohms | R5, R8, R13 | 3 | 0.03€ | 0.09€ | SMD 0805 package, 125mW, 1% |
 | Resistor 1 kOhms | R1.0 - R1.15<br>R2.0 - R2.15 | 32 | 0.015€ | 0.48€ | SMD 0805 package, 125mW, 1% |
 | Resistor 2.7 kOhms | R4 | 1 | 0.03€ | 0.03€ | SMD 0805 package, 125mW, 1% |

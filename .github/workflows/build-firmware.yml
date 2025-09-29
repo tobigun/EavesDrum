@@ -115,23 +115,6 @@ jobs:
           fileName: x86_64-linux-gnu.picotool-c56c005.250530.tar.gz
           extract: true
 
-      # Build uf2tool
-      - name: Setup Erlang for Build
-        uses: erlangsters/setup-erlang@v1
-        with:
-          erlang-version: ${{ env.ERLANG_VERSION }}
-          install-rebar3: true
-      - name: Checkout uf2tool
-        uses: actions/checkout@v4
-        with:
-          repository: pguyot/uf2tool
-          ref: v1.1.0
-          path: uf2tool
-      - name: Build uf2tool
-        run: |
-          cd uf2tool
-          rebar3 escriptize
-
       - name: Combine executable UF2s and filesystem (config + UI) UF2
         run: |
           PICO1_BUILD_DIR=${{ env.PICO1_ARTIFACT }} \
@@ -155,6 +138,6 @@ jobs:
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
           files: |
             output/*-universal.uf2
-            output/*-pico1.uf2
-            output/*-pico2.uf2
+            output/*-pico1_with_fs.uf2
+            output/*-pico2_with_fs.uf2
             LICENSE.txt
