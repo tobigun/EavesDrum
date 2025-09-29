@@ -223,6 +223,8 @@ void arduino::serialEventRun(void) {
 
 #else
 
+SerialUSB::SerialUSB() {}
+
 void SerialUSB::begin(unsigned long baud) {
     _running = false;
 }
