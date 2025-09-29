@@ -194,13 +194,13 @@ All you need is:
 ### Use the Reference Design
 **Schematics of the trigger module with 32 inputs:**
 
-<a href="doc/schematics/module/schematic.png"><img alt="Basic circuit" src="doc/schematics/module/schematic.png" width="500px"/></a>
+<img alt="Basic circuit" src="doc/schematics/module/schematic-module-1.1.png" width="500px"/>
 
 You can find the schematics and pcb files in the `doc/schematics/module` directory. They can be viewed and edited with [KiCad](https://www.kicad.org/).
 
 **Bill of material (BOM):**
-| Comment | Designator | Quantity | Price / Unit | Price Total | Comment |
-| ------- | ---------- | -------- | ------------ | ----------- | ------- | 
+| Component | Designator | Quantity | Price / Unit | Price Total | Comment |
+| --------- | ---------- | -------- | ------------ | ----------- | ------- | 
 | Raspberry Pi Pico 2 | A1 | 1 | 5.50€ | 5.50€ | <ul><li>There is also a variant Pico 2H with an already soldered header</li><li>A Pico 1 would also work but is not recommended due to the better performance of the Pico 2 and the little difference in price.</li><li>Pico 2W is not yet supported but might be in the future for Wifi and BLE</li></ul>|
 | 20-pin Header (male)<br>20-pin Header (female) | A1 | 2 | 0.20€<br>0.30€ | 1.00€ | Optional. <ul><li>Used to socket your Pico to be able to replace it when it is damaged or exchange it by another variant like the Pico 2W.</li><li>If you use the Pico variant that already has a header. Then you only need the female header.</li></ul> |
 | HC4067 | U1, U2 | 2 | 1.00€ | 2.00€ | Multiplexer. Each provides 16 inputs.<br>Available from many vendors with HC4067 in the name (e.g. CD74HC4067M). Make sure it is the SO-24 package. |
@@ -217,8 +217,8 @@ You can find the schematics and pcb files in the `doc/schematics/module` directo
 | Capacitor 10 µF | C1, C2 | 2 | 0.04€ | 0.08€ | SMD 0805 package, >=25V, X5R (or X7R)
 | D-Sub 37-pin Connector, right-angled, male | J1 | 1 | 1.00€ | 1.00€ | Alternatively, you can use any connector of your choice via the 2x25 pin IDC header (J2). |
 | Header 2x25 pins (male) | J2 | 1 | 0.33€ | 0.33€ | Optional. Only required if you do not want to use the D-Sub 37 connector.
-| 3-pin Header (male)<br>+ 2-pin Jumpers | JP1 - JP6 | 6 | 0.09€<br>+ 0.02€ | 0.66€ | Instead of 6x 3-pin headers, use a cheaper 40-pin header and brake it into 3-pin pieces. You can also use slide switches instead if you want to change the settings more often.
-| 3-pin Header (female) | J3 | 1 | 0.15€ | 0.15€ | Only required for UART serial debug output.
+| 3-Pin Header (male)<br>+ 2-pin Jumpers | JP1 - JP6 | 6 | 0.09€<br>+ 0.02€ | 0.66€ | Instead of 6x 3-pin headers, use a cheaper 40-pin header and brake it into 3-pin pieces. You can also use slide switches instead if you want to change the settings more often.
+| 3-Pin Header (female) | J3 | 1 | 0.15€ | 0.15€ | Only required for UART serial debug output.
 | PCB | - | 1 | ~10€ (Germany) | ~10€ | See the section [PCB Ordering and Assembly](#pcb-ordering-and-assembly) for more info|
 | **Total** |||| 24.66€ || 
 
@@ -255,7 +255,6 @@ Due to the varying discount by coupons, prices of JLCPCB and PCBWay my vary. So 
 **Assembly**
 It is possible to assemble the PCB on your own by hand-soldering without special equipment. The only tricky part is the HC4067 SMD packages and the SMD resistors and capacitors. While the latter is quite easy, the HC4067 requires some experience.
 
-
 You can also let JLCPCB or PCBWay assemble the PCB as you already order the PCB there.
 
 *Example:*
@@ -270,6 +269,9 @@ If you want an assembled board it is best to organize a collective purchase orde
 - Some parts might currently not be available. There is most likely an identical component / chip from a different vendor that you can select in this case.
 - In the next step check the component placements and submit your order.
 - After a review an engineer might contact you if there are questions about the design (that was the case in my order).
+
+> [!NOTE]
+> Also take a look at the [DIY Optical Hi-Hat Sensor PCB](doc/hihat.md). You might want to get both PCBs with one order.
 
 #### Connector Harness
 
