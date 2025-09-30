@@ -1,7 +1,7 @@
 #theme: minima
 remote_theme: "jekyll/minima@b3385fe64e9d79e75260668cad1852a3913b1829"
 markdown: GFM
-plugins_dir: doc/_plugins
+plugins_dir:  doc/_plugins
 #includes_dir: doc/_includes
 plugins:
   - jekyll-relative-links
