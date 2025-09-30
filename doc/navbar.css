@@ -7,7 +7,7 @@ main {
   max-width: 1400px;
 }
 
-main ul:first-of-type {
+.home > ul:first-of-type {
   display: none;
 }
 
@@ -15,7 +15,7 @@ main ul:first-of-type {
     #sidebar {
         display: none;
     }
-    main ul:first-of-type {
+    .home > ul:first-of-type {
         display: block;
     }
     main {
@@ -92,4 +92,21 @@ main ul:first-of-type {
   -moz-box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.1);
   outline: none;
+}
+
+#forkme_banner {
+  display: block;
+  position: absolute;
+  top:0;
+  height: 27px;
+  line-height: 27px;
+  right: 10px;
+  z-index: 10;
+  padding: 10px 50px 10px 10px;
+  color: #fff;
+  background: url('images/blacktocat.png') #0090ff no-repeat 95% 50%;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(0,0,0,.5);
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
 }

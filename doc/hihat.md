@@ -1,3 +1,7 @@
+---
+layout: home
+---
+
 ## DIY Optical Hi-Hat sensor
 
 If you need a Hi-Hat sensor here is a simple PCB to build one yourself.
@@ -36,6 +40,7 @@ The core of the PCB is a cheap TCRT5000 Infrared Reflectance Sensor.
 All files that you need to order your Hi-Hat Sensor PCB (GERBER file, ...) are [here](https://github.com/tobigun/EavesDrum/releases/tag/PCB-hihat-v1.0.2).
 
 ### Bill of material (BOM)
+
 | Component | Designator | Quantity | Price / Unit | Price Total | Comment |
 | --------- | ---------- | -------- | ------------ | ----------- | ------- | 
 | Potentiometer 5k | R1 | 1 | 0.35€ | 0.35€ | Supports Piher PT10 (10mm) / PT6 (6mm) or Bourns TC33 (SMD) |
@@ -49,6 +54,7 @@ All files that you need to order your Hi-Hat Sensor PCB (GERBER file, ...) are [
 If you search for a shop for the TCRT5000 and are located in Germany you might want to take a look at BerryBase.
 
 ### Connector
+
 | Pin | Function | Comment |
 | --- | -------- | ------- |
 | 1 | GND | Connect to the `GND` of the EavesDrum Trigger Module. Usually the shield / metal housing of the SUB-D37 connector |

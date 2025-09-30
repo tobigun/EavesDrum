@@ -18,6 +18,8 @@ layout: home
 
 <!-- vscode-markdown-toc -->
 - [Welcome to EavesDrum!](#welcome-to-eavesdrum)
+  - [Downloads](#downloads)
+  - [EavesDrum Trigger Module](#eavesdrum-trigger-module)
 - [Features](#features)
 - [Before You Start: Is EavesDrum What You Need?](#before-you-start-is-eavesdrum-what-you-need)
 - [Getting Started](#getting-started)
@@ -39,7 +41,10 @@ layout: home
     - [Apply Presets](#apply-presets)
   - [Mappings](#mappings)
   - [Apply a Whole Configuration](#apply-a-whole-configuration)
-  - [Understand and Reduce Latency](#understand-and-reduce-latency)
+- [Understand and Reduce Latency](#understand-and-reduce-latency)
+  - [Reduce Hit Detection Latency](#reduce-hit-detection-latency)
+  - [Reduce Audio Interface Latency](#reduce-audio-interface-latency)
+  - [TL;DR](#tldr)
 - [Firmware Development](#firmware-development)
   - [How to Build the UI](#how-to-build-the-ui)
   - [How to Build the Backend and Firmware](#how-to-build-the-backend-and-firmware)
@@ -64,7 +69,13 @@ The configuration of the module is simple and user-friendly, thanks to a built-i
 
 The trigger module acts as a USB MIDI device - simply connect it to your notebook and use drum software of your choice (EZdrummer, Addictive Drums, SSD5, ...) to convert your notebook into a complete drum module.
 
-The EavesDrum Trigger Module:
+### Downloads
+- Trigger Module:
+  - [PCB files](https://github.com/tobigun/EavesDrum/releases/tag/PCB-module-v1.1)
+  - [Firmware](https://github.com/tobigun/EavesDrum/releases/latest)
+- [DIY Optical Hi-Hat Sensor](doc/hihat.md)
+
+### EavesDrum Trigger Module
 
 <img src="doc/images/module.jpg" height="400px"/>
 
@@ -135,10 +146,13 @@ System overview:
 - **Open Source:** Source code and PCB Gerber files are available for customization and extension.
 - **WebUI Configuration:** Browser-based interface for setting up and tweaking trigger parameters such as sensitivity, threshold, retrigger prevention, and more. No app required as the UI runs directly on the trigger module.
   - Monitor the signal of your drum pads in real time so that you can see the effect of your settings.
+  
     <img alt="UI Monitor" src="doc/images/ui-monitor.png" width="900px"/>
   - Provides extensive settings options within a (hopefully) user-friendly layout.
+  
     <img alt="UI Settings" src="doc/images/ui-settings.png" width="900px"/>
   - Mappings can be adjusted individually or for the whole kit.
+  
     <img alt="UI Mappings" src="doc/images/ui-mappings.png" width="900px"/>
 
 ## Before You Start: Is EavesDrum What You Need?
@@ -203,10 +217,11 @@ All you need is:
 You can find the schematics and pcb files in the `doc/schematics/module` directory. They can be viewed and edited with [KiCad](https://www.kicad.org/).
 
 **Bill of material (BOM):**
+
 | Component | Designator | Quantity | Price / Unit | Price Total | Comment |
 | --------- | ---------- | -------- | ------------ | ----------- | ------- | 
-| Raspberry Pi Pico 2 | A1 | 1 | 5.50€ | 5.50€ | <ul><li>There is also a variant Pico 2H with an already soldered header</li><li>A Pico 1 would also work but is not recommended due to the better performance of the Pico 2 and the little difference in price.</li><li>Pico 2W is not yet supported but might be in the future for Wifi and BLE</li></ul>|
-| 20-pin Header (male)<br>20-pin Header (female) | A1 | 2 | 0.20€<br>0.30€ | 1.00€ | Optional. <ul><li>Used to socket your Pico to be able to replace it when it is damaged or exchange it by another variant like the Pico 2W.</li><li>If you use the Pico variant that already has a header. Then you only need the female header.</li></ul> |
+| Raspberry Pi Pico 2 | A1 | 1 | 5.50€ | 5.50€ | There is also a variant Pico 2H with an already soldered header<br>- A Pico 1 would also work but is not recommended due to the better performance of the Pico 2 and the little difference in price.<br>- Pico 2W is not yet supported but might be in the future for Wifi and BLE |
+| 20-pin Header (male)<br>20-pin Header (female) | A1 | 2 | 0.20€<br>0.30€ | 1.00€ | Optional. <br>- Used to socket your Pico to be able to replace it when it is damaged or exchange it by another variant like the Pico 2W.<br>- If you use the Pico variant that already has a header. Then you only need the female header. |
 | HC4067 | U1, U2 | 2 | 1.00€ | 2.00€ | Multiplexer. Each provides 16 inputs.<br>Available from many vendors with HC4067 in the name (e.g. CD74HC4067M). Make sure it is the SO-24 package. |
 | BAT54S | D1.0 - D1.15<br>D2.0 - D2.15 | 32 | 0.05€ | 1.60€ |Prefer the ones with a forward voltage (VF) of 800mV@100mA over those with 1V@100mA but probably any vendor and type will work.|
 | LED (red) | D3 | 1 | 0.08€ | 0.08€ | Use any color of your choice. THT or SMD 0805 / 0603 packages are supported. |
@@ -217,7 +232,7 @@ You can find the schematics and pcb files in the `doc/schematics/module` directo
 | Resistor 330 Ohms | R5, R8, R13 | 3 | 0.03€ | 0.09€ | SMD 0805 package, 125mW, 1% |
 | Resistor 1 kOhms | R1.0 - R1.15<br>R2.0 - R2.15 | 32 | 0.015€ | 0.48€ | SMD 0805 package, 125mW, 1% |
 | Resistor 2.7 kOhms | R4 | 1 | 0.03€ | 0.03€ | SMD 0805 package, 125mW, 1% |
-| Resistor 4.7 kOhms | R9, R10 | 2 | 0.03€ | 0.06€ | SMD 0805 package, 125mW, 1% ||
+| Resistor 4.7 kOhms | R9, R10 | 2 | 0.03€ | 0.06€ | SMD 0805 package, 125mW, 1% |
 | Capacitor 10 µF | C1, C2 | 2 | 0.04€ | 0.08€ | SMD 0805 package, >=25V, X5R (or X7R)
 | D-Sub 37-pin Connector, right-angled, male | J1 | 1 | 1.00€ | 1.00€ | Alternatively, you can use any connector of your choice via the 2x25 pin IDC header (J2). |
 | Header 2x25 pins (male) | J2 | 1 | 0.33€ | 0.33€ | Optional. Only required if you do not want to use the D-Sub 37 connector.
@@ -290,6 +305,7 @@ You can either solder jacks directly to a D-Sub 37 (female) connector or you can
 <img alt="Cable harness" src="doc/images/cable-harness.jpg" width="500px"/>
 
 This is the default configuration for the outputs:
+
 | Jack | Pins | Assignment |
 |-----------|------|------------|
 |1| in1_0, in1_1, in1_2 | Snare (Main, Rim, Side-Rim) |
@@ -305,7 +321,7 @@ This is the default configuration for the outputs:
 |11| in2_9, in2_10 | Tom 4 (Main, Rim) |
 |12| in2_11 (sel0), in2_12 (sel1) | Tom 5 (Main, Rim) |
 |13| in2_13 (sel2), in2_14 (sel3), in2_15 (sel4) | Cymbal 4 (Bow, Edge, Cup) |
-|Pedal| adc2, hh_vcc (optical only) | Hi-Hat Pedal (resistive or optical)<ul><li>For resistive controllers: adjust the `ADC2 DC offset` potentiometer to the (+) direction (~4kOhm)</li><li>For optical (TCRT5000) controllers: adjust the `ADC2 DC offset` potentiometer to the middle (~69kOhm)</li></ul>This will adjust the sensitivity of the ADC2 channel. You can fine-tune this setting in the UI later. |
+|Pedal| adc2, hh_vcc (optical only) | Hi-Hat Pedal (resistive or optical)<br>- For resistive controllers: adjust the `ADC2 DC offset` potentiometer to the (+) direction (~4kOhm)<br>- For optical (TCRT5000) controllers: adjust the `ADC2 DC offset` potentiometer to the middle (~69kOhm)<br>This will adjust the sensitivity of the ADC2 channel. You can fine-tune this setting in the UI later. |
 
 <a id="pad-connectors"></a>
 
@@ -464,10 +480,6 @@ The settings for the Hi-Hat pedal are different from the settings of the pads.
 
 <img src="doc/images/settings-pedal.png" width="20%"/>
 
-To see the effect of the settings, monitor the pedal with the record button
-
-<img src="doc/images/settings-pedal2.png" width="50%"/>
-
 - **Pedal Range**: determines the offset and threshold for the lowest and highest signal level
   - Do not touch the Hi-Hat pedal for the open position.
   - Adjust the **min value** of the `Pedal Range` so that the corresponding marker in the monitor's signal graph is slightly above the current pedal signal and the Pedal value in the hit graph is at 0%.
@@ -481,6 +493,10 @@ To see the effect of the settings, monitor the pedal with the record button
   - The faster the pedal moves from `Almost Closed` to `Closed` the higher the intensity of the "Chick" sound will be.
   - If the time between both states is higher than **Chick Detect Timeout**, then no sound will be played.
   - If you do not want a "Chick" sound, you can disable it on the Mappings Page by setting the sound for the "Chick" to `None`.
+
+To see the effect of the settings, monitor the pedal with the record button:
+
+<img src="doc/images/settings-pedal2.png" width="50%"/>
 
 #### Apply Presets
 In the folder `config/presets` you can find some presets for some pads. You can apply them by dragging them from Windows Explorer to the settings panel of a pad.
@@ -520,51 +536,69 @@ This way you can Backup & Restore your config whenever you do a firmware update.
 
 <a id="latency"></a> 
 
-### Understand and Reduce Latency
+## Understand and Reduce Latency
 At a speed of sound of about 343 m/s, the sound travels 34 cm in 1 ms, so a little less then the length of a drum stick. It seems that everything up to [5 ms is not noticeable and most drummers still have no problem with 10 ms](https://forums.steinberg.net/t/ab-welcher-latenz-bemerkt-ihr-eine-verzogerung-und-ab-wann-stort-die-euch/105517/45). So you want the latency to be as low as possible or at least below 10 ms.
 
 If you look at the signal path there a quite some components involved from the hit to the drum until you hear the sound from the speaker. This is round trip time (RTT) of your system which defines the latency of your signal.
 
 <img src="doc/images/latency.svg" width="40%"/>
 
-1. The **hit detection** by the trigger module will take a fixed time - the scan time that you selected in the pad's settings and that is by default 3 ms. You can try to reduce this time but if you take a look at the screenshot of the Monitor below you might notice that the piezo signal for some pads reaches its peaks only after 1, 2 or even 3 ms. So if you set the scan time too low, you might get wrong results. The default of 3 ms was chosen so that it will work with most drum pads.
-  <img alt="Basic circuit" src="doc/images/trigger2.png" width="40%"/>
+1. The **hit detection** by the trigger module will take a fixed time - the scan time that you selected in the pad's settings and that is by default 3 ms.
+1. The time it takes the trigger module to **generate and transfer a MIDI message to the computer via USB** is negligible as it is only a small fraction of a ms.
+2. Although the **sound processing** might also take some time I did not notice a vast differences between the drum softwares.
+3. The audio latency from your drum software to the **audio interface** is the biggest contributor to latency.
 
-2. The time it takes the trigger module to **generate and transfer a MIDI message to the computer via USB** is negligible as it is only a small fraction of a ms.
-3. Although the **sound processing** might also take some time I did not notice a vast differences between the drum softwares.
-4. The audio latency from your drum software to the **audio interface** is the biggest contributor to latency.
-   - It depends on the **number of buffers** the software, drivers and audio interface uses and the **buffer size**.
-     - Dedicated audio interfaces for musicians are optimized for low latency and offer better (ASIO) drivers.
-     - The bigger the buffer the less error-prone is the playback, even if the CPU is currently doing some other stuff. But every buffer and every byte in the buffer will increase the latency.
-   - The best way to reduce latency is to **reduce the buffer sizes**. The goal is a **latency of 5-6 ms** for this part of the signal chain.
-     - On **Windows** this is **only possible** without crackling and dropouts **with ASIO drivers**. So make sure your audio device has dedicated ASIO drivers.
-     - Do not waste your time with **WASAPI** or **DirectSound** drivers. WASAPI (Low-Latency) resulted in 69ms, WASAPI (Exclusive Mode) in 34.9ms. DirectSound was even worse. Same device with ASIO was about 6ms.
-     - You can try **[ASIO4All](https://asio4all.org/)** if you want to start with an existing interface that does not come with ASIO drivers - but keep your expectations low. With the Realtek soundcard built into one of my notebooks I could not get the latency below 35 ms with ASIO4All which is unusable.
-   - **Select ASIO as the output type** in your drum software and start with the lowest audio buffer size.
-     - Trigger the pads really quick and try every pads if you hear some crackling or dropouts on any of them.
-     - Also check if the audio quality is still ok or if it sounds muffled, ...
-     - If you notice audio problems (**crackling, muffling, popping, dropouts**)
-       - Make sure that no other CPU-intensive software is currently in use.
-       - Also make sure that your CPU is suited for the task (i.e. you CPU load is not too high)
-       - Although my old Intel Core i7-7500U (2.7 GHz) Ultrabook CPU from 2016 works fine as drum computer most of the time, it seems to stutter sometimes if I select the lowest buffer size. Something I have not noticed with my newer Intel Core i7-1260P (2.1 GHz, 12 Cores) from 2022.
-       - If you have a modern i7 (and probably i5) CPU you should be fine. Same with an Apple M1 CPU.
-     - If you still notice audio problems **increase the sample size step by step** until you get a stable output.
-   - Note that the latencies that your ASIO driver displays for each buffer size (e.g. 64 samples -> 1.5 ms) is only the **theoretical minimum** with this setting. In reality the value is much higher (e.g. for my device 5 ms instead of the 1.5 ms). You can measure the system latency if you want to be sure (see below)
-   - Sometimes you can further reduce the latency by **increasing the sample rate** (so 192kHz, 96kHz or at least 48kHz instead of 44.1kHz), but this might not always give you the expected result.
-   - Last but not least the **OS** might also be a factor. If you have the choice try Mac OS X or iOS - it might perform better due to its superior audio architecture.
+### Reduce Hit Detection Latency
+The time the trigger module waits for a peak to detect a hit can be configured for each pad. The default of 3 ms was chosen so that it works with most drum pads.
 
-**TL;DR**
+If you take a look at the screenshot of the Monitor below you might notice that the piezo signal for some pads reaches its peaks only after 1, 2 or even 3 ms. 
+
+<img alt="Basic circuit" src="doc/images/trigger2.png" width="40%"/>
+
+So if you set the scan time too low, you might get wrong results. Decrease the scan time in small amounts and check if the hit strength are still detected correctly.
+
+### Reduce Audio Interface Latency
+The Audio Interface latency depends on the **number of buffers** the software, drivers and audio interface uses and the **buffer size**.
+  - Dedicated audio interfaces for musicians are optimized for low latency and offer better (ASIO) drivers.
+  - The bigger the buffer the less error-prone is the playback, even if the CPU is currently doing some other stuff. But every buffer and every byte in the buffer will increase the latency.
+
+The best way to reduce latency is to **reduce the buffer sizes**. The goal is a **latency of 5-6 ms** for this part of the signal chain.
+  - On **Windows** this is **only possible** without crackling and dropouts **with ASIO drivers**. So make sure your audio device has dedicated ASIO drivers.
+  - Do not waste your time with **WASAPI** or **DirectSound** drivers. WASAPI (Low-Latency) resulted in 69ms, WASAPI (Exclusive Mode) in 34.9ms. DirectSound was even worse. Same device with ASIO was about 6ms.
+  - You can try **[ASIO4All](https://asio4all.org/)** if you want to start with an existing interface that does not come with ASIO drivers - but keep your expectations low. With the Realtek soundcard built into one of my notebooks I could not get the latency below 35 ms with ASIO4All which is unusable.
+
+**Select ASIO as the output type** in your drum software and start with the lowest audio buffer size.
+  - Trigger the pads really quick and try every pads if you hear some crackling or dropouts on any of them.
+  - Also check if the audio quality is still ok or if it sounds muffled, ...
+  - If you notice audio problems (**crackling, muffling, popping, dropouts**)
+    - Make sure that no other CPU-intensive software is currently in use.
+    - Also make sure that your CPU is suited for the task (i.e. you CPU load is not too high)
+    - Although my old Intel Core i7-7500U (2.7 GHz) Ultrabook CPU from 2016 works fine as drum computer most of the time, it seems to stutter sometimes if I select the lowest buffer size. Something I have not noticed with my newer Intel Core i7-1260P (2.1 GHz, 12 Cores) from 2022.
+    - If you have a modern i7 (and probably i5) CPU you should be fine. Same with an Apple M1 CPU.
+  - If you still notice audio problems **increase the sample size step by step** until you get a stable output.
+
+Note that the latencies that your ASIO driver displays for each buffer size (e.g. 64 samples -> 1.5 ms) is only the **theoretical minimum** with this setting. In reality the value is much higher (e.g. for my device 5 ms instead of the 1.5 ms). You can measure the system latency if you want to be sure (see below)
+
+Sometimes you can further reduce the latency by **increasing the sample rate** (so 192kHz, 96kHz or at least 48kHz instead of 44.1kHz), but this might not always give you the expected result.
+
+Last but not least the **OS** might also be a factor. If you have the choice try Mac OS X or iOS - it might perform better due to its superior audio architecture.
+
+### TL;DR
+
 To reduce the latency, use a decent Audio interface, use dedicated ASIO drivers, reduce the sample size and try to increase the sample rate. You should get the output latency of the audio device to about 5-6 ms with ASIO on Windows. So with a scan time of 3 ms this will be 8-9 ms. If you are still not satisfied with this, try to reduce the scan time of the pads.
 
 You can test the latency of your system with the latency measurement feature, built into the UI. Open the `Settings` page and click on `Check Latency` on top of the `Monitor` panel. The wizard will guide you through the procedure.
 
 <img src="doc/images/latency-measurement.png" width="80%"/>
+
 <img src="doc/latency/test-setup.jpg" height="600px"/>
+
 <img src="doc/latency/umc204hd.png" width="80%"/>
 
 ---
 
 Below are the measurement results from the audio interfaces that I own. Maybe it will give you an idea what to expect:
+
 |Device|Sample Rate|Buffer Size|ASIO driver|Latency|Comment|
 |------|-----------|-----------|-----------|-------|-------|
 |Behringer UMC204HD|**48kHz**|32 (0.7ms)|UMC ASIO|5.7ms||

@@ -52,3 +52,4 @@ build
 # Jekyll
 _site
 .sass-cache
+Gemfile.lock

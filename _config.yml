@@ -1,12 +1,18 @@
-#theme: minima
-remote_theme: "jekyll/minima@b3385fe64e9d79e75260668cad1852a3913b1829"
-markdown: GFM
+title: EavesDrum
+github:
+  repository_url: https://github.com/tobigun/EavesDrum
+#remote_theme: "jekyll/minima@b3385fe64e9d79e75260668cad1852a3913b1829"
+theme: minima
+markdown: kramdown
+kramdown:
+  input: GFM
 plugins_dir: doc/_plugins
 includes_dir: doc/_includes
 plugins:
   - jekyll-relative-links
   - jekyll-remote-theme
-#  - jekyll-readme-index
+  - jekyll-readme-index
+  - jekyll-gfm-admonitions  
 relative_links:
   enabled: true
   collections: true
@@ -15,10 +21,9 @@ exclude:
   - lib
   - src
   - .pio
-include:
-  - README.md
 minima:
   skin: dark
+  hide_site_feed_link: true
 readme_index:
   enabled: true
   remove_originals: false
