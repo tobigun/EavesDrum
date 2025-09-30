@@ -1,0 +1,12 @@
+<nav id="sidebar">
+  <ul>
+    {% for heading in site.readme_toc %}
+      {% if heading.depth == 2 %}
+        <li><a href="#{{ heading.text | slugify }}">{{ heading.text }}</a></li>
+      {% endif %}
+      {% if heading.depth == 3 %}
+        <li><ul><li><a href="#{{ heading.text | slugify }}"><h2>{{ heading.text }}</h2></a></li></ul></li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</nav>

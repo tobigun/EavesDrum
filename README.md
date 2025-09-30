@@ -1,3 +1,7 @@
+---
+layout: home
+---
+
 <p align="center">
   <img alt="Yarn" src="doc/logo/Eavesdrum-banner.svg" width="100%"/>
 </p>

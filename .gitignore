@@ -48,3 +48,7 @@ build
 *.pdf
 *.b#1
 *.s#1
+
+# Jekyll
+_site
+.sass-cache

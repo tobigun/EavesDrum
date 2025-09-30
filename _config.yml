@@ -1,0 +1,26 @@
+#theme: minima
+remote_theme: "jekyll/minima@b3385fe64e9d79e75260668cad1852a3913b1829"
+markdown: GFM
+data_dir: doc/_data
+plugins_dir: doc/_plugins
+includes_dir: doc/_includes
+plugins:
+  - jekyll-relative-links
+  - jekyll-remote-theme
+#  - jekyll-readme-index
+relative_links:
+  enabled: true
+  collections: true
+exclude:
+  - webui
+  - lib
+  - src
+  - .pio
+include:
+  - README.md
+minima:
+  skin: dark
+readme_index:
+  enabled: true
+  remove_originals: false
+  with_frontmatter: true
