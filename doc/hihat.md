@@ -1,7 +1,3 @@
----
-layout: home
----
-
 ## DIY Optical Hi-Hat sensor
 
 If you need a Hi-Hat sensor here is a simple PCB to build one yourself.

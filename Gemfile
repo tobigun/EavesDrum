@@ -7,10 +7,10 @@ gem "wdm"
 gem "webrick"
 
 group :jekyll_plugins do
-  gem "jekyll-feed"
   gem "jekyll-readme-index"
   gem "jekyll-seo-tag"
-  gem "jekyll-relative-links"
   gem "jekyll-remote-theme"
   gem "jekyll-gfm-admonitions"
+  #gem "jekyll-feed"
+  #gem "jekyll-relative-links"
 end

@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="Yarn" src="doc/logo/Eavesdrum-banner.svg" width="100%"/>
+  <img alt="EavesDrum" src="doc/logo/Eavesdrum-banner.svg" width="100%"/>
 </p>
 
 <p align="center">
