@@ -382,6 +382,8 @@ The base circuit for each input consists of the following parts:
 
 <img alt="Basic circuit" src="doc/images/base-circuit.png" width="500px"/>
 
+Please note that "~2,7k" for R2 in the schematics means that the variable resistor should be adjusted to this value. The nominal value of the resistor should be about 5k to have some range for the adjustment.
+
 You might also be able to build this on a breadboard for first experimentation.
 
 #### How the Circuit Works
