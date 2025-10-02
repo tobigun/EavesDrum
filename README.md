@@ -435,7 +435,7 @@ The signal graph should now look like this - with a signal level of 0%:
 
 Now the calibration is completed.
 
-> [!INFO]
+> [!NOTE]
 > Do not worry if the signal is not totally clean and has a bit of a ripple in the 1% or 2% range. This can be compensated with the thresholds later.
 > If you do not reach the 0% level at all, your trigger module might be faulty.
 
