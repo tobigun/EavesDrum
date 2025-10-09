@@ -383,6 +383,8 @@ The base circuit for each input consists of the following parts:
 
 <img alt="Basic circuit" src="doc/images/base-circuit.png" width="500px"/>
 
+Please note that "~2,7k" for R1 in the schematics means that the variable resistor should be adjusted to this value. The nominal value of the resistor should be about 5k to have some range for the adjustment.
+
 You might also be able to build this on a breadboard for first experimentation.
 
 #### How the Circuit Works
@@ -436,7 +438,7 @@ The signal graph should now look like this - with a signal level of 0%:
 
 Now the calibration is completed.
 
-> [!INFO]
+> [!NOTE]
 > Do not worry if the signal is not totally clean and has a bit of a ripple in the 1% or 2% range. This can be compensated with the thresholds later.
 > If you do not reach the 0% level at all, your trigger module might be faulty.
 
