@@ -47,6 +47,7 @@
   - [How to Simulate a Drum-Kit on a PC](#how-to-simulate-a-drum-kit-on-a-pc)
 - [About This Project](#about-this-project)
 - [Other Related Projects](#other-related-projects)
+- [Author](#author)
 - [License](#license)
 
 <!-- vscode-markdown-toc-config
@@ -692,6 +693,11 @@ So if you have the money, give a little love to the drum vendors and buy some or
   - Unfortunately the last commit is 5 years old and it did not work with my cymbals
 - [Edrumulus](https://github.com/corrados/edrumulus) by Volker Fischer (corrados)
   - Another Open Source trigger module for ESP32 and Teensy with Positional sensing and Cross talk cancellation
+
+## Author
+Tobias Gunkel
+- GitHub: [tobigun](https://github.com/tobigun)
+- Mail: [tobias@eavesdrum.io](mailto:tobias@eavesdrum.io)
 
 ## License
 This project is licensed under the [GNU General Public License v3.0](LICENSE.txt).
