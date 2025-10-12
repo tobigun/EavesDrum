@@ -606,18 +606,29 @@ Below are the measurement results from the audio interfaces that I own. Maybe it
 |Terratec Aureon 5.1 USB MK.2|48kHz|64 (1.3ms)|ASIO4All|5.9ms||
 |Conrad UA0078 (CMedia CM108 chip)|48kHz|64 (1.3ms)|ASIO4All|6.6ms||
 |Realtek HD Audio (HW Dev-ID 0x0293)|44.1kHz|64 (1.5ms)|ASIO4All|6.4ms|Could be an ALC293. The latency was not constant between tests and reached in a few instances 12, 23 and even 40ms. Realteks ASIO driver was not available on the computer.|
-|EFNote 3 as Audio Interface|48kHz|32 (0.7ms)|EFNOTE|8.2ms|Measured with my 9 year old Notebook. Got about 13ms on my newer Notebook with the same setup.|
+|EFNote 3 as Audio Interface|48kHz|32 (0.7ms)|EFNOTE|8.2ms|Measured on my old Notebook with an Intel Core i7-7500U (2.7 GHz) CPU from 2016. Got about 13ms on my newer Notebook with the same setup.|
+|Yamaha EAD10|44.1kHz|48 (1.1ms)|Yamaha Steinberg|16.1ms|Tested on two different systems with same result.|
 |Noname USB-C headphone adapter (AB13X)|44.1kHz|64 (1.5ms)|ASIO4All|23.8ms||
-|Realtek HD Audio (HW Dev-ID 0x0294)|44.1kHz|64 (1.5ms)|ASIO4All|34.9ms|Could be an ALC294. Realtek's ASIO driver crashed, so I had to use ASIO4All|
+|Realtek HD Audio (HW Dev-ID 0x0294)|44.1kHz|64 (1.5ms)|ASIO4All|34.9ms|Could be an ALC294. Realtek's ASIO driver crashed, so I had to use ASIO4All.|
 
 *Notes*:
-* There is a [forum where you can post your own latency measurements](https://github.com/tobigun/EavesDrum/discussions/2).
-* The folder `doc/latency` contains screenshots of all tests.
+* Measured on my Notebook with an Intel Core i7-1260P (2.1 GHz, 12 Cores) from 2022 (if not otherwise stated)
 * The measurements were performed multiple times and the results varied slightly (~0.5 - 1ms) between tests. I took a result with a representative value.
+* The folder `doc/latency` contains screenshots of all tests.
+
+There is a [forum where you can post your own latency measurements](https://github.com/tobigun/EavesDrum/discussions/2).
+
+Also check out the [Latency Test by Secret Sauce on Youtube](https://www.youtube.com/watch?v=DEgUQVjkk2g) ([Full results](https://www.dropbox.com/scl/fi/n60srm83qz4fhdilr7zsh/Round-Trip-Latency-Tests-Round-Trip-Latency-Tests.pdf?rlkey=s357wgnl4lxkiuw7nl1j95wcx&e=1&st=j8oy9cmj&dl=0)). Here some notable results:
+
+|Device|Sample Rate|Buffer Size|Latency|
+|------|-----------|-----------|-------|
+|Focusrite Scarlett 2i2 4th Gen|48kHz / 96kHz|32|5.6ms(@48kHz) / 4.4ms(@96kHz)|
+|Arturia MiniFuse 2|48kHz / 96kHz / 192kHz|32|5.0ms(@48kHz) / 3.4ms(@96kHz) / 2.8ms(@192kHz)|
 
 **Conclusion**
 > - The only dedicated device (Behringer UMC204HD) performed best.
->   - Focusrite Scarlett Solo 3rd / 4th Gen also comes with ASIO drivers and might work as well.
+>   - Focusrite Scarlett Solo 3rd / 4th Gen might be a good alternative.
+> - Drum Modules (at least EFNote 3 and Yamaha EAD10) might not be suited to be used as low latency audio output interfaces.
 > - The results can vary between Computers and sometimes a 9 year old Computer can give you better results than a new one (see EFNOTE 3).
 > - Although some ASIO4All performed quite well and I did not notice any crackling during the short test, I would not recommend them, as crackling is still likely with them. But it might be a start if you already own them.
 
