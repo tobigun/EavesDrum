@@ -49,6 +49,9 @@ build
 *.b#1
 *.s#1
 
+# Compiled pio files
+*.pio.h
+
 # Jekyll
 _site
 .sass-cache
