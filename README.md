@@ -66,6 +66,8 @@ The configuration of the module is simple and user-friendly, thanks to a built-i
 
 The trigger module acts as a USB MIDI device - simply connect it to your notebook and use drum software of your choice (EZdrummer, Addictive Drums, SSD5, ...) to convert your notebook into a complete drum module.
 
+[![Youtube Trailer](http://img.youtube.com/vi/7D-15hSAtLw/0.jpg)](http://www.youtube.com/watch?v=7D-15hSAtLw "EavesDrum Trailer")
+
 ### Downloads
 - Trigger Module:
   - [PCB files](https://github.com/tobigun/EavesDrum/releases/tag/PCB-module-v1.1)
