@@ -88,6 +88,14 @@
           ""
         ],
         [
+          "lib_footprint_mismatch|138965000|75275000|0769fc3a-4ea3-4757-93c6-b3e9d54a5a17|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "lib_footprint_mismatch|138970000|57500000|69d553ea-3e7e-4b19-a3ee-5f94e616f176|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
           "lib_footprint_mismatch|139500000|46500000|33493599-fa20-46d5-b476-b8d901470ada|00000000-0000-0000-0000-000000000000",
           ""
         ],
@@ -120,11 +128,19 @@
           ""
         ],
         [
+          "lib_footprint_mismatch|76850000|69965000|119805e2-b20d-4e71-90a5-d42a8f0784ec|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
           "lib_footprint_mismatch|84935449|47550000|05ca65a5-7a37-4fe7-82ab-ae61eca0a325|00000000-0000-0000-0000-000000000000",
           ""
         ],
         [
           "lib_footprint_mismatch|96935449|47500000|3226d97e-2664-4eca-b6fd-4d024a2483f4|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "lib_footprint_mismatch|97350000|69965000|61c1c2d1-ad78-47b2-9e1c-e07ada5716b1|00000000-0000-0000-0000-000000000000",
           ""
         ],
         [
@@ -526,6 +542,7 @@
       "single_global_label": "error",
       "unannotated": "error",
       "unconnected_wire_endpoint": "warning",
+      "undefined_netclass": "error",
       "unit_value_mismatch": "error",
       "unresolved_variable": "error",
       "wire_dangling": "error"
@@ -752,6 +769,6 @@
   "text_variables": {
     "AUTHOR": "Tobias Gunkel",
     "COPYRIGHT": "2025",
-    "VERSION": "1.1"
+    "VERSION": "1.1.1"
   }
 }
