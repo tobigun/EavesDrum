@@ -553,7 +553,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "eavesdrum.kicad_pro",
+    "filename": "eavesdrum-module.kicad_pro",
     "version": 3
   },
   "net_settings": {
