@@ -1,0 +1,25 @@
+1: Kick Tip
+2: Kick Ring
+3: Snare Tip
+4: Snare Ring
+5: Snare GND
+6: Tom2 GND
+7: Hi-Hat Tip (Mini-DIN: 5)
+8: Hi-Hat Ring (Mini-DIN: 2)
+9: Hi-Hat +5V (Mini-DIN: 3)
+10: Hi-Hat Control (Mini-DIN: 6)
+11: Hi-Hat/Crash1 GND (Mini-DIN: 4)
+12: Crash1 Tip
+13: Crash1 Ring
+14: Tom1 Tip
+15: Tom1 Ring
+16: Kick GND
+17: Tom2 Tip
+18: Tom2 Ring
+19: Tom3 GND
+20: Tom3 Tip
+21: Tom3 Ring
+22: Ride GND
+23: Ride Ring
+24: Ride Tip
+25: Ride Cup
