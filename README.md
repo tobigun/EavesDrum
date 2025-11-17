@@ -70,7 +70,7 @@ The trigger module acts as a USB MIDI device - simply connect it to your noteboo
 
 ### Downloads
 - Trigger Module:
-  - [PCB files](https://github.com/tobigun/EavesDrum/releases/tag/PCB-module-v1.1)
+  - [PCB files](https://github.com/tobigun/EavesDrum/releases/tag/PCB-module-v1.1.1)
   - [Firmware](https://github.com/tobigun/EavesDrum/releases/latest)
 - [DIY Optical Hi-Hat Sensor](doc/hihat.md)
 
@@ -211,7 +211,7 @@ All you need is:
 ### Use the Reference Design
 **Schematics of the trigger module with 32 inputs:**
 
-<img alt="Basic circuit" src="doc/schematics/module/schematic-module-1.1.png" width="500px"/>
+<a href="doc/schematics/module/schematic-module-1.1.1.pdf"/><img alt="Schematics" src="doc/schematics/module/schematic-module-1.1.1.png" width="500px"/></a>
 
 You can find the schematics and pcb files in the `doc/schematics/module` directory. They can be viewed and edited with [KiCad](https://www.kicad.org/).
 
@@ -244,11 +244,11 @@ If you are located in Germany, check prices at Reichelt (that's where the prices
 
 #### PCB Ordering and Assembly
 All you need to order your Trigger Module PCB v1.1 for assembly are the following files:
-- [GERBER File](https://github.com/tobigun/EavesDrum/releases/download/PCB-module-v1.1/GERBER-eavesdrum-module-1.1.zip)
-- [BOM File (Bill of Material)](https://github.com/tobigun/EavesDrum/releases/download/PCB-module-v1.1/BOM-eavesdrum-module-1.1.csv)
-- [CPL File (Component Placement List)](https://github.com/tobigun/EavesDrum/releases/download/PCB-module-v1.1/CPL-eavesdrum-module-1.1.csv)
+- GERBER File
+- BOM File (Bill of Material)
+- CPL File (Component Placement List)
 
-You will also find all files on the [PCB Module 1.1 Release Page](https://github.com/tobigun/EavesDrum/releases/tag/PCB-module-v1.1).
+These files are available on the [PCB Module 1.1.1 Release Page](https://github.com/tobigun/EavesDrum/releases/tag/PCB-module-v1.1.1).
 
 **To order the PCB:**
 - Open the website of a PCB manufacturer.
