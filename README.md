@@ -211,7 +211,9 @@ All you need is:
 ### Use the Reference Design
 **Schematics of the trigger module with 32 inputs:**
 
-<a href="https://github.com/tobigun/EavesDrum/releases/download/PCB-module-v1.1.1/schematic-module-1.1.1.pdf"/><img alt="Schematics" src="doc/schematics/module/schematic-module-1.1.1.png" width="500px"/></a>
+<a href="https://github.com/tobigun/EavesDrum/releases/download/PCB-module-v1.1.1/schematic-module-1.1.1.pdf">
+  <img alt="Schematics" src="doc/schematics/module/schematic-module-1.1.1.png" width="500px"/>
+</a>
 
 You can find the schematics and pcb files in the `doc/schematics/module` directory. They can be viewed and edited with [KiCad](https://www.kicad.org/).
 
