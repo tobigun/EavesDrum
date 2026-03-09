@@ -5,6 +5,7 @@
 #include "ble_midi_pkt_codec.h"
 #include <inttypes.h>
 #include <stdio.h>
+#include "ble_midi_debug.h"
 
 #include <Arduino.h>
 
@@ -65,22 +66,22 @@ static bool midi_is_ready = false;
 static bool keep_client_connected = false;
 static void printUUID(uint8_t * uuid128, uint16_t uuid16){
     if (uuid16){
-        printf("%04x",uuid16);
+        DEBUG_PRINTF("%04x",uuid16);
     } else {
-        printf("%s", uuid128_to_str(uuid128));
+        DEBUG_PRINTF("%s", uuid128_to_str(uuid128));
     }
 }
 static void dump_characteristic(gatt_client_characteristic_t * characteristic){
-    printf("    * characteristic: [0x%04x-0x%04x-0x%04x], properties 0x%02x, uuid ",
+    DEBUG_PRINTF("    * characteristic: [0x%04x-0x%04x-0x%04x], properties 0x%02x, uuid ",
                             characteristic->start_handle, characteristic->value_handle, characteristic->end_handle, characteristic->properties);
     printUUID(characteristic->uuid128, characteristic->uuid16);
-    printf("\n");
+    DEBUG_PRINTF("\n");
 }
 
 static void dump_service(gatt_client_service_t * service){
-    printf("    * service: [0x%04x-0x%04x], uuid ", service->start_group_handle, service->end_group_handle);
+    DEBUG_PRINTF("    * service: [0x%04x-0x%04x], uuid ", service->start_group_handle, service->end_group_handle);
     printUUID(service->uuid128, service->uuid16);
-    printf("\n");
+    DEBUG_PRINTF("\n");
 }
 
 static int find_midi_peripheral(BLEMC_client_t* blemc, uint8_t* bdaddr)
@@ -145,37 +146,37 @@ static void handle_gatt_client_event(uint8_t packet_type, uint16_t channel, uint
         case GATT_EVENT_QUERY_COMPLETE:
             att_status = gatt_event_query_complete_get_att_status(packet);
             if (att_status != ATT_ERROR_SUCCESS) {
-                printf("SERVICE_QUERY_RESULT, ATT Error 0x%02x.\n", att_status);
+                DEBUG_PRINTF("SERVICE_QUERY_RESULT, ATT Error 0x%02x.\n", att_status);
                 //state = BLEMC_WAIT_FOR_DISCONNECTION;
                 //gap_disconnect(con_handle);
                 break;  
             } 
             if (state == BLEMC_WAIT_FOR_SERVICES) {
-                printf("\nCHARACTERISTIC for SERVICE %s, [0x%04x-0x%04x]\n",
+                DEBUG_PRINTF("\nCHARACTERISTIC for SERVICE %s, [0x%04x-0x%04x]\n",
                     uuid128_to_str(midi_service.uuid128), midi_service.start_group_handle, midi_service.end_group_handle);
                 state = BLEMC_WAIT_FOR_CHARACTERISTICS;
                 gatt_client_discover_characteristics_for_service_by_uuid128(handle_gatt_client_event, con_handle, &midi_service, midi_data_io_characteristic_uuid);
                 break;
             }
             else if (state == BLEMC_WAIT_FOR_CHARACTERISTICS) {
-                printf("found all characteristics query complete\r\n");
+                DEBUG_PRINTF("found all characteristics query complete\r\n");
                 state = BLEMC_WAIT_FOR_ENABLE_NOTIFICATIONS_COMPLETE;
                 listener_registered = true;
                 gatt_client_listen_for_characteristic_value_updates(&notification_listener, handle_gatt_client_event, con_handle, &midi_data_io_characteristic);
                 if (ERROR_CODE_SUCCESS != gatt_client_write_client_characteristic_configuration(handle_gatt_client_event, con_handle,
                     &midi_data_io_characteristic, GATT_CLIENT_CHARACTERISTICS_CONFIGURATION_NOTIFICATION)) {
-                        printf("failed to write client characteristic configuration\r\n");
+                        DEBUG_PRINTF("failed to write client characteristic configuration\r\n");
                 }
                 else {
-                    printf("wrote client characteristic configuration\r\n");
+                    DEBUG_PRINTF("wrote client characteristic configuration\r\n");
                 }
             }
             else if (state == BLEMC_WAIT_FOR_ENABLE_NOTIFICATIONS_COMPLETE) {
                 state = BLEMC_WAIT_FOR_MIDI_DATA_RX;
-                printf("ready to receive MIDI data\r\n");
+                DEBUG_PRINTF("ready to receive MIDI data\r\n");
                 cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, true);
                 hci_connection_t * con = hci_connection_for_handle(con_handle);
-                //printf("HCI Connection: bdaddr=%s type=%u", bd_addr_to_str(con->address), con->address_type);
+                //DEBUG_PRINTF("HCI Connection: bdaddr=%s type=%u", bd_addr_to_str(con->address), con->address_type);
                 last_connected_bd_addr_type = con->address_type;
                 memcpy(last_connected_bd_addr, con->address, sizeof(last_connected_bd_addr));
                 midi_is_ready = true;
@@ -185,20 +186,20 @@ static void handle_gatt_client_event(uint8_t packet_type, uint16_t channel, uint
             data_len = gatt_event_notification_get_value_length(packet);
             data = gatt_event_notification_get_value(packet);
 #if 0
-            printf("data rx:");
+            DEBUG_PRINTF("data rx:");
             for (uint16_t idx = 0; idx < data_len; idx++) {
-                printf(" %02x", data[idx]);
+                DEBUG_PRINTF(" %02x", data[idx]);
             }
-            printf("\r\n");
+            DEBUG_PRINTF("\r\n");
 #endif
             ndecoded = ble_midi_pkt_codec_ble_midi_decode_push(data, data_len, ble_midi_pkt_codec_data);
             if (ndecoded != data_len) {
-                printf("Parse error decoding midi packet\r\n");
+                DEBUG_PRINTF("Parse error decoding midi packet\r\n");
                 printf_hexdump(data, data_len);
             }
             break;
         default:
-            //printf("unhandled packet type %u", hci_event_packet_get_type(packet));
+            //DEBUG_PRINTF("unhandled packet type %u", hci_event_packet_get_type(packet));
             break;
     }
 }
@@ -270,7 +271,7 @@ static void handle_hci_event(uint8_t packet_type, uint16_t channel, uint8_t *pac
     switch (event) {
         case BTSTACK_EVENT_STATE:
             if (btstack_event_state_get_state(packet) == HCI_STATE_OFF) {
-                printf("HCI power is safely off\r\n");
+                DEBUG_PRINTF("HCI power is safely off\r\n");
                 hci_remove_event_handler(&hci_event_callback_registration);
                 sm_remove_event_handler(&sm_event_callback_registration);
 
@@ -289,12 +290,12 @@ static void handle_hci_event(uint8_t packet_type, uint16_t channel, uint8_t *pac
             }
             // BTstack activated, get started
             if (btstack_event_state_get_state(packet) != HCI_STATE_WORKING) {
-                printf("client: unhandled BTSTACK_EVENT_STATE %u\r\n", btstack_event_state_get_state(packet));
+                DEBUG_PRINTF("client: unhandled BTSTACK_EVENT_STATE %u\r\n", btstack_event_state_get_state(packet));
                 break;
             }
             if (state == BLEMC_WAIT_FOR_SCAN_COMPLETE) {
                 midi_client.n_midi_peripherals = 0;
-                printf("BTstack activated, start active scanning\r\n");
+                DEBUG_PRINTF("BTstack activated, start active scanning\r\n");
                 gap_set_scan_params(1,0x0030, 0x0030,0);
                 gap_start_scan();
             }
@@ -328,7 +329,7 @@ static void handle_hci_event(uint8_t packet_type, uint16_t channel, uint8_t *pac
                 }
                 midi_client.midi_peripherals[idx].timeout = scan_remove_timeout; // do not time out this entry
                 get_local_name_from_ad_data(ad_data_len, ad_data, &midi_client.midi_peripherals[idx]);
-                //printf("    * adv. event: addr=%s[%s]\r\n", bd_addr_to_str(bdaddr), midi_client.midi_peripherals[idx].name);
+                //DEBUG_PRINTF("    * adv. event: addr=%s[%s]\r\n", bd_addr_to_str(bdaddr), midi_client.midi_peripherals[idx].name);
             }
             break;
         case HCI_EVENT_LE_META:
@@ -338,47 +339,47 @@ static void handle_hci_event(uint8_t packet_type, uint16_t channel, uint8_t *pac
                         break;
                     }
                     if (hci_subevent_le_connection_complete_get_status(packet) == ERROR_CODE_UNKNOWN_CONNECTION_IDENTIFIER) {
-                        printf("\nCONNECT REQUEST Canceled\r\n");
+                        DEBUG_PRINTF("\nCONNECT REQUEST Canceled\r\n");
                         state = BLEMC_IDLE;
                         break;
                     }
-                    printf("\nclient: CONNECTED status=%u\n", hci_subevent_le_connection_complete_get_status(packet));
+                    DEBUG_PRINTF("\nclient: CONNECTED status=%u\n", hci_subevent_le_connection_complete_get_status(packet));
                     con_handle = hci_subevent_le_connection_complete_get_connection_handle(packet);
                     // print connection parameters (without using float operations)
                     conn_interval = hci_subevent_le_connection_complete_get_conn_interval(packet);
-                    printf("Connection Interval: %u.%02u ms\n", conn_interval * 125 / 100, 25 * (conn_interval & 3));
-                    printf("Connection Latency: %u\n", hci_subevent_le_connection_complete_get_conn_latency(packet));
+                    DEBUG_PRINTF("Connection Interval: %u.%02u ms\n", conn_interval * 125 / 100, 25 * (conn_interval & 3));
+                    DEBUG_PRINTF("Connection Latency: %u\n", hci_subevent_le_connection_complete_get_conn_latency(packet));
                     // initialize gatt client context with handle, and add it to the list of active clients
                     // query primary services
-                    printf("Search for MIDI service.\n");
+                    DEBUG_PRINTF("Search for MIDI service.\n");
                     err = gatt_client_discover_primary_services_by_uuid128(handle_gatt_client_event, con_handle, midi_service_uuid128);
                     if (err != ERROR_CODE_SUCCESS)
-                        printf("Error(%d): Failed to discover primary services by uuid128\r\n", err);
+                        DEBUG_PRINTF("Error(%d): Failed to discover primary services by uuid128\r\n", err);
                     state = BLEMC_WAIT_FOR_SERVICES;
                     midi_service_emit_state(con_handle, true); // pass the connection handle to the client application to this library
                     break;
                 case HCI_SUBEVENT_LE_DATA_LENGTH_CHANGE:
                     con_handle = hci_subevent_le_data_length_change_get_connection_handle(packet);
                     midi_service_emit_state(con_handle, true); // pass the connection handle to the client application to this library
-                    printf("- LE Connection 0x%04x: data length change - max %u bytes per packet\n", con_handle,
+                    DEBUG_PRINTF("- LE Connection 0x%04x: data length change - max %u bytes per packet\n", con_handle,
                            hci_subevent_le_data_length_change_get_max_tx_octets(packet));
                     break;
                 case HCI_SUBEVENT_LE_PHY_UPDATE_COMPLETE:
                     con_handle = hci_subevent_le_phy_update_complete_get_connection_handle(packet);
                     midi_service_emit_state(con_handle, true); // pass the connection handle to the client application to this library
-                    printf("- LE Connection 0x%04x: PHY update - using LE %s PHY now\n", con_handle,
+                    DEBUG_PRINTF("- LE Connection 0x%04x: PHY update - using LE %s PHY now\n", con_handle,
                            phy_names[hci_subevent_le_phy_update_complete_get_tx_phy(packet)]);
                     break;
                 case HCI_SUBEVENT_LE_REMOTE_CONNECTION_PARAMETER_REQUEST:
-                    printf("HCI_SUBEVENT_LE_REMOTE_CONNECTION_PARAMETER_REQUEST\r\n");
+                    DEBUG_PRINTF("HCI_SUBEVENT_LE_REMOTE_CONNECTION_PARAMETER_REQUEST\r\n");
                     // TODO: Do we need to do anything, or is this all handled in the HCI layer?
                     break;
                 case HCI_SUBEVENT_LE_CONNECTION_UPDATE_COMPLETE:
-                    printf("HCI_SUBEVENT_LE_CONNECTION_UPDATE_COMPLETE\r\n");
+                    DEBUG_PRINTF("HCI_SUBEVENT_LE_CONNECTION_UPDATE_COMPLETE\r\n");
                     // print connection parameters (without using float operations)
                     con_handle    = hci_subevent_le_connection_update_complete_get_connection_handle(packet);
                     conn_interval = hci_subevent_le_connection_update_complete_get_conn_interval(packet);
-                    printf("LE Connection - Connection Param update - connection interval %u.%02u ms, latency %u\n", conn_interval * 125 / 100,
+                    DEBUG_PRINTF("LE Connection - Connection Param update - connection interval %u.%02u ms, latency %u\n", conn_interval * 125 / 100,
                         25 * (conn_interval & 3), hci_subevent_le_connection_update_complete_get_conn_latency(packet));
                     break;
                 default:
@@ -386,7 +387,7 @@ static void handle_hci_event(uint8_t packet_type, uint16_t channel, uint8_t *pac
             }
             break;
         case HCI_EVENT_DISCONNECTION_COMPLETE:
-            printf("\nclient: DISCONNECTED\n");
+            DEBUG_PRINTF("\nclient: DISCONNECTED\n");
             if (listener_registered) {
                 listener_registered = false;
                 gatt_client_stop_listening_for_characteristic_value_updates(&notification_listener);
@@ -400,7 +401,7 @@ static void handle_hci_event(uint8_t packet_type, uint16_t channel, uint8_t *pac
                 state = BLEMC_WAIT_FOR_CONNECTION;
                 uint8_t status = gap_connect(next_connect_bd_addr, next_connect_bd_addr_type);
                 if (status != ERROR_CODE_SUCCESS) {
-                    printf("reconnect failed code=%u\r\n", status);
+                    DEBUG_PRINTF("reconnect failed code=%u\r\n", status);
                 }
             }
             else {
@@ -409,7 +410,7 @@ static void handle_hci_event(uint8_t packet_type, uint16_t channel, uint8_t *pac
             break;
 
         default:
-            //printf("client: unhandled HCI_EVENT %u\r\n", event);
+            //DEBUG_PRINTF("client: unhandled HCI_EVENT %u\r\n", event);
             break;
     }
 }
@@ -426,46 +427,46 @@ static void sm_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *pa
 
     switch (hci_event_packet_get_type(packet)) {
         case SM_EVENT_IDENTITY_RESOLVING_STARTED:
-            printf("SM_EVENT_IDENTITY_RESOLVING_STARTED\r\n");
+            DEBUG_PRINTF("SM_EVENT_IDENTITY_RESOLVING_STARTED\r\n");
             break;
         case SM_EVENT_IDENTITY_RESOLVING_FAILED:
-            printf("SM_EVENT_IDENTITY_RESOLVING_FAILED\r\n");
+            DEBUG_PRINTF("SM_EVENT_IDENTITY_RESOLVING_FAILED\r\n");
             break;
         case SM_EVENT_IDENTITY_RESOLVING_SUCCEEDED:
-            printf("SM_EVENT_IDENTITY_RESOLVING_SUCCEEDED\r\n");
+            DEBUG_PRINTF("SM_EVENT_IDENTITY_RESOLVING_SUCCEEDED\r\n");
             break;
         case SM_EVENT_JUST_WORKS_REQUEST:
-            printf("Just works requested\n");
+            DEBUG_PRINTF("Just works requested\n");
             sm_just_works_confirm(sm_event_just_works_request_get_handle(packet));
             break;
         case SM_EVENT_NUMERIC_COMPARISON_REQUEST:
-            printf("Confirming numeric comparison: %" PRIu32 "\n", sm_event_numeric_comparison_request_get_passkey(packet));
+            DEBUG_PRINTF("Confirming numeric comparison: %" PRIu32 "\n", sm_event_numeric_comparison_request_get_passkey(packet));
             sm_numeric_comparison_confirm(sm_event_passkey_display_number_get_handle(packet));
             break;
         case SM_EVENT_PASSKEY_DISPLAY_NUMBER:
-            printf("Display Passkey: %" PRIu32 "\n", sm_event_passkey_display_number_get_passkey(packet));
+            DEBUG_PRINTF("Display Passkey: %" PRIu32 "\n", sm_event_passkey_display_number_get_passkey(packet));
             break;
         case SM_EVENT_PASSKEY_INPUT_NUMBER:
-            printf("Passkey Input requested\n");
-            printf("Sending fixed passkey %" PRIu32 "\n", (uint32_t) FIXED_PASSKEY);
+            DEBUG_PRINTF("Passkey Input requested\n");
+            DEBUG_PRINTF("Sending fixed passkey %" PRIu32 "\n", (uint32_t) FIXED_PASSKEY);
             sm_passkey_input(sm_event_passkey_input_number_get_handle(packet), FIXED_PASSKEY);
             break;
         case SM_EVENT_PAIRING_STARTED:
-            printf("Pairing started\n");
+            DEBUG_PRINTF("Pairing started\n");
             break;
         case SM_EVENT_PAIRING_COMPLETE:
             switch (sm_event_pairing_complete_get_status(packet)){
                 case ERROR_CODE_SUCCESS:
-                    printf("Pairing complete, success\n");
+                    DEBUG_PRINTF("Pairing complete, success\n");
                     break;
                 case ERROR_CODE_CONNECTION_TIMEOUT:
-                    printf("Pairing failed, timeout\n");
+                    DEBUG_PRINTF("Pairing failed, timeout\n");
                     break;
                 case ERROR_CODE_REMOTE_USER_TERMINATED_CONNECTION:
-                    printf("Pairing failed, disconnected\n");
+                    DEBUG_PRINTF("Pairing failed, disconnected\n");
                     break;
                 case ERROR_CODE_AUTHENTICATION_FAILURE:
-                    printf("Pairing failed, authentication failure with reason = %u\n", sm_event_pairing_complete_get_reason(packet));
+                    DEBUG_PRINTF("Pairing failed, authentication failure with reason = %u\n", sm_event_pairing_complete_get_reason(packet));
                     break;
                 default:
                     break;
@@ -473,30 +474,30 @@ static void sm_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *pa
             break;
         case SM_EVENT_REENCRYPTION_STARTED:
             sm_event_reencryption_complete_get_address(packet, addr);
-            printf("Bonding information exists for addr type %u, identity addr %s -> start re-encryption\n",
+            DEBUG_PRINTF("Bonding information exists for addr type %u, identity addr %s -> start re-encryption\n",
                    sm_event_reencryption_started_get_addr_type(packet), bd_addr_to_str(addr));
             break;
         case SM_EVENT_IDENTITY_CREATED:
             idx = sm_event_identity_created_get_index(packet);
             addr_type = sm_event_identity_created_get_addr_type(packet);
             sm_event_identity_created_get_address(packet, addr);
-            printf("new bonded idx=%d, addr=%s type=%u\r\n", idx, bd_addr_to_str(addr), addr_type);
+            DEBUG_PRINTF("new bonded idx=%d, addr=%s type=%u\r\n", idx, bd_addr_to_str(addr), addr_type);
             break;
         case SM_EVENT_REENCRYPTION_COMPLETE:
             switch (sm_event_reencryption_complete_get_status(packet)){
                 case ERROR_CODE_SUCCESS:
-                    printf("Re-encryption complete, success\n");
+                    DEBUG_PRINTF("Re-encryption complete, success\n");
                     break;
                 case ERROR_CODE_CONNECTION_TIMEOUT:
-                    printf("Re-encryption failed, timeout\n");
+                    DEBUG_PRINTF("Re-encryption failed, timeout\n");
                     break;
                 case ERROR_CODE_REMOTE_USER_TERMINATED_CONNECTION:
-                    printf("Re-encryption failed, disconnected\n");
+                    DEBUG_PRINTF("Re-encryption failed, disconnected\n");
                     break;
                 case ERROR_CODE_PIN_OR_KEY_MISSING:
-                    printf("Re-encryption failed, bonding information missing\n\n");
-                    printf("Assuming remote lost bonding information\n");
-                    printf("Deleting local bonding information and start new pairing...\n");
+                    DEBUG_PRINTF("Re-encryption failed, bonding information missing\n\n");
+                    DEBUG_PRINTF("Assuming remote lost bonding information\n");
+                    DEBUG_PRINTF("Deleting local bonding information and start new pairing...\n");
                     sm_event_reencryption_complete_get_address(packet, addr);
                     addr_type = sm_event_reencryption_started_get_addr_type(packet);
                     gap_delete_bonding(addr_type, addr);
@@ -507,7 +508,7 @@ static void sm_packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *pa
             }
             break;
         default:
-            printf("unhandled SM event 0x%x\r\n",hci_event_packet_get_type(packet));
+            DEBUG_PRINTF("unhandled SM event 0x%x\r\n",hci_event_packet_get_type(packet));
             break;
     }
 }
@@ -661,7 +662,7 @@ void ble_midi_client_scan_begin()
         hci_power_control(HCI_POWER_ON); // active scan will start when power on event happens
     else {
         midi_client.n_midi_peripherals = 0;
-        printf("BTstack activated, start active scanning\n");
+        DEBUG_PRINTF("BTstack activated, start active scanning\n");
         gap_set_scan_params(1,0x0030, 0x0030,0);        
         gap_start_scan();
     }
@@ -680,9 +681,9 @@ void ble_midi_client_scan_end()
 
 void ble_midi_client_dump_midi_peripherals()
 {
-    printf("Index Bluetooth Address Name\r\n");
+    DEBUG_PRINTF("Index Bluetooth Address Name\r\n");
     for (uint8_t idx=0; idx < midi_client.n_midi_peripherals; idx++) {
-        printf("%-5u %s %s %u\r\n", idx+1, bd_addr_to_str(midi_client.midi_peripherals[idx].bdaddr), midi_client.midi_peripherals[idx].name, midi_client.midi_peripherals[idx].addr_type );
+        DEBUG_PRINTF("%d %s '%s' %d\r\n", idx+1, bd_addr_to_str(midi_client.midi_peripherals[idx].bdaddr), midi_client.midi_peripherals[idx].name, midi_client.midi_peripherals[idx].addr_type );
     }
 }
 
@@ -718,7 +719,7 @@ bool ble_midi_client_request_connect(uint8_t idx)
             state = BLEMC_WAIT_FOR_CONNECTION;
             result = gap_connect(next_connect_bd_addr, next_connect_bd_addr_type);
             if (ERROR_CODE_SUCCESS != result) {
-                printf("gap_connect: Bluetooth error code %u", result);
+                DEBUG_PRINTF("gap_connect: Bluetooth error code %u", result);
             }
             break;
         case BLEMC_WAIT_FOR_DISCONNECTION:
@@ -731,7 +732,7 @@ bool ble_midi_client_request_connect(uint8_t idx)
             state = BLEMC_WAIT_FOR_CONNECTION;
             result = gap_disconnect(con_handle);
             if (ERROR_CODE_SUCCESS != result) {
-                printf("gap_disconnect: Bluetooth error code %u", result);
+                DEBUG_PRINTF("gap_disconnect: Bluetooth error code %u", result);
             }
             break;
         case BLEMC_WAIT_FOR_CONNECTION:
@@ -741,7 +742,7 @@ bool ble_midi_client_request_connect(uint8_t idx)
             state = BLEMC_WAIT_FOR_CONNECTION;
             result = gap_connect(next_connect_bd_addr, next_connect_bd_addr_type);
             if (ERROR_CODE_SUCCESS != result) {
-                printf("gap_connect: Bluetooth error code %u", result);
+                DEBUG_PRINTF("gap_connect: Bluetooth error code %u", result);
             }
             break;
         case BLEMC_WAIT_FOR_SCAN_COMPLETE:
@@ -752,7 +753,7 @@ bool ble_midi_client_request_connect(uint8_t idx)
             state = BLEMC_WAIT_FOR_CONNECTION;
             result = gap_connect(next_connect_bd_addr, next_connect_bd_addr_type);
             if (ERROR_CODE_SUCCESS != result) {
-                printf("gap_connect: Bluetooth error code %u", result);
+                DEBUG_PRINTF("gap_connect: Bluetooth error code %u", result);
             }
             break;
         default:
@@ -769,7 +770,7 @@ void ble_midi_client_request_disconnect()
         state = BLEMC_WAIT_FOR_DISCONNECTION;
         uint8_t result = gap_disconnect(con_handle);
         if (ERROR_CODE_SUCCESS != result) {
-            printf("gap_disconnect: Bluetooth error code %u", result);
+            DEBUG_PRINTF("gap_disconnect: Bluetooth error code %u", result);
         }
     }
 }
@@ -822,6 +823,11 @@ uint8_t ble_midi_client_stream_read(uint8_t max_bytes, uint8_t* midi_stream_byte
     }
 
     return nread;
+}
+
+bool ble_midi_client_stream_read_available(void)
+{
+    return ble_midi_pkt_codec_ble_pkt_available(ble_midi_pkt_codec_data);
 }
 
 bool ble_midi_client_is_connected(void)

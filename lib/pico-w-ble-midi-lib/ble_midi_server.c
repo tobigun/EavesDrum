@@ -26,6 +26,8 @@
 #include "ble_midi_server.h"
 #include <inttypes.h>
 #include <assert.h>
+#include "ble_midi_debug.h"
+
 static hci_con_handle_t con_handle;
 static const uint8_t APP_AD_FLAGS=0x06;
 static const uint8_t adv_data[] = {
@@ -70,11 +72,11 @@ static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packe
                         break;
                     }
                     if (btstack_event_state_get_state(packet) != HCI_STATE_WORKING) {
-                        printf("unhandled BTSTACK_EVENT_STATE state=%u\r\n", btstack_event_state_get_state(packet));
+                        DEBUG_PRINTF("unhandled BTSTACK_EVENT_STATE state=%u\r\n", btstack_event_state_get_state(packet));
                         return;
                     }
                     gap_local_bd_addr(local_addr);
-                    printf("BTstack up and running on %s.\n", bd_addr_to_str(local_addr));
+                    DEBUG_PRINTF("BTstack up and running on %s.\n", bd_addr_to_str(local_addr));
 
                     memset(null_addr, 0, 6);
                     gap_advertisements_set_params(adv_int_min, adv_int_max, adv_type, 0, null_addr, 0x07, 0x00);
@@ -86,17 +88,17 @@ static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packe
 
                     break;
                 case HCI_EVENT_DISCONNECTION_COMPLETE:
-                    printf("ble server: HCI_EVENT_DISCONNECTION_COMPLETE event\r\n");
+                    DEBUG_PRINTF("ble server: HCI_EVENT_DISCONNECTION_COMPLETE event\r\n");
                     con_handle = HCI_CON_HANDLE_INVALID;
                     break;
                 case HCI_EVENT_GATTSERVICE_META:
                     switch(hci_event_gattservice_meta_get_subevent_code(packet)) {
                         case GATTSERVICE_SUBEVENT_SPP_SERVICE_CONNECTED:
                             con_handle = gattservice_subevent_spp_service_connected_get_con_handle(packet);
-                            printf("ble server: GATTSERVICE_SUBEVENT_SPP_SERVICE_CONNECTED event handle = %u\r\n", con_handle);
+                            DEBUG_PRINTF("ble server: GATTSERVICE_SUBEVENT_SPP_SERVICE_CONNECTED event handle = %u\r\n", con_handle);
                             break;
                         case GATTSERVICE_SUBEVENT_SPP_SERVICE_DISCONNECTED:
-                            printf("ble server: GATTSERVICE_SUBEVENT_SPP_SERVICE_DISCONNECTED event\r\n");
+                            DEBUG_PRINTF("ble server: GATTSERVICE_SUBEVENT_SPP_SERVICE_DISCONNECTED event\r\n");
                             con_handle = HCI_CON_HANDLE_INVALID;
                             break;
                         default:
@@ -104,44 +106,44 @@ static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packe
                     }
                     break;
                 case SM_EVENT_JUST_WORKS_REQUEST:
-                    printf("ble server: Just Works requested\n");
+                    DEBUG_PRINTF("ble server: Just Works requested\n");
                     sm_just_works_confirm(sm_event_just_works_request_get_handle(packet));
                     break;
                 case SM_EVENT_NUMERIC_COMPARISON_REQUEST:
-                    printf("ble server: Confirming numeric comparison: %" PRIu32 "\n", sm_event_numeric_comparison_request_get_passkey(packet));
+                    DEBUG_PRINTF("ble server: Confirming numeric comparison: %" PRIu32 "\n", sm_event_numeric_comparison_request_get_passkey(packet));
                     sm_numeric_comparison_confirm(sm_event_passkey_display_number_get_handle(packet));
                     break;
                 case SM_EVENT_PASSKEY_DISPLAY_NUMBER:
-                    printf("ble server: Display Passkey: %" PRIu32 "\n", sm_event_passkey_display_number_get_passkey(packet));
+                    DEBUG_PRINTF("ble server: Display Passkey: %" PRIu32 "\n", sm_event_passkey_display_number_get_passkey(packet));
                     break;
                 case SM_EVENT_IDENTITY_CREATED:
                     sm_event_identity_created_get_identity_address(packet, addr);
-                    printf("ble server: Identity created: type %u address %s\n", sm_event_identity_created_get_identity_addr_type(packet), bd_addr_to_str(addr));
+                    DEBUG_PRINTF("ble server: Identity created: type %u address %s\n", sm_event_identity_created_get_identity_addr_type(packet), bd_addr_to_str(addr));
                     break;
                 case SM_EVENT_IDENTITY_RESOLVING_SUCCEEDED:
                     sm_event_identity_resolving_succeeded_get_identity_address(packet, addr);
-                    printf("ble server: Identity resolved: type %u address %s\n", sm_event_identity_resolving_succeeded_get_identity_addr_type(packet), bd_addr_to_str(addr));
+                    DEBUG_PRINTF("ble server: Identity resolved: type %u address %s\n", sm_event_identity_resolving_succeeded_get_identity_addr_type(packet), bd_addr_to_str(addr));
                     break;
                 case SM_EVENT_IDENTITY_RESOLVING_FAILED:
                     sm_event_identity_created_get_address(packet, addr);
-                    printf("ble server: Identity resolving failed\n");
+                    DEBUG_PRINTF("ble server: Identity resolving failed\n");
                     break;
                 case SM_EVENT_PAIRING_STARTED:
-                    printf("ble server: Pairing started\n");
+                    DEBUG_PRINTF("ble server: Pairing started\n");
                     break;
                 case SM_EVENT_PAIRING_COMPLETE:
                     switch (sm_event_pairing_complete_get_status(packet)){
                         case ERROR_CODE_SUCCESS:
-                            printf("ble server: Pairing complete, success\n");
+                            DEBUG_PRINTF("ble server: Pairing complete, success\n");
                             break;
                         case ERROR_CODE_CONNECTION_TIMEOUT:
-                            printf("ble server: Pairing failed, timeout\n");
+                            DEBUG_PRINTF("ble server: Pairing failed, timeout\n");
                             break;
                         case ERROR_CODE_REMOTE_USER_TERMINATED_CONNECTION:
-                            printf("ble server: Pairing failed, disconnected\n");
+                            DEBUG_PRINTF("ble server: Pairing failed, disconnected\n");
                             break;
                         case ERROR_CODE_AUTHENTICATION_FAILURE:
-                            printf("ble server: Pairing failed, authentication failure with reason = %u\n", sm_event_pairing_complete_get_reason(packet));
+                            DEBUG_PRINTF("ble server: Pairing failed, authentication failure with reason = %u\n", sm_event_pairing_complete_get_reason(packet));
                             break;
                         default:
                             break;
@@ -149,24 +151,24 @@ static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packe
                     break;
                 case SM_EVENT_REENCRYPTION_STARTED:
                     sm_event_reencryption_complete_get_address(packet, addr);
-                    printf("ble server: Bonding information exists for addr type %u, identity addr %s -> re-encryption started\n",
+                    DEBUG_PRINTF("ble server: Bonding information exists for addr type %u, identity addr %s -> re-encryption started\n",
                         sm_event_reencryption_started_get_addr_type(packet), bd_addr_to_str(addr));
                     break;
                 case SM_EVENT_REENCRYPTION_COMPLETE:
                     switch (sm_event_reencryption_complete_get_status(packet)){
                         case ERROR_CODE_SUCCESS:
-                            printf("ble server: Re-encryption complete, success\n");
+                            DEBUG_PRINTF("ble server: Re-encryption complete, success\n");
                             break;
                         case ERROR_CODE_CONNECTION_TIMEOUT:
-                            printf("ble server: Re-encryption failed, timeout\n");
+                            DEBUG_PRINTF("ble server: Re-encryption failed, timeout\n");
                             break;
                         case ERROR_CODE_REMOTE_USER_TERMINATED_CONNECTION:
-                            printf("ble server: Re-encryption failed, disconnected\n");
+                            DEBUG_PRINTF("ble server: Re-encryption failed, disconnected\n");
                             break;
                         case ERROR_CODE_PIN_OR_KEY_MISSING:
-                            printf("ble server: Re-encryption failed, bonding information missing\n\n");
-                            printf("Assuming remote lost bonding information\n");
-                            printf("Deleting local bonding information to allow for new pairing...\n");
+                            DEBUG_PRINTF("ble server: Re-encryption failed, bonding information missing\n\n");
+                            DEBUG_PRINTF("Assuming remote lost bonding information\n");
+                            DEBUG_PRINTF("Deleting local bonding information to allow for new pairing...\n");
                             sm_event_reencryption_complete_get_address(packet, addr);
                             addr_type = (bd_addr_type_t)(sm_event_reencryption_started_get_addr_type(packet));
                             gap_delete_bonding(addr_type, addr);
@@ -179,29 +181,29 @@ static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packe
                     status = gatt_event_query_complete_get_att_status(packet);
                     switch (status){
                         case ATT_ERROR_INSUFFICIENT_ENCRYPTION:
-                            printf("ble server: GATT Query failed, Insufficient Encryption\n");
+                            DEBUG_PRINTF("ble server: GATT Query failed, Insufficient Encryption\n");
                             break;
                         case ATT_ERROR_INSUFFICIENT_AUTHENTICATION:
-                            printf("ble server: GATT Query failed, Insufficient Authentication\n");
+                            DEBUG_PRINTF("ble server: GATT Query failed, Insufficient Authentication\n");
                             break;
                         case ATT_ERROR_BONDING_INFORMATION_MISSING:
-                            printf("ble server: GATT Query failed, Bonding Information Missing\n");
+                            DEBUG_PRINTF("ble server: GATT Query failed, Bonding Information Missing\n");
                             break;
                         case ATT_ERROR_SUCCESS:
-                            printf("ble server: GATT Query successful\n");
+                            DEBUG_PRINTF("ble server: GATT Query successful\n");
                             break;
                         default:
-                            printf("ble server: GATT Query failed, status 0x%02x\n", gatt_event_query_complete_get_att_status(packet));
+                            DEBUG_PRINTF("ble server: GATT Query failed, status 0x%02x\n", gatt_event_query_complete_get_att_status(packet));
                             break;
                     }
                     break;
                 default:
-                    //printf("unhandled HCI_EVENT_PACKET event type=%u\r\n", event_type);
+                    //DEBUG_PRINTF("unhandled HCI_EVENT_PACKET event type=%u\r\n", event_type);
                     break;
             } // event_type
             break;
         default:
-            //printf("unhandled packet type=%u\r\n", packet_type);
+            //DEBUG_PRINTF("unhandled packet type=%u\r\n", packet_type);
             break;
     } // HCI_PACKET
 }

@@ -182,6 +182,13 @@ uint8_t ble_midi_client_stream_read(uint8_t max_bytes, uint8_t* midi_stream_byte
 /**
  * @brief
  *
+ * @return true if the data is ready to be read, false otherwise
+ */
+bool ble_midi_client_stream_read_available(void);
+
+/**
+ * @brief
+ *
  * @return true if the client is connected to a server, false otherwise
  */
 bool ble_midi_client_is_connected(void);
