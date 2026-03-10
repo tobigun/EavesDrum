@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Tobias Gunkel
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { NumberField } from '@base-ui-components/react/number-field';
+import { NumberField } from '@base-ui/react/number-field';
 import { styled } from '@mui/material';
 import React, { useId } from 'react';
 
