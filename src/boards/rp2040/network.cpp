@@ -89,7 +89,7 @@ static err_t linkoutput_fn(struct netif* netif, struct pbuf* p) {
 
     // if the network driver can accept another packet, we make it happen
     if (tud_network_can_xmit(p->tot_len)) {
-      DrumIO::led(LED_NETWORK, false);
+      DrumIO::led(LedId::Network, false);
       tud_network_xmit(p, 0 /* unused for this example */);
       return ERR_OK;
     }
@@ -185,10 +185,10 @@ void tud_network_init_cb() {
 }
 
 void NetworkConnection::service_traffic() {
-  DrumIO::led(LED_NETWORK, true);
+  DrumIO::led(LedId::Network, true);
   // handle any packet received by tud_network_recv_cb()
   if (received_frame) {
-    DrumIO::led(LED_NETWORK, false);
+    DrumIO::led(LedId::Network, false);
     ethernet_input(received_frame, &netif_data);
     // pbuf_free(received_frame);
     received_frame = NULL;
@@ -202,7 +202,7 @@ void NetworkConnection::setup() {
   init_lwip();
   while (!netif_is_up(&netif_data)) {}
 
-  DrumIO::led(LED_NETWORK, true); // indicate that the network is up
+  DrumIO::led(LedId::Network, true); // indicate that the network is up
 
   while (dhserv_init(&dhcp_config) != ERR_OK) {}
   while (dnserv_init(IP_ADDR_ANY, 53, dns_query_proc) != ERR_OK) {}

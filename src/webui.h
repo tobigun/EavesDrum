@@ -5,6 +5,7 @@
 
 #include <map>
 #include "drum_kit.h"
+#include "ble_client.h"
 
 #include <Arduino.h>
 
@@ -14,12 +15,20 @@
 #include <ESPAsyncWebServer.h>
 #endif
 
+struct BleDeviceInfo {
+  String name;
+  String bdaddr;
+};
+
 class WebUI {
 public:
   void setup(DrumKit& drumKit);
 
   void sendBinaryToWebSocket(uint8_t* messageBuffer, size_t size);
-  void sendTextToWebSocket(const String& text);
+  void sendJsonToWebSocket(JsonDocument json, AsyncWebSocketClient* client = nullptr);
+
+  void sendBleScanResult(const std::vector<BleDeviceInfo>& results);
+  void sendBleStatus(BleClientStatus status, bool isScanning, AsyncWebSocketClient* client = nullptr);
 
 private:
   void initHttpServer();
@@ -41,10 +50,17 @@ private:
   void handleEventLogRequest(AsyncWebSocketClient* client);
   void handleLatencyTestRequest(JsonObjectConst argsNode, AsyncWebSocketClient* client);
   void handleStatsRequest(AsyncWebSocketClient* client);
+  void handleScanBleDevicesRequest(AsyncWebSocketClient* client);
+  void handleSetBlePairingRequest(JsonObjectConst argsNode, AsyncWebSocketClient* client);
+  void handleGetBleStatusRequest(AsyncWebSocketClient* client);
 
   void sendConfig(AsyncWebSocketClient* client);
-  void setMonitorConfig(JsonObject& configNode);
-  void setVersionInfo(JsonObject& configNode);
+  
+  void setMonitorConfig(JsonObject& infoNode);
+  void setVersionInfo(JsonObject& infoNode);
+  void setAvailableMidiOutputModes(JsonObject& infoNode);
+
+  void sendTextToWebSocket(const String& text);
 
 private:
   DrumKit* drumKit = nullptr;

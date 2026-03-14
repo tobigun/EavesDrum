@@ -3,7 +3,9 @@
 
 #pragma once
 
-#include "esp32-hal-tinyusb.h"
-#include "USB.h"
+class BleServer {
+public:
+  void updateServer(bool enabled);
+};
 
-void setupUsb();
+extern BleServer bleServer;

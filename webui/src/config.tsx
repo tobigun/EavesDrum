@@ -30,6 +30,14 @@ export function updateConfig(updater: ConfigUpdateFunc) {
   useConfig.setState(produce((config) => { updater(config); }));
 }
 
+type InfoUpdateFunc = (info: ConfigInfo) => void;
+export function updateInfo(updater: InfoUpdateFunc) {
+  updateConfig(config => {
+    config._info = config._info || {};
+    updater(config._info);
+  });
+}
+
 export function getPadIndexByName(padName: string): number | undefined {
   const index = useConfig.getState().pads.findIndex(pad => pad.name === padName);
   return index == -1 ? undefined : index;
@@ -51,13 +59,31 @@ export interface Config {
   connectors: Record<ConnectorId, ConnectorConfig>;
   pads: DrumPadConfig[];
   mappings: Record<PadRole, DrumPadMappings>;
-  monitor?: MonitorConfig;
+  _info?: ConfigInfo;
+}
+
+export interface ConfigInfo {
   isDirty?: boolean; // false if not present
+  monitor?: MonitorConfig;
   version?: VersionInfo;
+  midiOutputModes?: MidiOutputMode[];
 }
 
 export interface GeneralConfig {
   gateTimeMs: number; // 0 .. MAX_GATE_TIME_MS
+  midiOutputMode: MidiOutputMode; // USB client if not present
+  blePairing?: {
+    name: string;
+    address: string;
+  }
+}
+
+export enum MidiOutputMode {
+  UsbDevice = "UsbDevice",
+  UsbHost = "UsbHost",
+  SerialDin = "SerialDin",
+  BleClient = "BleClient",
+  BleServer = "BleServer"
 }
 
 export interface Mux {

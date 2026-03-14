@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tobigun/EavesDrum/refs/tags/config-schema-v1.0/config/config.jsonc
+# EFNote 3/5/7 (as dpecified in reference guide)
+mappings:
+  Snare:
+    noteMain: 38 # Head
+    noteRim: 40 # Rim
+    noteCross: 37 # Side-rim
+  Tom1:
+    noteMain: 48 # Head
+    noteRim: 50 # Rim
+  Tom2:
+    noteMain: 45 # Head
+    noteRim: 47 # Rim
+  Tom3:
+    noteMain: 43 # Head
+    noteRim: 58 # Rim
+  Tom4:
+    noteMain: 41 # Head
+    noteRim: 39 # Rim
+  Kick:
+    noteMain: 36
+  HiHat:
+    name: Hi-Hat
+    closedNotesEnabled: false
+    noteMain: 46 # Bow (CC?)
+    noteCloseMain: 42 # Closed Bow
+    noteRim: 26 # Edge (CC)
+    noteCloseRim: 22 # Edge Closed
+    noteCup: 53 # n/a (use Ride Cup)
+    noteCloseCup: 53 # n/a (use Ride Cup)
+  HiHatPedal:
+    name: Hi-Hat Pedal
+    noteMain: 44 # Pedal
+  Ride1:
+    name: Ride
+    noteMain: 51 # Bow
+    noteRim: 59 # Edge
+    noteCup: 53 # Cup
+  Cymbal1:
+    name: Crash 1
+    noteMain: 49 # Bow
+    noteRim: 55 # Edge
+    noteCup: 54 # Cup
+  Cymbal2: 
+    name: Crash 2
+    noteMain: 57 # Bow
+    noteRim: 52 # Edge
+    noteCup: 56 # Cup
+  Cymbal3:
+    name: Crash 3
+    noteMain: 27 # Bow
+    noteRim: 28 # Crash
+    noteCup: 56 # (n/a, use Crash 2 Cup)

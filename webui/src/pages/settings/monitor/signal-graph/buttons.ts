@@ -27,6 +27,11 @@ const resetZoomButton = new ChartButton('Reset Zoom', (chart: Chart) => {
 });
   
 export const yZoomButton = new ChartButton('Zoom Selected Y-Range');
+
+export function setYZoomButtonState(enabled: boolean, onClick: (chart: Chart) => boolean) {
+  yZoomButton.enabled = enabled;
+  yZoomButton.onClick = onClick;
+}
   
 const chartButtons: ChartButton[] = [
   resetZoomButton,

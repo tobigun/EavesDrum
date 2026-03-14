@@ -5,7 +5,7 @@
 
 #include "config/config_mapper.h"
 #include "drum_kit.h"
-#include "midi_device.h"
+#include "midi_transport.h"
 #include "monitor.h"
 #include "network.h"
 #include "webui.h"

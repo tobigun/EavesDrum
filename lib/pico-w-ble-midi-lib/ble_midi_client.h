@@ -82,6 +82,19 @@ extern "C" {
 
 /* API_START */
 
+
+#define BLEMC_MAX_SCAN_ITEMS 16
+
+#define BLE_MAX_DEVICE_NAME_LEN 32
+#define BLE_ADDRESS_LENGTH 6
+
+typedef struct  {
+    char name[BLE_MAX_DEVICE_NAME_LEN];
+    uint8_t bdaddr[BLE_ADDRESS_LENGTH];
+} Ble_Scan_Result_t;
+
+typedef void (*ble_midi_client_scan_callback_t)();
+
 /**
  * @brief Initialize the BLE-MIDI client
  * 
@@ -129,6 +142,15 @@ void ble_midi_client_scan_end();
  *
  */
 void ble_midi_client_dump_midi_peripherals();
+
+/**
+ * @brief writes the last scan results to the provided array
+ *
+ * @param results a pointer to the array where scan results will be stored
+ * @param max_n_results a pointer to the maximum number of results that can be stored in the results array.
+ *  After the function returns, this pointer will be updated to the number of results actually stored in the results array.
+ */
+void ble_midi_client_get_midi_peripherals(Ble_Scan_Result_t* results, uint8_t* max_n_results);
 
 /**
  * @brief request connection to a device discovered during the scan
@@ -214,6 +236,9 @@ void ble_midi_client_cancel_connection_request();
 
 bool ble_midi_client_get_keep_connected();
 void ble_midi_client_set_keep_connected(bool keep_client_connected_);
+
+void ble_midi_client_set_scan_callback(ble_midi_client_scan_callback_t scan_callback_);
+
 #if defined __cplusplus
 }
 #endif

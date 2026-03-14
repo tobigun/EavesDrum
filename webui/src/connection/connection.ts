@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Tobias Gunkel
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-import { DrumPadConfig, DrumPadMappings, DrumPadSettings, updateConfig } from '@config';
+import { DrumPadConfig, DrumPadMappings, DrumPadSettings, GeneralConfig, updateConfig } from '@config';
 
 export enum DrumCommand {
   getConfig = "getConfig",
@@ -17,7 +17,10 @@ export enum DrumCommand {
   latencyTest = "latencyTest",
   triggerMonitor = "triggerMonitor",
   getEvents = "getEvents",
-  getStats = "getStats"
+  getStats = "getStats",
+  scanBleDevices = "scanBleDevices",
+  blePair = "blePair",
+  getBleStatus = "getBleStatus"
 }
 
 enum ConnectionEventType {
@@ -111,9 +114,13 @@ export class Connection {
 
   sendCommandWithDirtyFlag(command: DrumCommand, args: any, dirty: boolean) {
     if (dirty) {
-      updateConfig(config => config.isDirty = true);
+      updateConfig(config => config._info = { ...config._info, isDirty: true });
     }    
     this.sendCommand(command, args);
+  }
+
+  sendSetGeneralConfigCommand(values: Partial<GeneralConfig>) {
+    this.sendCommandWithDirtyFlag(DrumCommand.setGeneral, { ...values }, true);
   }
 
   sendSetConfigCommand(values: Partial<DrumPadConfig>) {

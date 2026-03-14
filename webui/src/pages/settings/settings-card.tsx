@@ -10,7 +10,7 @@ import { getHeaderBackground } from "@/common";
 import { Card, PanelIconToggleButton } from "@/components/card";
 import { GroupChip } from "@/components/group-chip";
 import { Switch } from "@/components/switch";
-import { ConnectorId, getPadIndexByName, PadType, updateConfig, useConfig } from "@config";
+import { ConnectorId, getPadIndexByName, PadType, updateInfo, updateConfig, useConfig } from "@config";
 import { connection, DrumCommand } from "@/connection/connection";
 import { recordButtonColor } from "./monitor/monitor-card";
 import { SettingsElements } from "./settings-pad";
@@ -125,14 +125,14 @@ function MonitorToggleButton({ padIndex }: {
   padIndex: number,
 }) {
   const connected = useContext(ConnectionStateContext);
-  const monitoredPadIndex = useConfig(config => config.monitor?.padIndex);
+  const monitoredPadIndex = useConfig(config => config._info?.monitor?.padIndex);
   
   const isMonitored = (padIndex === monitoredPadIndex);
   
   const onChangePadMonitoring = useCallback(() => {
     const selectAsMonitor = !isMonitored;
     const newMonitoredPadIndex = selectAsMonitor ? padIndex : undefined;
-    updateConfig(config => config.monitor = { ...config.monitor, padIndex: newMonitoredPadIndex });
+    updateInfo(info => info.monitor = { ...info.monitor, padIndex: newMonitoredPadIndex });
     connection.sendCommand(DrumCommand.setMonitor, { padIndex: newMonitoredPadIndex ?? null });
   }, [padIndex, isMonitored]);
   

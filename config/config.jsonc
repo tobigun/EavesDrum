@@ -5,7 +5,22 @@
     "general": {
       "type": "object",
       "properties": {
-        "gateTimeMs": { "type": "integer" }
+        "gateTimeMs": { "type": "integer" },
+        "midiOutputMode": { "enum": [
+          "UsbClient",
+          "UsbHost",
+          "SerialDin",
+          "BleClient",
+          "BleServer"
+        ] },
+        "blePairing": {
+          "type": "object",
+          "properties": {
+            "address": { "type": "string", "pattern": "^([0-9A-F]{2}:){5}[0-9A-F]{2}$" },
+            "name": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
       },
       "additionalProperties": false
     },

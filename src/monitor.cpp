@@ -5,7 +5,7 @@
 
 #include "drum_kit.h"
 #include "log.h"
-#include "midi_device.h"
+#include "midi_transport.h"
 #include "webui.h"
 #include "drum/sensing/latency.h"
 

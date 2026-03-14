@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <Arduino.h>
 #include "types.h"
 
 #define PIN_UNUSED 0xFF
@@ -10,9 +11,12 @@
 
 #define NUM_SAMPLES 2
 
-#define LED_WATCHDOG 0
-#define LED_HIT_INDICATOR 1
-#define LED_NETWORK 2
+enum class LedId {
+  WatchDog = 0,
+  HitIndicator = 1,
+  Network = 2,
+  Ble = 3
+};
 
 class DrumIO {
 public:
@@ -30,7 +34,7 @@ public:
 
   static void writeDigitalOutPin(pin_size_t pin, pin_status_t status);
 
-  static void led(uint8_t id, bool enable);
+  static void led(LedId id, bool enable);
 
   static void reset();
 };

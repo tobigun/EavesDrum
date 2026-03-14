@@ -6,6 +6,9 @@
 
 #include <Arduino.h>
 #include <hardware/adc.h>
+#ifndef ARDUINO_RASPBERRY_PI_PICO_W
+#define __isPicoW false
+#endif
 
 #define GPIO_LED_0 LED_BUILTIN // Use the built-in LED pin
 #define GPIO_LED_1 4
@@ -39,7 +42,7 @@ void DrumIO::setup(bool usePwmPowerSupply) {
   // Driving high the SMPS mode pin (GPIO23), to force the power supply into PWM mode,
   // can greatly reduce the inherent ripple of the SMPS at light load, and therefore the ripple on the ADC supply.
   // This will also increase the power consumption.
-  if (usePwmPowerSupply) {
+  if (!__isPicoW && usePwmPowerSupply) {
     pinMode(SMPS_MODE_PIN, OUTPUT);
     digitalWrite(SMPS_MODE_PIN, SMPS_MODE_PWM);
   }
@@ -126,17 +129,39 @@ static void ledInit() {
   digitalWrite(GPIO_LED_2, LOW);
 }
 
-void DrumIO::led(uint8_t id, bool enable) {
-  bool enabled_by_high_level = (id != 0);
-
-  pin_size_t ledPin = GPIO_LED_0;
-  if (id == 1) {
-    ledPin = GPIO_LED_1;
-  } else if (id == 2) {
+void DrumIO::led(LedId id, bool enable) {
+  pin_size_t ledPin;
+  if (id == LedId::WatchDog) {
+    //if (__isPicoW) {
+    //  return; // LED 0 used by BLE
+    //}
+    //ledPin = GPIO_LED_0;
     ledPin = GPIO_LED_2;
+  } else if (id == LedId::HitIndicator) {
+    ledPin = GPIO_LED_1;
+  } else if (id == LedId::Network) {
+    return;
+  } else if (id == LedId::Ble) {
+    if (!__isPicoW) {
+      return; // BLE not supported
+    }
+    ledPin = GPIO_LED_0;
+  } else {
+    return;
   }
 
-  digitalWrite(ledPin, (enable == enabled_by_high_level) ? HIGH : LOW);
+  // avoid blinking the LED on the Pico W, as it is multiplexed by the cyw43.
+  // It takes 1ms instead of 1us to toggle the pin with digitalWrite. This would interfer with the timing of the ADC sampling.
+  if (__isPicoW && ledPin == LED_BUILTIN) {
+    static int lastBuiltinLedEnable = -1;
+    if (enable == lastBuiltinLedEnable) {
+      return; 
+    }
+    lastBuiltinLedEnable = enable;
+  }
+
+  bool enabledByHighLevel = (__isPicoW || ledPin != LED_BUILTIN); // Built-in LED of Pico (not PicoW) is low active
+  digitalWrite(ledPin, (enable == enabledByHighLevel) ? HIGH : LOW);
 }
 
 void DrumIO::reset() {

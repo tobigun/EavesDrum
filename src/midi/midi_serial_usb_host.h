@@ -24,13 +24,20 @@
 
 #pragma once
 
+#if __has_include (<tusb.h>)
 #include <tusb.h>
+#if CFG_TUH_ENABLED > 0 && CFG_TUH_MIDI > 0
+#define ENABLE_MIDI_USB_HOST_TRANSPORT
+#endif
+#endif
+
+#ifdef ENABLE_MIDI_USB_HOST_TRANSPORT
+
 #include "Stream.h"
 
-// stripped down version of Adafruit_USBD_MIDI
-class USBD_MIDI_Serial : public Stream {
+class MidiSerialUsbHost : public Stream {
 public:
-  USBD_MIDI_Serial() {}
+  MidiSerialUsbHost() {}
 
   // for MIDI library
   bool begin(uint32_t baud) {
@@ -38,20 +45,55 @@ public:
     return true;
   }
 
-  // Stream interface to use with MIDI Library
-  virtual int read(void) {
-    uint8_t ch;
-    return tud_midi_stream_read(&ch, 1) ? (int)ch : (-1);
+  bool isConnected() {
+    return dev_idx != TUSB_INDEX_INVALID_8;
   }
 
-  virtual size_t write(uint8_t b) { return tud_midi_stream_write(0, &b, 1); }
-  virtual int available(void) { return tud_midi_available(); }
+  uint8_t getDeviceIndex() { return dev_idx; }
+  void setDeviceIndex(uint8_t idx) { dev_idx = idx; }
+
+  // Stream interface to use with MIDI Library
+  virtual int read(void) {
+    if (!isConnected()) return -1;
+    uint8_t ch;
+    return tuh_midi_stream_read(dev_idx, 0, &ch, 1) ? (int)ch : (-1);
+  }
+
+  virtual size_t write(uint8_t b) {
+    if (!isConnected()) return 0;
+    return tuh_midi_stream_write(dev_idx, 0, &b, 1);
+  }
+
+  virtual int available(void) {
+    if (!isConnected()) return false;
+    return tuh_midi_read_available(dev_idx);
+  }
+
   virtual int peek(void) { return -1; } // MIDI Library does not use peek
-  virtual void flush(void) {} // MIDI Library does not use flush
+
+  virtual void flush(void) { // MIDI Library does not use flush
+    tuh_midi_write_flush(dev_idx);
+  }
 
   using Stream::write;
 
   // Raw MIDI USB packet interface.
-  bool writePacket(const uint8_t packet[4])  { return tud_midi_packet_write(packet); }
-  bool readPacket(uint8_t packet[4]) { return tud_midi_packet_read(packet); }
+  bool writePacket(const uint8_t packet[4]) {
+    if (!isConnected()) return false;
+    return tuh_midi_packet_write(dev_idx, packet);
+  }
+
+  bool readPacket(uint8_t packet[4]) {
+    if (!isConnected()) return false;
+    return tuh_midi_packet_read(dev_idx, packet);
+  }
+
+  void printConnectedDevice();
+
+private:
+  uint8_t dev_idx = TUSB_INDEX_INVALID_8;
 };
+
+extern MidiSerialUsbHost usbh_midi;
+
+#endif

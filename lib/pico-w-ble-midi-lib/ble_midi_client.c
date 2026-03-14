@@ -1,6 +1,7 @@
 #include "btstack.h"
 #include "pico/cyw43_arch.h"
 #include "pico/btstack_cyw43.h"
+#include <pico/mutex.h>
 #include "ble_midi_client.h"
 #include "ble_midi_pkt_codec.h"
 #include <inttypes.h>
@@ -28,11 +29,9 @@ static enum {
     BLEMC_WAIT_FOR_DISCONNECTION,
 } state = BLEMC_DEINIT;
 
-#define BLEMC_MAX_SCAN_ITEMS 16
-
 typedef struct  {
-    char name[32];
-    uint8_t bdaddr[6];
+    char name[BLE_MAX_DEVICE_NAME_LEN];
+    uint8_t bdaddr[BLE_ADDRESS_LENGTH];
     uint8_t type; // BDADDR = 0; otherwise COMPLETE or SHORTENED
     uint8_t addr_type;
     int32_t timeout;
@@ -66,6 +65,8 @@ static io_capability_t iocaps;
 static uint8_t secmask;
 static bool midi_is_ready = false;
 static bool keep_client_connected = false;
+static ble_midi_client_scan_callback_t scan_callback = NULL;
+
 static void printUUID(uint8_t * uuid128, uint16_t uuid16){
     if (uuid16){
         DEBUG_PRINTF("%04x",uuid16);
@@ -115,6 +116,10 @@ static void scan_timer_cb(btstack_timer_source_t* timer_)
         else {
             ++idx;
         }
+    }
+
+    if (scan_callback) {
+        scan_callback();
     }
 
     // Restart timer
@@ -689,6 +694,21 @@ void ble_midi_client_dump_midi_peripherals()
     }
 }
 
+void ble_midi_client_get_midi_peripherals(Ble_Scan_Result_t* results, uint8_t* max_n_results)
+{
+    uint8_t n_results = *max_n_results;
+    if (n_results > midi_client.n_midi_peripherals) {
+        n_results = midi_client.n_midi_peripherals;
+    }
+
+    for (uint8_t idx=0; idx < n_results; idx++) {
+        memcpy(results[idx].bdaddr, midi_client.midi_peripherals[idx].bdaddr, BLE_ADDRESS_LENGTH);
+        strncpy(results[idx].name, midi_client.midi_peripherals[idx].name, BLE_MAX_DEVICE_NAME_LEN);
+    }
+
+    *max_n_results = n_results;
+}
+
 bool ble_midi_client_request_connect(uint8_t idx)
 {
     if (idx > midi_client.n_midi_peripherals)
@@ -795,6 +815,11 @@ static void handle_can_write_without_response(void * context)
 
 uint8_t ble_midi_client_stream_write(uint8_t nbytes, const uint8_t* midi_stream_bytes)
 {
+    // do not send data in unconnected state, otherwise a crash will occur on reconnect
+    if (!ble_midi_client_is_ready()) {
+        return 0;
+    }
+
     uint8_t bytes_written = 0;
     bool ready_to_send = false;
     bytes_written = ble_midi_pkt_codec_push_midi(midi_stream_bytes, nbytes, ble_midi_pkt_codec_data, &ready_to_send);
@@ -860,4 +885,9 @@ bool ble_midi_client_get_keep_connected()
 void ble_midi_client_set_keep_connected(bool keep_client_connected_)
 {
     keep_client_connected = keep_client_connected_;
+}
+
+void ble_midi_client_set_scan_callback(ble_midi_client_scan_callback_t scan_callback_)
+{
+    scan_callback = scan_callback_;
 }

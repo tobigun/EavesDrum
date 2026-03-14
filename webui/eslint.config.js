@@ -11,7 +11,7 @@ export default tseslint.config(
       js.configs.recommended,
       ...tseslint.configs.recommended,
       ...tseslint.configs.stylistic,
-      reactHooks.configs['recommended-latest']
+      reactHooks.configs.flat['recommended-latest']
     ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {

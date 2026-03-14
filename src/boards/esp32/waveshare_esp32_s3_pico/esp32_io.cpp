@@ -62,13 +62,9 @@ static void ledUpdateColor() {
       ledEnabled[2] ? BRIGHTNESS : 0);
 }
 
-void DrumIO::led(uint8_t id, bool enable) {
-  if (id >= 3) {
-    return;
-  }
-
-  if (ledEnabled[id] != enable) {
-    ledEnabled[id] = enable;
+void DrumIO::led(LedId id, bool enable) {
+  if (ledEnabled[(int) id] != enable) {
+    ledEnabled[(int) id] = enable;
     ledUpdateColor();
   }
 }

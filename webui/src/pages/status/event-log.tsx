@@ -36,9 +36,7 @@ export function EventLogInfo() {
 
     connection.sendCommand(DrumCommand.getEvents);
 
-    return () => {
-      connection.unregisterListener(onEventJsonListenerHandle);
-    };
+    return () => connection.unregisterListener(onEventJsonListenerHandle);
   }, []);
 
   return (

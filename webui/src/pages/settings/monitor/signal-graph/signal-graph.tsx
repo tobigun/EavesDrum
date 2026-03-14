@@ -17,8 +17,8 @@ import ZoomPlugin from 'chartjs-plugin-zoom';
 import AnnotationPlugin from 'chartjs-plugin-annotation';
 import { Line } from 'react-chartjs-2';
 import { PadType, useConfig } from '@config';
-import { useCallback, useState } from 'react';
-import { ButtonsPlugin, yZoomButton } from './buttons';
+import { useEffect, useState } from 'react';
+import { ButtonsPlugin, setYZoomButtonState } from './buttons';
 import { getZoneName } from '@/common';
 import { createSignalGraphOptions } from './options';
 import { getGradient } from './gradient';
@@ -50,10 +50,11 @@ export function SignalGraph({mode, messageInfo} : {
   messageInfo: MonitorMessageInfo
 }) {
   const [scaleToSelectedRange, setScaleToSelectedRange] = useState(false);
-  yZoomButton.enabled = scaleToSelectedRange;
-  yZoomButton.onClick = useCallback(() => {
-    setScaleToSelectedRange(!scaleToSelectedRange);
-    return true;
+  useEffect(() => {
+    setYZoomButtonState(scaleToSelectedRange, () => {
+      setScaleToSelectedRange(prev => !prev);
+      return true;
+    });
   }, [scaleToSelectedRange]);
 
   const data = updateSignalGraphDatasets(scaleToSelectedRange, messageInfo);

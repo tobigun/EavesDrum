@@ -7,16 +7,21 @@
 #include "drum_kit.h"
 #include "event_log.h"
 #include "log.h"
-#include "midi_device.h"
+#include "midi_transport.h"
 #include "monitor.h"
 #include "version.h"
+#if HAS_BLUETOOTH
+#include "ble_client.h"
+#endif
 
 #include <ArduinoJson.h>
 #include <LittleFS.h>
 
-#define CONFIG_MONITOR "monitor"
-#define CONFIG_MONITOR_PAD "padIndex"
-#define CONFIG_MONITOR_TRIGGERED_BY_ALL_PADS "triggeredByAllPads"
+#define CONFIG_INFO "_info"
+
+#define CONFIG_INFO_MONITOR "monitor"
+#define CONFIG_INFO_MONITOR_PAD "padIndex"
+#define CONFIG_INFO_MONITOR_TRIGGERED_BY_ALL_PADS "triggeredByAllPads"
 
 #define CONFIG_MAPPINGS_REPLACE_PROP "_replace"
 
@@ -31,12 +36,6 @@ WebUI webUI;
 static AsyncWebServer* server;
 static AsyncWebSocket* ws;
 
-static void sendJson(JsonDocument json, AsyncWebSocketClient* client) {
-  String str;
-  serializeJson(json, str);
-  client->text(str);
-}
-
 void WebUI::handleGetConfigRequest(AsyncWebSocketClient* client) {
   sendConfig(client);
 }
@@ -45,19 +44,21 @@ void WebUI::sendConfig(AsyncWebSocketClient* client) {
   JsonDocument configDoc = DrumConfigMapper::getDrumKitConfigAsJson(*drumKit);
   JsonObject configNode = configDoc.as<JsonObject>();
 
-  setMonitorConfig(configNode);
-  setVersionInfo(configNode);
+  JsonObject infoNode = configDoc[CONFIG_INFO].to<JsonObject>();
+  setMonitorConfig(infoNode);
+  setVersionInfo(infoNode);
+  setAvailableMidiOutputModes(infoNode);
 
   if (isConfigDirty) {
-    configNode["isDirty"] = isConfigDirty;
+    infoNode["isDirty"] = isConfigDirty;
   }
   
   JsonDocument doc;
   doc["config"] = configNode;
-  sendJson(doc, client);
+  sendJsonToWebSocket(doc, client);
 }
 
-void WebUI::setMonitorConfig(JsonObject& configNode) {
+void WebUI::setMonitorConfig(JsonObject& infoNode) {
   const DrumMonitor& monitor = drumKit->getMonitor();
   const DrumPad* monitoredPad = monitor.getMonitoredPad();
   bool triggeredByAllPads = monitor.isTriggeredByAllPads();
@@ -68,32 +69,39 @@ void WebUI::setMonitorConfig(JsonObject& configNode) {
     return;
   }
 
-  JsonObject monitorNode = configNode[CONFIG_MONITOR].to<JsonObject>();
+  JsonObject monitorNode = infoNode[CONFIG_INFO_MONITOR].to<JsonObject>();
   if (monitoredPad) {
-    monitorNode[CONFIG_MONITOR_PAD] = monitoredPad->getIndex();
+    monitorNode[CONFIG_INFO_MONITOR_PAD] = monitoredPad->getIndex();
   }
   if (triggeredByAllPads) {
-    monitorNode[CONFIG_MONITOR_TRIGGERED_BY_ALL_PADS] = triggeredByAllPads;
+    monitorNode[CONFIG_INFO_MONITOR_TRIGGERED_BY_ALL_PADS] = triggeredByAllPads;
   }
   if (latencyTestActive) {
     monitorNode["latencyTest"] = monitor.isLatencyTestActive();
   }
 }
 
-void WebUI::setVersionInfo(JsonObject& configNode) {
-  JsonObject versionNode = configNode["version"].to<JsonObject>();
+void WebUI::setVersionInfo(JsonObject& infoNode) {
+  JsonObject versionNode = infoNode["version"].to<JsonObject>();
   versionNode["packageVersion"] = Version::getPackageVersion();
   versionNode["gitCommitHash"] = Version::getGitCommitHash();
   versionNode["buildTime"] = Version::getBuildTime();
 }
 
+void WebUI::setAvailableMidiOutputModes(JsonObject& infoNode) {
+  JsonArray midiOutputsNode = infoNode["midiOutputModes"].to<JsonArray>();
+  for (MidiOutputMode mode : midiTransport.getSupportedOutputModes()) {
+    midiOutputsNode.add(midiOutputModeToString(mode));
+  }
+}
+
 void WebUI::handleSetMonitor(JsonObjectConst configNode) {
   DrumMonitor& monitor = drumKit->getMonitor();
 
-  if (!configNode[CONFIG_MONITOR_PAD].isUnbound()) {
+  if (!configNode[CONFIG_INFO_MONITOR_PAD].isUnbound()) {
     DrumPad* monitorPad = nullptr;
-    if (configNode[CONFIG_MONITOR_PAD].is<pad_size_t>()) { // unset with null
-      pad_size_t padIndex = configNode[CONFIG_MONITOR_PAD];
+    if (configNode[CONFIG_INFO_MONITOR_PAD].is<pad_size_t>()) { // unset with null
+      pad_size_t padIndex = configNode[CONFIG_INFO_MONITOR_PAD];
       monitorPad = drumKit->getPad(padIndex);
     }
 
@@ -106,8 +114,8 @@ void WebUI::handleSetMonitor(JsonObjectConst configNode) {
     }
   }
 
-  if (configNode[CONFIG_MONITOR_TRIGGERED_BY_ALL_PADS].is<bool>()) {
-    bool triggeredByAllPads = configNode[CONFIG_MONITOR_TRIGGERED_BY_ALL_PADS];
+  if (configNode[CONFIG_INFO_MONITOR_TRIGGERED_BY_ALL_PADS].is<bool>()) {
+    bool triggeredByAllPads = configNode[CONFIG_INFO_MONITOR_TRIGGERED_BY_ALL_PADS];
     monitor.setTriggeredByAllPads(triggeredByAllPads);
   }
 }
@@ -240,7 +248,7 @@ void WebUI::handleEventLogRequest(AsyncWebSocketClient* client) {
     eventNode["level"] = (int)level;
     eventNode["message"] = message;
   });
-  sendJson(doc, client);
+  sendJsonToWebSocket(doc, client);
 }
 
 void WebUI::handleStatsRequest(AsyncWebSocketClient* client) {
@@ -254,7 +262,7 @@ void WebUI::handleStatsRequest(AsyncWebSocketClient* client) {
     statsNode["updateCountPer30s"] = nullptr;
   }
 
-  sendJson(doc, client);
+  sendJsonToWebSocket(doc, client);
 }
 
 void WebUI::handleSaveConfigRequest(AsyncWebSocketClient* client) {
@@ -291,6 +299,58 @@ void WebUI::handleLatencyTestRequest(JsonObjectConst argsNode, AsyncWebSocketCli
   }
 }
 
+void WebUI::handleScanBleDevicesRequest(AsyncWebSocketClient* client) {
+#if HAS_BLUETOOTH
+  bleClient.startDeviceScan();
+#endif
+}
+
+void WebUI::handleSetBlePairingRequest(JsonObjectConst argsNode, AsyncWebSocketClient* client) {
+#if HAS_BLUETOOTH
+  String name = argsNode["name"] | "";
+  String address = argsNode["address"] | "";
+  bleClient.setPairingInfo(name, address);
+
+  isConfigDirty = true;
+  sendConfig(client);
+#endif
+}
+
+void WebUI::handleGetBleStatusRequest(AsyncWebSocketClient* client) {
+#if HAS_BLUETOOTH
+  BleClientStatus status = bleClient.getStatus();
+  bool isScanning = bleClient.isScanning();
+  sendBleStatus(status, isScanning, client);
+#endif
+}
+
+void WebUI::sendBleScanResult(const std::vector<BleDeviceInfo>& results) {
+  JsonDocument doc;
+  JsonArray devicesNode = doc["bleDevices"].to<JsonArray>();
+  for (const BleDeviceInfo& device : results) {
+    JsonObject deviceNode = devicesNode.add<JsonObject>();
+    deviceNode["name"] = device.name;
+    deviceNode["address"] = device.bdaddr;
+  }
+  sendJsonToWebSocket(doc);
+}
+
+void WebUI::sendBleStatus(BleClientStatus status, bool isScanning, AsyncWebSocketClient* client) {
+  JsonDocument doc;
+  JsonObject devicesNode = doc["bleStatus"].to<JsonObject>();
+
+  switch (status) {
+  case BleClientStatus::Disconnected: devicesNode["status"] = "disconnected"; break;
+  case BleClientStatus::Connecting: devicesNode["status"] = "connecting"; break;
+  case BleClientStatus::Connected: devicesNode["status"] = "connected"; break;
+  default: devicesNode["status"] = "unknown"; break;
+  }
+  
+  devicesNode["scanning"] = isScanning;
+  
+  sendJsonToWebSocket(doc, client);
+}
+
 void WebUI::handleCommand(String cmd, JsonObject& argsNode, AsyncWebSocketClient* client) {
   if (cmd == "getConfig") {
     handleGetConfigRequest(client);
@@ -320,6 +380,12 @@ void WebUI::handleCommand(String cmd, JsonObject& argsNode, AsyncWebSocketClient
     handleEventLogRequest(client);
   } else if (cmd == "getStats") {
     handleStatsRequest(client);
+  } else if (cmd == "scanBleDevices") {
+    handleScanBleDevicesRequest(client);
+  } else if (cmd == "blePair") {
+    handleSetBlePairingRequest(argsNode, client);
+  } else if (cmd == "getBleStatus") {
+    handleGetBleStatusRequest(client);
   } else {
     SerialDebug.printf("Cmd: %s\n", cmd.c_str());
   }
@@ -397,6 +463,17 @@ void WebUI::initHttpServer() {
 void WebUI::setup(DrumKit& drumKit) {
   this->drumKit = &drumKit;
   initHttpServer();
+}
+
+void WebUI::sendJsonToWebSocket(JsonDocument json, AsyncWebSocketClient* client) {
+  String str;
+  serializeJson(json, str);
+
+  if (client) {
+    client->text(str);
+  } else {
+    sendTextToWebSocket(str);
+  }
 }
 
 void WebUI::sendTextToWebSocket(const String& text) {

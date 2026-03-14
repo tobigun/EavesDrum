@@ -61,7 +61,7 @@ bool DrumIO::initDigitalOutPin(pin_size_t pin) {
 void DrumIO::writeDigitalOutPin(pin_size_t pinNumber, pin_status_t status) {
 }
 
-void DrumIO::led(uint8_t id, bool enable) {
+void DrumIO::led(LedId id, bool enable) {
 }
 
 void DrumIO::reset() {

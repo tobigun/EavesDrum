@@ -73,7 +73,7 @@ export const signalGraphOptions: ChartOptions<'line'> = {
           return [ Number(tooltipItems[0].parsed.x).toFixed(1) + " ms" ];
         },
         label: function (tooltipItem: TooltipItem<'line'>) {
-          return tooltipItem.dataset.label + ': ' + tooltipItem.parsed.y.toFixed(1) + "%";
+          return tooltipItem.dataset.label + ': ' + tooltipItem.parsed.y?.toFixed(1) + "%";
         },
       },
     },

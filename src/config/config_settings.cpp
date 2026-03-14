@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "config_mapper.h"
+#include "util.h"
 
 #define SETTINGS_ZONES_TYPE_PROP "zonesType"
 #define SETTINGS_CHOKE_TYPE_PROP "chokeType"

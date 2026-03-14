@@ -17,15 +17,6 @@
 #define CONNECTORS_SECTION "connectors"
 #define PADS_SECTION "pads"
 
-#define ENUM_TO_STRING(v) (#v)
-#define MAP_ENUM_TO_STRING(v) \
-  if (value == v) \
-    return ENUM_TO_STRING(v);
-
-#define MAP_STRING_TO_ENUM(v) \
-  if (value == ENUM_TO_STRING(v)) \
-    return v;
-  
 #if CFG_TUD_MSC
 void enableMassStorageDevice();
 #endif

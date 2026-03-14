@@ -122,7 +122,7 @@ function StepIntroduction() {
 function StepSelectChannel({ setNextEnabled } : {
   setNextEnabled: (enabled: boolean) => void
 }) {
-  const monitoredPadIndex = useConfig(config => config.monitor?.padIndex);
+  const monitoredPadIndex = useConfig(config => config._info?.monitor?.padIndex);
   const isMux = isPadPinConnectedToMux(0, monitoredPadIndex);
 
   useEffect(() => {
@@ -173,7 +173,7 @@ function StepAdjustTriggerSettings({threshold, setThreshold, midiNote, setMidiNo
   midiNote: number,
   setMidiNote: (value: number) => void,
 }) {
-  const monitoredPadIndex = useConfig(config => config.monitor?.padIndex);
+  const monitoredPadIndex = useConfig(config => config._info?.monitor?.padIndex);
   if (monitoredPadIndex === undefined) {
     return "No pad selected";
   }
@@ -248,7 +248,7 @@ function StepFinalTest({threshold, midiNote, setMidiNote} : {
     };
   }, []);
 
-  const monitoredPadIndex = useConfig(config => config.monitor?.padIndex);
+  const monitoredPadIndex = useConfig(config => config._info?.monitor?.padIndex);
   if (monitoredPadIndex === undefined) {
     return "No pad selected";
   }

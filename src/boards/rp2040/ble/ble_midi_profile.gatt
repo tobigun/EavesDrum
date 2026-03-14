@@ -1,0 +1,4 @@
+PRIMARY_SERVICE, GAP_SERVICE
+CHARACTERISTIC, GAP_DEVICE_NAME, READ, "EavesDrum BLE MIDI"
+
+#import <midi_service.gatt>

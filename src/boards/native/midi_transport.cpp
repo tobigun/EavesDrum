@@ -1,0 +1,20 @@
+#include "midi_transport.h"
+#ifdef ENABLE_MIDI_PORTMIDI_TRANSPORT
+#include "midi_transport_portmidi.h"
+MidiTransport_PortMidi nativeMidiTransport;
+#else
+#include "midi_transport_dummy.h"
+MidiTransport_Dummy nativeMidiTransport;
+#endif
+
+
+MidiTransportInstances midiTransportInstances = {
+  .usbDevice = &nativeMidiTransport,
+  .usbHost = &nativeMidiTransport,
+  .serialDin = &nativeMidiTransport,
+#ifdef HAS_BLUETOOTH
+  .bleClient = &nativeMidiTransport,
+  .bleServer = &nativeMidiTransport,
+#endif
+};
+MidiTransportMultiplexer midiTransport(midiTransportInstances);

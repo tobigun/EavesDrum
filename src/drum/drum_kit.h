@@ -8,6 +8,7 @@
 #include "drum_mux.h"
 #include "monitor.h"
 #include "note_event_queue.h"
+#include "midi_transport.h"
 
 #include <queue>
 
@@ -171,6 +172,18 @@ public:
     this->gateTimeMs = gateTimeMs;
   }
 
+  MidiOutputMode getMidiOutputMode() const { return midiOutputMode; }
+
+  void setMidiOutputMode(MidiOutputMode mode) {
+    if (midiOutputMode != mode) {
+      SerialDebug.printf("Switching MIDI output: %d\n", (int) mode);
+      midiOutputMode = mode;
+      midiTransport.shutdown();
+      midiTransport.setOutputMode(mode);
+      midiTransport.begin();
+    }
+  }
+
 public:
   void sendMidiNoteOnOffMessage(midi_note_t note, midi_velocity_t velocity);
 
@@ -190,6 +203,8 @@ private:
   void flushMultiplexers();
 
 private:
+  MidiOutputMode midiOutputMode;
+
   /**
    * The gate time is the time (in ms) between sending a NoteOff to a NoteOn event.
    * 
@@ -201,7 +216,7 @@ private:
    */
   time_ms_t gateTimeMs = 0; // 0 .. MAX_GATE_TIME_MS
   NoteEventQueue pendingNotesQueue;
-  
+
   mux_size_t muxCount = 0;
   DrumMux mux[MAX_MUX_COUNT];
 

@@ -7,7 +7,7 @@ import { StyledTableRow } from "@/components/table-row";
 import { licenses } from "./licenses";
 
 export function VersionInfo() {
-  const backendVersionInfo = useConfig(config => config.version);
+  const backendVersionInfo = useConfig(config => config._info?.version);
 
   return <Stack paddingX={4} paddingY={1}>
     <Typography>Backend:</Typography>

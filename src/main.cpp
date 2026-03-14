@@ -5,13 +5,18 @@
 #include "drum_kit.h"
 #include "event_log.h"
 #include "log.h"
-#include "midi_device.h"
+#include "midi_transport.h"
 #include "network.h"
 #include "trigger_button.h"
 #include "usb.h"
 #include "version.h"
 #include "webui.h"
 #include "wifi_connect.h"
+
+#ifdef HAS_BLUETOOTH
+#include "ble_client.h"
+#include "ble_server.h"
+#endif
 
 #if __has_include(<tusb.h>)
 #include <tusb.h>
@@ -20,68 +25,29 @@
 
 #include <Arduino.h>
 
-MidiDevice MIDI;
 NetworkConnection network;
 
 DrumKit drumKit;
 
-void logVersion() {
-  eventLog.log(Level::INFO, String("Version: ") + Version::getPackageVersion()
-    + " (Git: " + Version::getGitCommitHash() + ", Date: " + Version::getBuildTime() + ")");
-}
-
-#ifdef HAS_BLUETOOTH
-void onBluetoothConnected() {
-  DrumIO::led(LED_NETWORK, true); // TODO: change led id
-}
-
-void onBluetoothDisconnected() {
-  DrumIO::led(LED_NETWORK, false); // TODO: change led id
-}
-#endif
-
 #ifdef USE_WIFI
 static WifiConnect wifi;
-
-void initWireless() {
-  EDRUM_DEBUGLN("Connecting ...");
-  DrumIO::led(LED_NETWORK, false);
-  wifi.connect();
-  // wifi.startServer();
-  DrumIO::led(LED_NETWORK, true);
-  EDRUM_DEBUGLN("Connected");
-}
-
 #endif
 
-void reconnectUsb() {
-#ifdef HAS_TINY_USB
-  if (tud_mounted()) {
-    tud_disconnect();
-    delay(10);
-    tud_connect();
-  }
-#endif
-}
+static void logVersion();
+static void blinkLed();
+static void ledTest();
+static void reconnectUsb();
+static void updateBluetooth();
 
-void ledTest() {
-  DrumIO::led(LED_WATCHDOG, true);
-  DrumIO::led(LED_HIT_INDICATOR, true);
-  DrumIO::led(LED_NETWORK, true);
-
-  delay(200);
-
-  DrumIO::led(LED_WATCHDOG, false);
-  DrumIO::led(LED_HIT_INDICATOR, false);
-  DrumIO::led(LED_NETWORK, false);
-}
+static void initWifi();
+static void updateWifiState();
 
 void setup() {  
   DrumIO::setup(true);
 
   reconnectUsb();
 
-#ifdef ENABLE_SERIAL
+#ifdef ENABLE_SERIAL_DEBUG
   SerialDebug.begin(115200);
 #endif
 
@@ -92,13 +58,11 @@ void setup() {
   // Note: config must be loaded before USB is started, otherwise USB will not initialize correctly
   DrumConfigMapper::loadAndApplyDrumKitConfig(drumKit);
 
-  MIDI.begin();
-#ifdef USE_WIFI
-  triggerButton.init();
-  initWireless();
-#else
+  midiTransport.begin();
+
   setupUsb();
-#endif
+
+  initWifi();
 
   network.setup();
   webUI.setup(drumKit);
@@ -107,7 +71,41 @@ void setup() {
   enableMassStorageDevice();
 #endif
 
+  updateBluetooth();
+
   // setupTouch();
+}
+
+void loop() {
+  blinkLed();
+
+  drumKit.updateDrums();
+
+  updateWifiState();
+
+  network.service_traffic();
+  updateBluetooth();
+
+  // touchSense();
+}
+
+static void logVersion() {
+  eventLog.log(Level::INFO, String("Version: ") + Version::getPackageVersion()
+    + " (Git: " + Version::getGitCommitHash() + ", Date: " + Version::getBuildTime() + ")");
+}
+
+static void ledTest() {
+  DrumIO::led(LedId::WatchDog, true);
+  DrumIO::led(LedId::HitIndicator, true);
+  DrumIO::led(LedId::Network, true);
+  DrumIO::led(LedId::Ble, true);
+
+  delay(200);
+
+  DrumIO::led(LedId::WatchDog, false);
+  DrumIO::led(LedId::HitIndicator, false);
+  DrumIO::led(LedId::Network, false);
+  DrumIO::led(LedId::Ble, false);
 }
 
 static void blinkLed() {
@@ -117,28 +115,48 @@ static void blinkLed() {
 
   if (cur_time - last_time > 1000) {
     led_state = !led_state;
-    DrumIO::led(LED_WATCHDOG, led_state);
+    DrumIO::led(LedId::WatchDog, led_state);
     last_time = cur_time;
   }
+}
+
+static void reconnectUsb() {
+#ifdef HAS_TINY_USB
+  if (tud_mounted()) {
+    tud_disconnect();
+    delay(10);
+    tud_connect();
+  }
+#endif
+}
+
+static void updateBluetooth() {
+#ifdef HAS_BLUETOOTH
+  MidiOutputMode mode = drumKit.getMidiOutputMode();
+  bleClient.updateClient(mode == MidiOutputMode::BleClient);
+  bleServer.updateServer(mode == MidiOutputMode::BleServer);
+#endif
+}
+
+static void initWifi() {
+#ifdef USE_WIFI
+  triggerButton.init();
+
+  EDRUM_DEBUGLN("Connecting ...");
+  DrumIO::led(LedId::Network, false);
+  wifi.connect();
+  // wifi.startServer();
+  DrumIO::led(LedId::Network, true);
+  EDRUM_DEBUGLN("Connected");
+#endif
 }
 
 static void updateWifiState() {
 #ifdef USE_WIFI
   if (triggerButton.isPressed()) {
-    DrumIO::led(LED_NETWORK, false);
+    DrumIO::led(LedId::Network, false);
     wifi.provision();
-    DrumIO::led(LED_NETWORK, true);
+    DrumIO::led(LedId::Network, true);
   }
 #endif
-}
-
-void loop() {
-  blinkLed();
-
-  drumKit.updateDrums();
-
-  updateWifiState();
-  network.service_traffic();
-
-  // touchSense();
 }

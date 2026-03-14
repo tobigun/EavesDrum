@@ -22,7 +22,7 @@ export function IconBar({ setFileUploadDialogOpen }: {
   setFileUploadDialogOpen: (open: boolean) => void
 }) {
   const connected = useContext(ConnectionStateContext);
-  const isDirty = useConfig(config => config.isDirty ?? false);
+  const isDirty = useConfig(config => config._info?.isDirty ?? false);
   
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
 

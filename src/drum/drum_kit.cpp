@@ -5,7 +5,7 @@
 #include "log.h"
 
 #include "config/config_mapper.h"
-#include "midi_device.h"
+#include "midi_transport.h"
 #include "monitor.h"
 
 #define HIHAT_CC 4
@@ -22,7 +22,7 @@ void DrumKit::updateDrums() {
   time_us_t senseTimeUs = micros();
 
   if (senseTimeUs - lastHitTimeUs > HIT_INDICATOR_DELAY_US) {
-    DrumIO::led(LED_HIT_INDICATOR, false);
+    DrumIO::led(LedId::HitIndicator, false);
   }
 
   if (senseTimeUs - lastStatisticsResetTimeUs > HALF_MINUTE_IN_US) {
@@ -81,7 +81,7 @@ void DrumKit::stabilizeMultiplexerOffsetVoltage(time_us_t senseTimeUs) {
     return;
   }
 
-  SerialDebug.printf("Flush Mux: %d ms\n", senseTimeUs - lastMuxReadTimeUs);
+  SerialDebug.printf("Flush Mux: %ld ms\n", (senseTimeUs - lastMuxReadTimeUs) / 1000);
   flushMultiplexers();
   lastMuxReadTimeUs = micros();
 }
@@ -101,10 +101,10 @@ void DrumKit::flushMultiplexers() {
 
 static void sendChokeMessage(const DrumPad& pad, const midi_note_t* notes) {
   for (int i = 0; i < pad.getActiveZoneCount(); ++i) {
-    MIDI.sendAfterTouch(notes[i], 127, MIDI_CHANNEL);
+    midiTransport.sendAfterTouch(notes[i], 127, MIDI_CHANNEL);
   }
   for (int i = 0; i < pad.getActiveZoneCount(); ++i) {
-    MIDI.sendAfterTouch(notes[i], 0, MIDI_CHANNEL);
+    midiTransport.sendAfterTouch(notes[i], 0, MIDI_CHANNEL);
   }
 }
 
@@ -148,7 +148,7 @@ void DrumKit::evaluateDrum(const DrumPad& pad) {
 
 void DrumKit::evaluateHiHat(const DrumPad& pad, const DrumPad& pedal) {
   if (pedal.hihat.isMoving) {
-    MIDI.sendControlChange(HIHAT_CC, pedal.hihat.pedalCC, MIDI_CHANNEL);
+    midiTransport.sendControlChange(HIHAT_CC, pedal.hihat.pedalCC, MIDI_CHANNEL);
   }
 
   const DrumMappings& padMappings = pad.getMappings();
@@ -191,21 +191,21 @@ void DrumKit::evaluateCymbalWithNotes(const DrumPad& pad, const midi_note_t* not
 
 void DrumKit::sendMidiNoteOnOffMessage(midi_note_t note, midi_velocity_t velocity) {
   if (note != MIDI_NOTE_UNASSIGNED) {
-    MIDI.sendNoteOn(note, velocity, MIDI_CHANNEL);
-    MIDI.sendNoteOff(note, 0, MIDI_CHANNEL);
+    midiTransport.sendNoteOn(note, velocity, MIDI_CHANNEL);
+    midiTransport.sendNoteOff(note, 0, MIDI_CHANNEL);
   }
 }
 
 void DrumKit::sendMidiNoteOnWithDelayedOffMessage(midi_note_t note, midi_velocity_t velocity) {
   if (pendingNotesQueue.removeNote(note)) { // stop note if it is already playing
-    MIDI.sendNoteOff(note, 0, MIDI_CHANNEL);
+    midiTransport.sendNoteOff(note, 0, MIDI_CHANNEL);
   }
 
-  MIDI.sendNoteOn(note, velocity, MIDI_CHANNEL);
+  midiTransport.sendNoteOn(note, velocity, MIDI_CHANNEL);
 
   if (pendingNotesQueue.isFull()) { // remove oldest note if queue is full
     const MidiNoteEvent& oldNote = pendingNotesQueue.peekOldestNote();
-    MIDI.sendNoteOff(oldNote.note, 0, MIDI_CHANNEL);
+    midiTransport.sendNoteOff(oldNote.note, 0, MIDI_CHANNEL);
     pendingNotesQueue.removeOldestNote();
   }
 
@@ -213,7 +213,7 @@ void DrumKit::sendMidiNoteOnWithDelayedOffMessage(midi_note_t note, midi_velocit
 }
 
 void DrumKit::sendMidiNoteOnMessage(midi_note_t note, midi_velocity_t velocity) {
-  DrumIO::led(LED_HIT_INDICATOR, true);
+  DrumIO::led(LedId::HitIndicator, true);
   lastHitTimeUs = micros();
 
   if (note == MIDI_NOTE_UNASSIGNED) {
@@ -235,7 +235,7 @@ void DrumKit::sendPendingMidiNoteOffMessages() {
       return; // wait until next check
     }
 
-    MIDI.sendNoteOff(noteEvent.note, 0, MIDI_CHANNEL);
+    midiTransport.sendNoteOff(noteEvent.note, 0, MIDI_CHANNEL);
     pendingNotesQueue.removeOldestNote();
   } 
 }
