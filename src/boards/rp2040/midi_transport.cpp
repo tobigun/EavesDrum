@@ -4,6 +4,7 @@
 #include "midi_serial_usb_host.h"
 #ifdef HAS_BLUETOOTH
 #include "ble/midi_serial_ble_client.h"
+#include "ble/midi_serial_ble_server.h"
 #endif
 
 MidiSerialUsbDevice midiSerialUsbDevice;
@@ -15,6 +16,9 @@ MidiTransport_ArduinoMidi<MidiSerialUsbHost> midiTransportUsbHost(midiSerialUsbH
 #ifdef HAS_BLUETOOTH
 MidiSerialBleClient midiSerialBleClient;
 MidiTransport_ArduinoMidi<MidiSerialBleClient> midiTransportBleClient(midiSerialBleClient);
+
+MidiSerialBleServer midiSerialBleServer;
+MidiTransport_ArduinoMidi<MidiSerialBleServer> midiTransportBleServer(midiSerialBleServer);
 #endif
 
 MidiTransport_ArduinoMidi<SerialUART> midiTransportDin(Serial1);
@@ -25,7 +29,7 @@ MidiTransportInstances midiTransportInstances = {
   .serialDin = &midiTransportDin,
 #ifdef HAS_BLUETOOTH
   .bleClient = &midiTransportBleClient,
-  .bleServer = &midiTransportUsbDevice,
+  .bleServer = &midiTransportBleServer,
 #endif
 };
 MidiTransportMultiplexer midiTransport(midiTransportInstances);

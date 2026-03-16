@@ -8,6 +8,7 @@
 
 #include "ble_midi_client.h"
 #include "log.h"
+#include "drum_io.h"
 #include "webui.h"
 
 #define CLIENT_PROFILE_NAME "EavesDrum BLE MIDI"
@@ -139,7 +140,11 @@ static void sendScanResultsToWebUI() {
 }
 
 static void onConnectionChanged(BleClientStatus status, bool isScanning) {
-  SerialDebug.printf("BLE connection state changed: %d, scannning: %d\n", status, isScanning);
+  SerialDebug.printf("BLE client state changed: %s, scannning: %d\n",
+    status == BleClientStatus::Connected ? "connected"
+      : (status == BleClientStatus::Connecting ? "connecting"
+      : "disconnected"),
+    isScanning);
   DrumIO::led(LedId::Ble, status == BleClientStatus::Connected);
   webUI.sendBleStatus(status, isScanning);
 }
@@ -157,6 +162,13 @@ static void updateConnectionStatus() {
     clientStatus = newStatus;
     wasScanning = scanning;
     onConnectionChanged(newStatus, scanning);
+  }
+
+  static bool blinkState = false;
+  if (clientStatus == BleClientStatus::Connecting) {
+    // waiting for connection, blink the LED
+    DrumIO::led(LedId::Ble, blinkState);
+    blinkState = !blinkState;
   }
 }
 

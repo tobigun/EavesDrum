@@ -6,7 +6,9 @@
 
 #include <Arduino.h>
 #include <hardware/adc.h>
-#ifndef ARDUINO_RASPBERRY_PI_PICO_W
+#if __has_include (<cyw43_wrappers.h>)
+#include <cyw43_wrappers.h>
+#else
 #define __isPicoW false
 #endif
 
