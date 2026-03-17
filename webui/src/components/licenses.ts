@@ -34,6 +34,12 @@ export const licenses = {
       name: "khoih-prog / AsyncTCP_RP2040W",
       license: "LGPL-3.0 license (Copyright: Khoi Hoang)",  
     }, {
+      name: "rppicomidi / pico-w-ble-midi-lib",
+      license: "MIT License (Copyright: rppicomidi)",  
+    }, {
+      name: "rppicomidi / ring_buffer_lib",
+      license: "MIT License (Copyright: rppicomidi)",  
+    }, {
       name: "cesanta / mongoose (PC simulation only)",
       license: "GPLv2 License (Copyright: Sergey Lyubka / Cesanta Software Limited)",    
     }
