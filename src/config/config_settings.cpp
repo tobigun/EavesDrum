@@ -16,7 +16,7 @@ static PadType mapStringToPadType(String value) {
   MAP_STRING_TO_ENUM(Drum);
   MAP_STRING_TO_ENUM(Cymbal);
   MAP_STRING_TO_ENUM(Pedal);
-  eventLog.log(Level::WARN, String("Unknown pad type '") + value + "' -> using fallback ");
+  eventLog.log(Level::Warn, String("Unknown pad type '") + value + "' -> using fallback ");
   return PAD_TYPE_DEFAULT;
 }
 
@@ -29,7 +29,7 @@ static ZonesType mapStringToZonesType(String value) {
   MAP_STRING_TO_ENUM(Zones3_Piezos);
   MAP_STRING_TO_ENUM(Zones3_PiezoAndSwitches_2TRS);
   MAP_STRING_TO_ENUM(Zones3_PiezoAndSwitches_1TRS);
-  eventLog.log(Level::WARN, String("Unknown zones type '") + value + "' -> using fallback");
+  eventLog.log(Level::Warn, String("Unknown zones type '") + value + "' -> using fallback");
   return ZONES_TYPE_DEFAULT;
 }
 
@@ -39,7 +39,7 @@ static ChokeType mapStringToChokeType(String value) {
   MAP_STRING_TO_ENUM(Switch_Edge);
   MAP_STRING_TO_ENUM(Switch_Cup);
   // MAP_STRING_TO_ENUM(TouchSensor);
-  eventLog.log(Level::WARN, String("Unknown choke type '") + value + "' -> using fallback");
+  eventLog.log(Level::Warn, String("Unknown choke type '") + value + "' -> using fallback");
   return None;
 }
 
@@ -50,7 +50,7 @@ static CurveType mapStringToCurveType(String value) {
   MAP_STRING_TO_ENUM(Exponential2);
   MAP_STRING_TO_ENUM(Logarithmic1);
   MAP_STRING_TO_ENUM(Logarithmic2);
-  eventLog.log(Level::WARN, String("Unknown curve type '") + value + "' -> using fallback");
+  eventLog.log(Level::Warn, String("Unknown curve type '") + value + "' -> using fallback");
   return CURVE_TYPE_DEFAULT;
 }
 
@@ -174,7 +174,7 @@ static String mapPadTypeToString(PadType value) {
   MAP_ENUM_TO_STRING(Drum);
   MAP_ENUM_TO_STRING(Cymbal);
   MAP_ENUM_TO_STRING(Pedal);
-  eventLog.log(Level::WARN, String("Unknown pad type '") + (uint8_t)value + "' -> using fallback");
+  eventLog.log(Level::Warn, String("Unknown pad type '") + (uint8_t)value + "' -> using fallback");
   return mapPadTypeToString(PAD_TYPE_DEFAULT);
 }
 
@@ -187,7 +187,7 @@ static String mapZonesTypeToString(ZonesType value) {
   MAP_ENUM_TO_STRING(Zones3_Piezos);
   MAP_ENUM_TO_STRING(Zones3_PiezoAndSwitches_2TRS);
   MAP_ENUM_TO_STRING(Zones3_PiezoAndSwitches_1TRS);
-  eventLog.log(Level::WARN, String("Unknown zones type '") + (uint8_t)value + "' -> using fallback");
+  eventLog.log(Level::Warn, String("Unknown zones type '") + (uint8_t)value + "' -> using fallback");
   return mapZonesTypeToString(ZONES_TYPE_DEFAULT);
 }
 
@@ -196,7 +196,7 @@ static String mapChokeTypeToString(ChokeType value) {
   MAP_ENUM_TO_STRING(None);
   MAP_ENUM_TO_STRING(Switch_Cup);
   MAP_ENUM_TO_STRING(Switch_Edge);
-  eventLog.log(Level::WARN, String("Unknown choke type '") + (uint8_t)value + "' -> using fallback");
+  eventLog.log(Level::Warn, String("Unknown choke type '") + (uint8_t)value + "' -> using fallback");
   return mapChokeTypeToString(None);
 }
 
@@ -207,7 +207,7 @@ static String mapCurveTypeToString(CurveType value) {
   MAP_ENUM_TO_STRING(Exponential2);
   MAP_ENUM_TO_STRING(Logarithmic1);
   MAP_ENUM_TO_STRING(Logarithmic2);
-  eventLog.log(Level::WARN, String("Unknown curve type '") + (uint8_t)value + "' -> using fallback");
+  eventLog.log(Level::Warn, String("Unknown curve type '") + (uint8_t)value + "' -> using fallback");
   return mapCurveTypeToString(CURVE_TYPE_DEFAULT);
 }
 

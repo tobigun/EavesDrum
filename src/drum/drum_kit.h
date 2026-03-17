@@ -95,7 +95,7 @@ public:
     }
 
     if (mappingsCount >= MAX_MAPPINGS_COUNT) {
-      eventLog.log(Level::ERROR, String("Cannot create mappings, maximum count reached: ") + MAX_MAPPINGS_COUNT);
+      eventLog.log(Level::Error, String("Cannot create mappings, maximum count reached: ") + MAX_MAPPINGS_COUNT);
       return nullptr;
     }
     
@@ -165,7 +165,7 @@ public:
    */
   void setGateTime(time_ms_t gateTimeMs) {
     if (gateTimeMs > MAX_GATE_TIME_MS) {
-      eventLog.log(Level::WARN, String("Gate time reduced to maximum ")
+      eventLog.log(Level::Warn, String("Gate time reduced to maximum ")
         + MAX_GATE_TIME_MS + "ms (was " + String(gateTimeMs) + "ms)");
       gateTimeMs = MAX_GATE_TIME_MS;
     }
@@ -176,7 +176,7 @@ public:
 
   void setMidiOutputMode(MidiOutputMode mode) {
     if (midiOutputMode != mode) {
-      SerialDebug.printf("Switching MIDI output: %d\n", (int) mode);
+      logInfo("Switching MIDI output: %d\n", (int) mode);
       midiOutputMode = mode;
       midiTransport.shutdown();
       midiTransport.setOutputMode(mode);

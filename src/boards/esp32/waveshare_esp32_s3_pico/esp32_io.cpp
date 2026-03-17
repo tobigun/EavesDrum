@@ -70,6 +70,6 @@ void DrumIO::led(LedId id, bool enable) {
 }
 
 void DrumIO::reset() {
-  SerialDebug.println("Reset");
+  logInfo("Reset\n");
   esp_restart();
 }

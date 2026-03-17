@@ -8,7 +8,7 @@
 static void initSensor(const DrumPin& pin) {
   if (!pin.mux) {
     if (!DrumIO::initAnalogInPin(pin.index)) {
-      eventLog.log(Level::ERROR, String("Mux: cannot initialize analog in pin: ") + pin);
+      eventLog.log(Level::Error, String("Mux: cannot initialize analog in pin: ") + pin);
     }
   }
 }

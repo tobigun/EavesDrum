@@ -22,14 +22,14 @@ static MuxType mapStringToMuxType(String value) {
 void DrumConfigMapper::addMultiplexersToKit(DrumKit& drumKit, JsonArrayConst& muxNodes) {
   for (JsonObjectConst muxNode : muxNodes) {
     if (drumKit.getMuxCount() >= MAX_MUX_COUNT) {
-      eventLog.log(Level::ERROR, String("Max. mux count reached: ") + MAX_MUX_COUNT);
+      eventLog.log(Level::Error, String("Max. mux count reached: ") + MAX_MUX_COUNT);
       break;
     }
 
     DrumMux mux;
     if (applyMuxConfig(mux, muxNode)) {
       drumKit.addMux(mux);
-      eventLog.log(Level::INFO, mux);
+      eventLog.log(Level::Info, mux);
     }
   }
 }
@@ -37,28 +37,28 @@ void DrumConfigMapper::addMultiplexersToKit(DrumKit& drumKit, JsonArrayConst& mu
 bool DrumConfigMapper::applyMuxConfig(DrumMux& mux, JsonObjectConst& muxNode) {
   MuxType type = mapStringToMuxType(muxNode[MUX_TYPE_PROP]);
   if (type == MuxType::Unknown) {
-    eventLog.log(Level::ERROR, String("Invalid mux type: ") + muxNode[MUX_TYPE_PROP].as<String>());
+    eventLog.log(Level::Error, String("Invalid mux type: ") + muxNode[MUX_TYPE_PROP].as<String>());
     return false;
   }
 
   JsonObjectConst pinsNode = muxNode[MUX_PINS_PROP];
   if (!pinsNode) {
-    eventLog.log(Level::ERROR, MUX_SECTION "." MUX_PINS_PROP " node missing");
+    eventLog.log(Level::Error, MUX_SECTION "." MUX_PINS_PROP " node missing");
     return false;
   }
 
   JsonArrayConst selectPinsNode = pinsNode[MUX_PINS_SELECT_PROP];
   if (!selectPinsNode) {
-    eventLog.log(Level::ERROR, MUX_SECTION "." MUX_PINS_PROP "." MUX_PINS_SELECT_PROP " node missing");
+    eventLog.log(Level::Error, MUX_SECTION "." MUX_PINS_PROP "." MUX_PINS_SELECT_PROP " node missing");
     return false;
   }
 
   pin_size_t numSelectPins = selectPinsNode.size();
   if (type == MuxType::HC4051 && numSelectPins != 3) {
-    eventLog.log(Level::ERROR, String("HC4051 requires 3 select pins, got ") + numSelectPins);
+    eventLog.log(Level::Error, String("HC4051 requires 3 select pins, got ") + numSelectPins);
     return false;
   } else if (type == MuxType::HC4067 && numSelectPins != 4) {
-    eventLog.log(Level::ERROR, String("HC4067 requires 4 select pins, got ") + numSelectPins);
+    eventLog.log(Level::Error, String("HC4067 requires 4 select pins, got ") + numSelectPins);
     return false;
   }
 
@@ -68,7 +68,7 @@ bool DrumConfigMapper::applyMuxConfig(DrumMux& mux, JsonObjectConst& muxNode) {
   }
 
   if (pinsNode[MUX_PINS_ANALOGIN_PROP].isNull()) {
-    eventLog.log(Level::ERROR, MUX_SECTION "." MUX_PINS_PROP "." MUX_PINS_ANALOGIN_PROP " node missing");
+    eventLog.log(Level::Error, MUX_SECTION "." MUX_PINS_PROP "." MUX_PINS_ANALOGIN_PROP " node missing");
     return false;
   }
 

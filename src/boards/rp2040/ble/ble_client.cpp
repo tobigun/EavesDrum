@@ -47,7 +47,7 @@ static void stopClient() {
 static void reconnect() {
   bd_addr_t bdaddr;
   if (sscanf_bd_addr(pairingInfo.address.c_str(), bdaddr) != 1) {
-    SerialDebug.printf("Invalid Bluetooth address: %s\n", pairingInfo.address.c_str());
+    logWarn("Invalid Bluetooth address: %s\n", pairingInfo.address.c_str());
     return;
   }
 
@@ -88,7 +88,7 @@ bool BleClient::isScanning() const {
 }
 
 void BleClient::startDeviceScan() {
-  SerialDebug.println("Start scanning for BLE devices...");
+  logInfo("Start scanning for BLE devices...\n");
   ble_midi_client_set_scan_callback([]() {
     scanResultAvailable = true;
   });
@@ -140,7 +140,7 @@ static void sendScanResultsToWebUI() {
 }
 
 static void onConnectionChanged(BleClientStatus status, bool isScanning) {
-  SerialDebug.printf("BLE client state changed: %s, scannning: %d\n",
+  logInfo("BLE client state changed: %s, scannning: %d\n",
     status == BleClientStatus::Connected ? "connected"
       : (status == BleClientStatus::Connecting ? "connecting"
       : "disconnected"),

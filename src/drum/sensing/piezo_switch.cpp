@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Tobias Gunkel
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "drum_log.h"
+#include "log.h"
 #include "drum_pad.h"
 
 #include "sensing/scale.h"
@@ -113,7 +113,7 @@ SensingState PiezoSwitchSensing::scan(time_us_t senseTimeUs) {
     if (pad.cymbal.lastEventType != LastCymbalEventType::Choked) {
       pad.cymbal.isChoked = true;
       pad.cymbal.lastEventType = LastCymbalEventType::Choked;
-      DEBUG_PRINTF("[Choked '%s'] \n", name.c_str());
+      EDRUM_DEBUG("[Choked '%s'] \n", name.c_str());
     } else {
       // do not choke again if already choked.
       // This will enable us to detect choked hits that would otherwise be masked by the choke events
@@ -123,7 +123,7 @@ SensingState PiezoSwitchSensing::scan(time_us_t senseTimeUs) {
     pad.hitVelocities[hitIndex] = scaleAndCurve(maxPiezoValue, piezoThresholdMin, piezoThresholdMax, pad.settings.curveType);
     pad.hits[hitIndex] = true;
     pad.cymbal.lastEventType = LastCymbalEventType::Hit;
-    DEBUG_PRINTF("[Hit '%s' %s] bow: %d/127 (%d/" MAX_SENSOR_VALUE_STR ") edge: %d/127 (%d/" MAX_SENSOR_VALUE_STR ") cup: %d/127 (%d/" MAX_SENSOR_VALUE_STR ")\n",
+    EDRUM_DEBUG("[Hit '%s' %s] bow: %d/127 (%d/" MAX_SENSOR_VALUE_STR ") edge: %d/127 (%d/" MAX_SENSOR_VALUE_STR ") cup: %d/127 (%d/" MAX_SENSOR_VALUE_STR ")\n",
         name.c_str(),
         hitIndex == 0 ? "Bow" : (hitIndex == 1 ? "Edge" : "Cup"),
         hitVelocities[MAIN_PIEZO_INDEX], maxZoneValues[MAIN_PIEZO_INDEX],

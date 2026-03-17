@@ -21,20 +21,20 @@ bool isConnected = false;
 static void updateConnectionStatus();
 
 static void startServer() {
-  SerialDebug.printf("BLE server started\n");
+  logInfo("BLE server started\n");
   ble_midi_server_init(profile_data, scan_resp_data, sizeof(scan_resp_data),
       IO_CAPABILITY_NO_INPUT_NO_OUTPUT,
       SM_AUTHREQ_SECURE_CONNECTION | SM_AUTHREQ_BONDING);
 }
 
 static void stopServer() {
-  SerialDebug.printf("BLE server stopping ...\n");
+  logInfo("BLE server stopping ...\n");
   ble_midi_server_deinit();
   while (ble_midi_server_is_initialized()) {
     delay(100);
   }
   updateConnectionStatus();
-  SerialDebug.printf("BLE server stopped\n");
+  logInfo("BLE server stopped\n");
 }
 
 static void updateConnectionStatus() {
@@ -42,7 +42,7 @@ static void updateConnectionStatus() {
   isConnected = ble_midi_server_is_connected();
 
   if (wasConnected != isConnected) {
-    SerialDebug.printf("BLE server state changed: %s\n", isConnected ? "connected" : "disconnected");
+    logInfo("BLE server state changed: %s\n", isConnected ? "connected" : "disconnected");
     DrumIO::led(LedId::Ble, isConnected);
     return;
   }

@@ -17,13 +17,13 @@
 
 void DrumConfigMapper::addPadsToDrumKit(DrumKit& drumKit, JsonArrayConst& padsNode) {
   if (!padsNode) {
-    eventLog.log(Level::INFO, "Config: " PADS_SECTION " node missing");
+    eventLog.log(Level::Info, "Config: " PADS_SECTION " node missing");
     return;
   }
 
   for (pad_size_t padIndex = 0; padIndex < padsNode.size(); ++padIndex) {
     if (drumKit.getPadsCount() >= MAX_PAD_COUNT) {
-      eventLog.log(Level::ERROR, String("Too many drum pads in config: ") + (int)padsNode.size() + " > " + MAX_PAD_COUNT);
+      eventLog.log(Level::Error, String("Too many drum pads in config: ") + (int)padsNode.size() + " > " + MAX_PAD_COUNT);
       break;
     }
 
@@ -50,7 +50,7 @@ void DrumConfigMapper::applyPadConfig(DrumPad& pad, DrumKit& drumKit, pad_size_t
 
   JsonObjectConst settingsNode = padNode[PAD_SETTINGS_PROP];
   if (!settingsNode) {
-    eventLog.log(Level::ERROR, String("Pad[") + pad.getName() + "]: pedal has no settings");
+    eventLog.log(Level::Error, String("Pad[") + pad.getName() + "]: pedal has no settings");
     failed = true;
   } else {
     DrumConfigMapper::applyPadSettings(pad, settingsNode);
@@ -60,7 +60,7 @@ void DrumConfigMapper::applyPadConfig(DrumPad& pad, DrumKit& drumKit, pad_size_t
     String pedalName = padNode[PAD_PEDAL_PROP];
     pad_size_t pedalIndex = findPedalIndexByName(pedalName, padsNode);
     if (pedalIndex == UNKNOWN_PAD) {
-      eventLog.log(Level::ERROR, String("Pad[") + pad.getName() + "]: pedal with name '" + pedalName + "' not found");
+      eventLog.log(Level::Error, String("Pad[") + pad.getName() + "]: pedal with name '" + pedalName + "' not found");
     } else {
       DrumPad* pedalPad = drumKit.getPadUnchecked(pedalIndex);
       pad.setPedalPad(pedalPad);
@@ -68,13 +68,13 @@ void DrumConfigMapper::applyPadConfig(DrumPad& pad, DrumKit& drumKit, pad_size_t
   }
 
   if (!padNode[PAD_CONNECTOR_PROP].is<String>()) {
-    eventLog.log(Level::ERROR, String("Pad[") + pad.getName() + "]: property '" PAD_CONNECTOR_PROP "' missing");
+    eventLog.log(Level::Error, String("Pad[") + pad.getName() + "]: property '" PAD_CONNECTOR_PROP "' missing");
     failed = true;
   } else {
     ConnectorId connectorId = padNode[PAD_CONNECTOR_PROP];
     DrumConnector* connector = drumKit.getConnectorById(connectorId);
     if (!connector) {
-      eventLog.log(Level::ERROR, String("Pad[") + pad.getName() + "]: Connector[" + connectorId + "] is unknown");
+      eventLog.log(Level::Error, String("Pad[") + pad.getName() + "]: Connector[" + connectorId + "] is unknown");
       failed = true;
     }
     pad.setConnector(connector);

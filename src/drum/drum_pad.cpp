@@ -12,12 +12,12 @@ DrumMappings DrumPad::fallbackMappings("None");
 
 void DrumPad::init() {
   if (pedalPad && pedalPad->getPadType() != PadType::Pedal) {
-    eventLog.log(Level::ERROR, String("Pad[") + pedalPad->getName() + "] does not have type 'Pedal'");
+    eventLog.log(Level::Error, String("Pad[") + pedalPad->getName() + "] does not have type 'Pedal'");
     pedalPad = nullptr;
   }
 
   if (!areMappingsAssigned()) {
-    eventLog.log(Level::WARN, String("Pad[") + name + "] uses unknown role '" + (role ? role : "-") + "'");
+    eventLog.log(Level::Warn, String("Pad[") + name + "] uses unknown role '" + (role ? role : "-") + "'");
   }
 }
 

@@ -17,13 +17,13 @@ public:
   static void parseConfig(fs::File& localeFile, JsonObject& jsonObject) {
     YAMLNode yamlnode = loadStream(localeFile);
     if (yamlnode.isNull()) {
-      eventLog.log(Level::ERROR, String("Could not load config"));
+      eventLog.log(Level::Error, String("Could not load config"));
       return;
     }
 
     DeserializationError error = deserializeYml_JsonObject(yamlnode.getDocument(), yamlnode.getNode(), jsonObject);
     if (error) {
-      eventLog.log(Level::ERROR, String("Could not deserialize config: ") + error.c_str());
+      eventLog.log(Level::Error, String("Could not deserialize config: ") + error.c_str());
       return;
     }
   }
@@ -32,21 +32,21 @@ private:
   static void handle_parser_error(yaml_parser_t* p) {
     switch (p->error) {
     case YAML_MEMORY_ERROR:
-      eventLog.log(Level::ERROR, "Memory error: Not enough memory for parsing");
+      eventLog.log(Level::Error, "Memory error: Not enough memory for parsing");
       break;
     case YAML_READER_ERROR:
       if (p->problem_value != -1)
-        eventLog.log(Level::ERROR, String(p->problem) + ": #" + p->problem_value + " at " + (long)p->problem_offset);
+        eventLog.log(Level::Error, String(p->problem) + ": #" + p->problem_value + " at " + (long)p->problem_offset);
       else
-        eventLog.log(Level::ERROR, String(p->problem) + " at " + (long)p->problem_offset);
+        eventLog.log(Level::Error, String(p->problem) + " at " + (long)p->problem_offset);
       break;
     case YAML_PARSER_ERROR:
     case YAML_SCANNER_ERROR:
       if (p->context)
-        eventLog.log(Level::ERROR, String(p->context) + " at line " + (long)(p->context_mark.line + 1) + ", column " + (long)(p->context_mark.column + 1) + "\n"
+        eventLog.log(Level::Error, String(p->context) + " at line " + (long)(p->context_mark.line + 1) + ", column " + (long)(p->context_mark.column + 1) + "\n"
             + p->problem + " at line " + (long)(p->problem_mark.line + 1) + ", column " + (long)(p->problem_mark.column + 1));
       else
-        eventLog.log(Level::ERROR, String(p->problem) + " at line " + (long)(p->problem_mark.line + 1) + ", column " + (long)(p->problem_mark.column + 1));
+        eventLog.log(Level::Error, String(p->problem) + " at line " + (long)(p->problem_mark.line + 1) + ", column " + (long)(p->problem_mark.column + 1));
       break;
     case YAML_COMPOSER_ERROR:
     case YAML_WRITER_ERROR:

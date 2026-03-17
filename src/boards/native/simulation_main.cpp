@@ -128,14 +128,14 @@ static void handleInput() {
   if (action == CommandAction::Increase) {
     sensorValue = min((int)sensorValue + 100, MAX_SENSOR_VALUE);
     setPadPinValue(*hitPad, 0, sensorValue);
-    SerialDebug.printf("Sensor-Value: %d\n", sensorValue);
+    logInfo("Sensor-Value: %d\n", sensorValue);
   } else if (action == CommandAction::Decrease) {
     sensorValue = max((int)sensorValue - 100, 0);
     setPadPinValue(*hitPad, 0, sensorValue);
-    SerialDebug.printf("Sensor-Value: %d\n", sensorValue);
+    logInfo("Sensor-Value: %d\n", sensorValue);
   } else if (action == CommandAction::Jitter) {
     jitterLevel = (jitterLevel + 1) % 5;
-    SerialDebug.printf("Jitter-Level: %d\n", jitterLevel);
+    logInfo("Jitter-Level: %d\n", jitterLevel);
   } else {
     padPlayback = std::make_shared<PadSoundPlayback>(hitPad, action == CommandAction::Choke);
   }

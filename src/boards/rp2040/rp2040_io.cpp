@@ -167,6 +167,6 @@ void DrumIO::led(LedId id, bool enable) {
 }
 
 void DrumIO::reset() {
-  SerialDebug.println("Reset");
+  logInfo("Reset\n");
   AIRCR_Register = 0x5FA0004;
 }

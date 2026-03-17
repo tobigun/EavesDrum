@@ -90,7 +90,7 @@ void loop() {
 }
 
 static void logVersion() {
-  eventLog.log(Level::INFO, String("Version: ") + Version::getPackageVersion()
+  eventLog.log(Level::Info, String("Version: ") + Version::getPackageVersion()
     + " (Git: " + Version::getGitCommitHash() + ", Date: " + Version::getBuildTime() + ")");
 }
 

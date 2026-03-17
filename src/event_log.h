@@ -6,12 +6,7 @@
 #include <Arduino.h>
 #include <deque>
 #include <functional>
-
-enum class Level {
-  INFO,
-  WARN,
-  ERROR
-};
+#include "log.h"
 
 struct EventLogEntry {
   int id;

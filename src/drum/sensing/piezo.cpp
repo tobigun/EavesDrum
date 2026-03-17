@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "drum_pad.h"
-#include "drum_log.h"
+#include "log.h"
 
 #include "sensing/piezo.h"
 #include "sensing/scale.h"
@@ -118,7 +118,7 @@ SensingState PiezoSensing::scan(time_us_t senseTimeUs) {
   zone_size_t hitIndex = determineHitZone(evaluationVelocities, zoneCount, pad.settings.headRimBias);
   pad.hits[hitIndex] = true;
 
-  DEBUG_PRINTF("[Hit '%s' %s] head: %d/127 (%d/" MAX_SENSOR_VALUE_STR ") rim: %d/127 (%d/" MAX_SENSOR_VALUE_STR ")\n",
+  EDRUM_DEBUG("[Hit '%s' %s] head: %d/127 (%d/" MAX_SENSOR_VALUE_STR ") rim: %d/127 (%d/" MAX_SENSOR_VALUE_STR ")\n",
       name.c_str(),
       hitIndex == 0 ? "Head" : "Rim",
       hitVelocities[0], maxZoneValues[0],

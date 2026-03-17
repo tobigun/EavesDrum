@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "drum_pad.h"
-#include "drum_log.h"
+#include "log.h"
 
 #include "sensing/controller.h"
 #include "sensing/scale.h"
@@ -51,7 +51,7 @@ void ControllerSensing::hiHatPedalPositionAndChickSensing(time_us_t senseTimeUs,
     // map closingTimeMs == 0 -> 127, closingTimeMs == maxHitClosingTimeMs -> 1, closingTimeMs > maxHitClosingTimeMs -> [0 .. -inf]
     int32_t velocity = map(closingTimeMs, maxHitClosingTimeMs, 0, 1, 127);
     pad.hitVelocities[0] = (velocity < 0) ? 0 : velocity;
-    DEBUG_PRINTF("[Close] sensorValue: %d (%d%%) chick: %d/127 (%lu ms)\n", pedalValue, (int16_t)pedalValuePercent, hitVelocities[0], closingTimeMs);
+    EDRUM_DEBUG("[Close] sensorValue: %d (%d%%) chick: %d/127 (%lu ms)\n", pedalValue, (int16_t)pedalValuePercent, hitVelocities[0], closingTimeMs);
 
     pad.hits[0] = pad.hitVelocities[0] > 0;
     hihat.state = HiHatState::Closed;
@@ -59,7 +59,7 @@ void ControllerSensing::hiHatPedalPositionAndChickSensing(time_us_t senseTimeUs,
 
   if ((!isClosed && hihat.state == HiHatState::Closed)
       || (isOpen && hihat.state == HiHatState::AlmostClosed)) { // opening: (almost) closed -> open
-    DEBUG_PRINTF("[Open] sensorValue: %d (%d%%)\n", pedalValue, (int16_t)pedalValuePercent);
+    EDRUM_DEBUG("[Open] sensorValue: %d (%d%%)\n", pedalValue, (int16_t)pedalValuePercent);
     hihat.state = HiHatState::Open;
   }
 }
@@ -73,7 +73,7 @@ void ControllerSensing::hiHatPedalCCSensing(sensor_value_t pedalValue) {
     settings.zoneThresholdsMax[0],
     settings.curveType);
   if (newPedalCC != hihat.pedalCC) {
-    DEBUG_PRINTF("[Move] pedalCC: %d/127 -> %d/127 (%d/" MAX_SENSOR_VALUE_STR "), hiHatClosed: %d\n", hihat.pedalCC, newPedalCC, pedalValue, hihat.state == HiHatState::Closed);
+    EDRUM_DEBUG("[Move] pedalCC: %d/127 -> %d/127 (%d/" MAX_SENSOR_VALUE_STR "), hiHatClosed: %d\n", hihat.pedalCC, newPedalCC, pedalValue, hihat.state == HiHatState::Closed);
 
     hihat.pedalCC = newPedalCC;
     hihat.isMoving = true;

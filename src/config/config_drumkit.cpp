@@ -42,14 +42,14 @@ void DrumConfigMapper::applyDrumKitConfig(DrumKit& drumKit, const JsonDocument& 
 
   JsonObjectConst mappingsNode = configNode[MAPPINGS_SECTION];
   if (!mappingsNode) {
-    eventLog.log(Level::ERROR, "Config: mappings node missing");
+    eventLog.log(Level::Error, "Config: mappings node missing");
   } else {
     applyDrumKitMappings(drumKit, mappingsNode, false);
   }
 
   drumKit.init();
 
-  eventLog.log(Level::INFO, String("Config: #multiplexers: ") + drumKit.getMuxCount()
+  eventLog.log(Level::Info, String("Config: #multiplexers: ") + drumKit.getMuxCount()
     + ", #pads: " + drumKit.getPadsCount()
     + ", #connectors: " + drumKit.getConnectorsCount()
   );
@@ -57,7 +57,7 @@ void DrumConfigMapper::applyDrumKitConfig(DrumKit& drumKit, const JsonDocument& 
 
 void DrumConfigMapper::applyGeneralConfig(DrumKit& drumKit, JsonObjectConst generalNode) {
   if (!generalNode) {
-    eventLog.log(Level::INFO, "Config: " GENERAL_SECTION " node missing");
+    eventLog.log(Level::Info, "Config: " GENERAL_SECTION " node missing");
     return;
   }
 
@@ -106,7 +106,7 @@ void DrumConfigMapper::applyDrumKitMappings(DrumKit& drumKit, JsonObjectConst ma
     DrumPad* pad = drumKit.getPadByRole(role);
     if (!pad) {
       // Note: not all roles have to be used, so this is just a warning
-      eventLog.log(Level::INFO, String("Config: unused mappings with role: ") + role);
+      eventLog.log(Level::Info, String("Config: unused mappings with role: ") + role);
     } else {
       pad->setMappings(mappings);
     }

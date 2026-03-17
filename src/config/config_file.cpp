@@ -25,12 +25,12 @@ JsonDocument loadConfigFile(fs::File& file) {
 }
 
 JsonDocument loadInitialConfigFile() {
-  eventLog.log(Level::INFO, String("Fallback to initial config file: ") + CONFIG_FILE_PATH);
+  eventLog.log(Level::Info, String("Fallback to initial config file: ") + CONFIG_FILE_PATH);
 
   LittleFS.begin();
   fs::File defaultFile = LittleFS.open(CONFIG_FILE_PATH, "r");
   if (!defaultFile) {
-    eventLog.log(Level::ERROR, String("Could not open default config: ") + CONFIG_FILE_PATH);
+    eventLog.log(Level::Error, String("Could not open default config: ") + CONFIG_FILE_PATH);
     return JsonDocument().to<JsonObject>();
   }
 
@@ -53,7 +53,7 @@ void DrumConfigMapper::writeDrumKitConfig(JsonDocument doc) {
 
   fs::File configFile = ConfigFS.open(CONFIG_FILE_PATH, "w");
   if (!configFile) {
-    eventLog.log(Level::ERROR, String("Could not open config for writing: ") + CONFIG_FILE_PATH);
+    eventLog.log(Level::Error, String("Could not open config for writing: ") + CONFIG_FILE_PATH);
   } else {
     configFile.print("# yaml-language-server: $schema=" CONFIG_SCHEMA_URL); // Note: no newline, as YAMLduino already adds one
     serializeYml(doc, configFile);

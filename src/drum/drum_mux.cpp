@@ -4,7 +4,7 @@
 #include "drum_io.h"
 #include "drum_mux.h"
 
-#include "log.h"
+#include "event_log.h"
 
 void DrumMux::init(pin_size_t selectPinsCount, const pin_size_t (&selectPins)[4], pin_size_t analogInPin, pin_size_t enablePin) {
   this->analogInPin = analogInPin;
@@ -15,12 +15,12 @@ void DrumMux::init(pin_size_t selectPinsCount, const pin_size_t (&selectPins)[4]
 
   channelCount = (1 << selectPinsCount);
   if (channelCount > MAX_CHANNEL_COUNT) {
-    logError(String("Mux: #channels > ") + MAX_CHANNEL_COUNT);
+    eventLog.log(Level::Error, String("Mux: #channels > ") + MAX_CHANNEL_COUNT);
     failed = true;
   }
 
   if (!DrumIO::initAnalogInPin(analogInPin)) {
-    logError(String("Mux: cannot initialize analog in pin: ") + analogInPin);
+    eventLog.log(Level::Error, String("Mux: cannot initialize analog in pin: ") + analogInPin);
     failed = true;
   }
 
@@ -28,7 +28,7 @@ void DrumMux::init(pin_size_t selectPinsCount, const pin_size_t (&selectPins)[4]
     if (DrumIO::initDigitalOutPin(enablePin)) {
       DrumIO::writeDigitalOutPin(enablePin, HIGH);
     } else {
-      logError(String("Mux: cannot initialize enable pin: ") + enablePin);
+      eventLog.log(Level::Error, String("Mux: cannot initialize enable pin: ") + enablePin);
       failed = true;
     }
   }
@@ -38,7 +38,7 @@ void DrumMux::init(pin_size_t selectPinsCount, const pin_size_t (&selectPins)[4]
     if (DrumIO::initDigitalOutPin(selectPins[i])) {
       DrumIO::writeDigitalOutPin(selectPins[i], HIGH);
     } else {
-      logError(String("Mux: cannot initialize select pin: ") + selectPins[i]);
+      eventLog.log(Level::Error, String("Mux: cannot initialize select pin: ") + selectPins[i]);
       failed = true;
     }
   }

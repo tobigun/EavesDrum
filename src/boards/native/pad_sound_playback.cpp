@@ -62,7 +62,7 @@ void PadSoundPlayback::stop() {
     setPadPinValue(*hitPad, zone, 0);
   }
 
-  SerialDebug.printf("Hit: %s\n", hitPad->getName().c_str());
+  logDebug("Hit: %s\n", hitPad->getName().c_str());
 
   step = -1;
   nextSignalTimeUs = 0;

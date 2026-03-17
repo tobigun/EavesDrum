@@ -12,19 +12,19 @@
 
 void DrumConfigMapper::addConnectorsToDrumKit(DrumKit& drumKit, JsonObjectConst connectorsNode) {
   if (!connectorsNode) {
-    eventLog.log(Level::INFO, "Config: " CONNECTORS_SECTION " node missing");
+    eventLog.log(Level::Info, "Config: " CONNECTORS_SECTION " node missing");
     return;
   }
 
   for (JsonPairConst connectorKeyValuePair : connectorsNode) {
     if (drumKit.getConnectorsCount() >= MAX_CONNECTOR_COUNT) {
-      eventLog.log(Level::ERROR, String("Too many connectors in config: ") + (int)connectorsNode.size() + " > " + MAX_CONNECTOR_COUNT);
+      eventLog.log(Level::Error, String("Too many connectors in config: ") + (int)connectorsNode.size() + " > " + MAX_CONNECTOR_COUNT);
       break;
     }
 
     ConnectorId id = ConnectorId(connectorKeyValuePair.key().c_str());
     if (drumKit.getConnectorById(id)) {
-      eventLog.log(Level::ERROR, String("Connector with ID '") + id + "' already present -> skip");
+      eventLog.log(Level::Error, String("Connector with ID '") + id + "' already present -> skip");
       continue;
     }
 
@@ -43,13 +43,13 @@ bool DrumConfigMapper::applyPinsConfig(DrumConnector& connector, DrumKit& drumKi
   pin_size_t pinCount = pinsNode.size();
 
   if (pinCount == 0) {
-    eventLog.log(Level::ERROR, String("Connector[") + connector.getId() + "] must have at least one pin definition");
+    eventLog.log(Level::Error, String("Connector[") + connector.getId() + "] must have at least one pin definition");
     return false;
   }
 
   if (pinCount > MAX_PINS) {
     pinCount = MAX_PINS;
-    eventLog.log(Level::WARN, String("Connector[") + connector.getId() + "] has more than " + MAX_PINS + " pins");
+    eventLog.log(Level::Warn, String("Connector[") + connector.getId() + "] has more than " + MAX_PINS + " pins");
   }
 
   for (pin_size_t i = 0; i < pinCount; ++i) {
@@ -79,20 +79,20 @@ DrumPin DrumConfigMapper::getPinsConfig(DrumConnector& connector, DrumKit& drumK
   JsonVariantConst muxNode = pinsNode[CONNECTOR_PINS_MUX_PROP];
   JsonVariantConst channelNode = pinsNode[CONNECTOR_PINS_CHANNEL_PROP];
   if (muxNode.isNull() || channelNode.isNull()) {
-    eventLog.log(Level::ERROR, String("Connector[") + connector.getId() + "]: " CONNECTOR_PINS_PROP " entry is neither a pin nor mux channel");
+    eventLog.log(Level::Error, String("Connector[") + connector.getId() + "]: " CONNECTOR_PINS_PROP " entry is neither a pin nor mux channel");
     return DrumPin();
   }
 
   mux_size_t muxIndex = muxNode.as<mux_size_t>();
   DrumMux* mux = drumKit.getMux(muxIndex);
   if (!mux) {
-    eventLog.log(Level::ERROR, String("Connector[") + connector.getId() + "]: Mux with index '" + muxIndex + "' does not exist");
+    eventLog.log(Level::Error, String("Connector[") + connector.getId() + "]: Mux with index '" + muxIndex + "' does not exist");
     return DrumPin();
   }
 
   channel_size_t channelIndex = channelNode.as<channel_size_t>();
   if (channelIndex >= mux->getChannelCount()) {
-    eventLog.log(Level::ERROR, String("Connector[") + connector.getId() + "]: Mux does not have channel with index " + channelIndex);
+    eventLog.log(Level::Error, String("Connector[") + connector.getId() + "]: Mux does not have channel with index " + channelIndex);
     return DrumPin();
   }
 

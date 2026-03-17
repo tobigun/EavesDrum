@@ -4,8 +4,8 @@
 #pragma once
 
 #include "types.h"
+#include "log.h"
 #include "drum_io.h"
-#include "drum_log.h"
 #include "drum_mappings.h"
 #include "drum_mux.h"
 #include "drum_pad.h"

@@ -107,10 +107,10 @@ void WebUI::handleSetMonitor(JsonObjectConst configNode) {
 
     if (!monitorPad) {
       monitor.disableMonitor();
-      SerialDebug.printf("Monitor: disabled\n");
+      logDebug("Monitor: disabled\n");
     } else {
       monitor.setMonitoredPad(monitorPad);
-      SerialDebug.printf("Monitor: %s\n", monitorPad->getName().c_str());
+      logDebug("Monitor: %s\n", monitorPad->getName().c_str());
     }
   }
 
@@ -126,7 +126,7 @@ void WebUI::handleSetPadConfig(JsonObjectConst configNode, AsyncWebSocketClient*
   for (JsonPairConst pair : configNode) {
     pad_size_t padIndex = atoi(pair.key().c_str());
     if (padIndex >= drumKit->getPadsCount()) {
-      eventLog.log(Level::ERROR, String("Invalid enable pad: ") + padIndex);
+      eventLog.log(Level::Error, String("Invalid enable pad: ") + padIndex);
       continue;
     }
 
@@ -139,7 +139,7 @@ void WebUI::handleSetPadConfig(JsonObjectConst configNode, AsyncWebSocketClient*
         String connectorId = nodeValue[CONFIG_CONNECTOR_PROP];
         connector = drumKit->getConnectorById(connectorId);
         if (!connector) {
-          eventLog.log(Level::ERROR, String("Disable as connectorId is invalid: ") + connectorId);
+          eventLog.log(Level::Error, String("Disable as connectorId is invalid: ") + connectorId);
         }
       }
       pad.setConnector(connector);
@@ -185,7 +185,7 @@ void WebUI::handleSetSettingsRequest(AsyncWebSocketClient* client, JsonObjectCon
     pad_size_t padIndex = atoi(keyValuePair.key().c_str());
     DrumPad* pad = drumKit->getPad(padIndex);
     if (!pad) {
-      eventLog.log(Level::ERROR, String("Invalid pad in setSettings request: ") + padIndex);
+      eventLog.log(Level::Error, String("Invalid pad in setSettings request: ") + padIndex);
       continue;
     }
     DrumConfigMapper::applyPadSettings(*pad, keyValuePair.value());
@@ -387,7 +387,7 @@ void WebUI::handleCommand(String cmd, JsonObject& argsNode, AsyncWebSocketClient
   } else if (cmd == "getBleStatus") {
     handleGetBleStatusRequest(client);
   } else {
-    SerialDebug.printf("Cmd: %s\n", cmd.c_str());
+    logInfo("Cmd: %s\n", cmd.c_str());
   }
 }
 
@@ -414,7 +414,7 @@ void WebUI::onWsEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsE
     JsonDocument doc;
     DeserializationError error = deserializeJson(doc, data, len);
     if (error) {
-      eventLog.log(Level::ERROR, String("Deserialization failed: ") + error.c_str());
+      eventLog.log(Level::Error, String("Deserialization failed: ") + error.c_str());
       return;
     }
 
@@ -438,7 +438,7 @@ void WebUI::initHttpServer() {
 
   bool fsBegin = LittleFS.begin();
   if (!fsBegin) {
-    eventLog.log(Level::ERROR, F("Failed to mount filesystem, check if filesystem content was uploaded"));
+    eventLog.log(Level::Error, F("Failed to mount filesystem, check if filesystem content was uploaded"));
     return;
   }
 
@@ -457,7 +457,7 @@ void WebUI::initHttpServer() {
 
   server->begin();
 
-  SerialDebug.println(F("UI Initialized"));
+  logInfo("UI Initialized\n");
 }
 
 void WebUI::setup(DrumKit& drumKit) {
