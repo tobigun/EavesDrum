@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 #include <hardware/adc.h>
-#if __has_include (<cyw43_wrappers.h>)
+#ifdef PICO_CYW43_SUPPORTED
 #include <cyw43_wrappers.h>
 #else
 #define __isPicoW false
