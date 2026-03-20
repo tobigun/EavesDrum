@@ -339,7 +339,7 @@ pads:
     pedal: Hi-Hat Pedal
     connector: Jack10
   - name: Hi-Hat Pedal
-    role: HiHat-Pedal
+    role: HiHatPedal
     enabled: true
     settings:
       padType: Pedal

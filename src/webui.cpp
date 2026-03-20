@@ -208,8 +208,9 @@ void WebUI::handleSetConfigRequest(AsyncWebSocketClient* client, JsonObjectConst
 
 void WebUI::handleSetMappingsRequest(JsonObject mappingsNode) {
   // if the replace property is set, replace existing mappings instead of merging them
-  bool replace = mappingsNode[CONFIG_MAPPINGS_REPLACE_PROP].as<bool>();
-  if (replace) { // remove UI specific property
+  bool replace = false;
+  if (mappingsNode[CONFIG_MAPPINGS_REPLACE_PROP].is<bool>()) { // remove UI specific property
+    replace = mappingsNode[CONFIG_MAPPINGS_REPLACE_PROP].as<bool>();
     mappingsNode.remove(CONFIG_MAPPINGS_REPLACE_PROP);
   }
 
