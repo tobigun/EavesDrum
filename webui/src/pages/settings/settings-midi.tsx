@@ -62,7 +62,8 @@ export function MidiOutputModeSelect() {
     [MidiOutputMode.UsbHost]: "USB Host",
     [MidiOutputMode.SerialDin]: "Serial 5-Pin DIN",
     [MidiOutputMode.BleClient]: "BLE Client",
-    [MidiOutputMode.BleServer]: "BLE Server"
+    [MidiOutputMode.BleServer]: "BLE Server",
+    [MidiOutputMode.GuitarHeroDrum]: "Guitar Hero Drum (SPI)"
   };
 
   const handleMidiModeChanged = (value: MidiOutputMode) => {

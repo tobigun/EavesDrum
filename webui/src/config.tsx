@@ -83,7 +83,8 @@ export enum MidiOutputMode {
   UsbHost = "UsbHost",
   SerialDin = "SerialDin",
   BleClient = "BleClient",
-  BleServer = "BleServer"
+  BleServer = "BleServer",
+  GuitarHeroDrum = "GuitarHeroDrum"
 }
 
 export interface Mux {

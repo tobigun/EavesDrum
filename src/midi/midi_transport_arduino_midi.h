@@ -14,13 +14,27 @@ class MidiTransport_ArduinoMidi : public MidiTransport {
 
 public:
   MidiTransport_ArduinoMidi(SerialPort& serialPort)
-    : serialMidi(serialPort),
+    : serialPort(serialPort),
+      serialMidi(serialPort),
       midiInterface((Transport&)serialMidi) {}
 
   virtual void begin() {
+    if (isLogSerial()) {
+      logInfo("Serial Port used by MIDI transport. Logging disabled\n");
+      SerialDebug.flush();
+      setLogLevel(Level::None);
+    }
+
     // Initialize MIDI, and listen to all MIDI channels
     // This will also call serial port's begin()
     midiInterface.begin(MIDI_CHANNEL_OMNI);
+  }
+
+  virtual void shutDown() {
+    if (isLogSerial()) {
+      SerialDebug.begin(LOG_BAUD);
+      setLogLevel(DEFAULT_LOG_LEVEL);
+    }
   }
 
   virtual void sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) {
@@ -44,6 +58,12 @@ public:
   }
 
 private:
+  bool isLogSerial() {
+    return (void*) &serialPort == (void*) &SerialDebug;
+  }
+
+private:
+  SerialPort& serialPort;
   Transport serialMidi;
   MIDI_NAMESPACE::MidiInterface<Transport> midiInterface;
 };

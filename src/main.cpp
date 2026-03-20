@@ -48,7 +48,7 @@ void setup() {
   reconnectUsb();
 
 #ifdef ENABLE_SERIAL_DEBUG
-  SerialDebug.begin(115200);
+  SerialDebug.begin(LOG_BAUD);
 #endif
 
   ledTest();
@@ -84,6 +84,7 @@ void loop() {
   updateWifiState();
 
   network.service_traffic();
+  midiTransport.update();
   updateBluetooth();
 
   // touchSense();

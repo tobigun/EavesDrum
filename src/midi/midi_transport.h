@@ -13,7 +13,8 @@ enum class MidiOutputMode {
   UsbHost,
   SerialDin,
   BleClient,
-  BleServer
+  BleServer,
+  GuitarHeroDrum
 };
 
 inline String midiOutputModeToString(MidiOutputMode value) {
@@ -23,6 +24,7 @@ inline String midiOutputModeToString(MidiOutputMode value) {
   MAP_ENUM_TO_STRING(SerialDin);
   MAP_ENUM_TO_STRING(BleClient);
   MAP_ENUM_TO_STRING(BleServer);
+  MAP_ENUM_TO_STRING(GuitarHeroDrum);
   return ENUM_TO_STRING(UsbDevice);
 }
 
@@ -33,6 +35,7 @@ inline MidiOutputMode parseMidiOutputMode(String value) {
   MAP_STRING_TO_ENUM(SerialDin);
   MAP_STRING_TO_ENUM(BleClient);
   MAP_STRING_TO_ENUM(BleServer);
+  MAP_STRING_TO_ENUM(GuitarHeroDrum);
   return UsbDevice;
 }
 
@@ -42,7 +45,9 @@ class MidiTransport {
 public:
   virtual void begin() = 0;
 
-  virtual void shutdown() {};
+  virtual void shutdown() {}
+
+  virtual void update() {}
 
   virtual void sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) = 0;
 
@@ -61,6 +66,7 @@ struct MidiTransportInstances {
   MidiTransport* serialDin = nullptr;
   MidiTransport* bleClient = nullptr;
   MidiTransport* bleServer = nullptr;
+  MidiTransport* guitarHeroDrum = nullptr;
 };
 
 class MidiTransportMultiplexer : public MidiTransport {
@@ -91,11 +97,18 @@ public:
     if (instances.bleServer) {
       supportedModes.push_back(MidiOutputMode::BleServer);
     }
+    if (instances.guitarHeroDrum) {
+      supportedModes.push_back(MidiOutputMode::GuitarHeroDrum);
+    }
     return supportedModes;
   }
 
   virtual void begin() {
     selectedTransport->begin();
+  }
+
+  virtual void update() {
+    selectedTransport->update();
   }
 
   virtual void sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) {
@@ -131,6 +144,8 @@ private:
       return instances.bleClient;
     case MidiOutputMode::BleServer:
       return instances.bleServer;
+    case MidiOutputMode::GuitarHeroDrum:
+      return instances.guitarHeroDrum;
     default:
       return instances.usbDevice;
     }

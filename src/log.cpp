@@ -5,58 +5,58 @@
 
 #include "event_log.h"
 
+static Level minLogLevel = DEFAULT_LOG_LEVEL;
+
 const char* levelToString(Level level) {
   switch (level) {
-    case Level::None: return "";
-    case Level::Debug: return "DEBUG: ";
-    case Level::Info: return "INFO: ";
-    case Level::Error: return "ERROR: ";
-    case Level::Warn: return "WARN: ";
-    default: return "";
-  }  
+  case Level::Debug:
+    return "DEBUG: ";
+  case Level::Info:
+    return "INFO: ";
+  case Level::Error:
+    return "ERROR: ";
+  case Level::Warn:
+    return "WARN: ";
+  default:
+    return "";
+  }
+}
+
+void setLogLevel(Level level) {
+  minLogLevel = level;
+}
+
+static void logCharBuffer(Level level, const char* message) {
+  SerialDebug.printf("%s%s\n", levelToString(level), message);
 }
 
 void logString(Level level, String message) {
-  SerialDebug.printf("%s%s\n", levelToString(level), message.c_str());
+  if (minLogLevel != Level::None && level >= minLogLevel) {
+    logCharBuffer(level, message.c_str());
+  }
 }
 
-static void logAtLevel(Level level, const char* format, va_list args) {
-  char formatBuffer[128];
-  vsnprintf(formatBuffer, sizeof(formatBuffer), format, args);
-  SerialDebug.printf("%s%s\n", levelToString(level), formatBuffer);
-}
-
-void logPrintf(const char* format, ...) {
-  va_list args;
-  va_start(args, format);
-  logAtLevel(Level::None, format, args);
+#define LOG_PRINTF(level) \
+  if (level < minLogLevel) return; \
+  va_list args; \
+  va_start(args, format); \
+  char formatBuffer[128]; \
+  vsnprintf(formatBuffer, sizeof(formatBuffer), format, args); \
+  logCharBuffer(level, formatBuffer); \
   va_end(args);
-}
 
 void logDebug(const char* format, ...) {
-  va_list args;
-  va_start(args, format);
-  logAtLevel(Level::Debug, format, args);
-  va_end(args);
+  LOG_PRINTF(Level::Debug);
 }
 
 void logInfo(const char* format, ...) {
-  va_list args;
-  va_start(args, format);
-  logAtLevel(Level::Info, format, args);
-  va_end(args);
+  LOG_PRINTF(Level::Info);
 }
 
 void logWarn(const char* format, ...) {
-  va_list args;
-  va_start(args, format);
-  logAtLevel(Level::Warn, format, args);
-  va_end(args);
+  LOG_PRINTF(Level::Warn);
 }
 
 void logError(const char* format, ...) {
-  va_list args;
-  va_start(args, format);
-  logAtLevel(Level::Error, format, args);
-  va_end(args);
+  LOG_PRINTF(Level::Error);
 }

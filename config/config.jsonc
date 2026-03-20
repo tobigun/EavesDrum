@@ -11,7 +11,8 @@
           "UsbHost",
           "SerialDin",
           "BleClient",
-          "BleServer"
+          "BleServer",
+          "GuitarHeroDrum"
         ] },
         "blePairing": {
           "type": "object",
