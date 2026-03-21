@@ -18,6 +18,10 @@ enum class LedId {
   Ble = 3
 };
 
+enum class ButtonId {
+  Wifi = 0
+};
+
 class DrumIO {
 public:
   DrumIO() = delete;
@@ -35,6 +39,8 @@ public:
   static void writeDigitalOutPin(pin_size_t pin, pin_status_t status);
 
   static void led(LedId id, bool enable);
+
+  static bool isButtonPressed(ButtonId id);
 
   static void reset();
 };

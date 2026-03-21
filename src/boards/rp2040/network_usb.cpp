@@ -79,6 +79,7 @@ static const dhcp_config_t dhcp_config = {
     .domain = DNS_DOMAIN_NAME,
     .num_entry = TU_ARRAY_SIZE(entries),
     .entries = entries};
+
 static err_t linkoutput_fn(struct netif* netif, struct pbuf* p) {
   (void)netif;
 
@@ -184,7 +185,7 @@ void tud_network_init_cb() {
   }
 }
 
-void NetworkConnection::service_traffic() {
+void NetworkUsb::update() {
   DrumIO::led(LedId::Network, true);
   // handle any packet received by tud_network_recv_cb()
   if (received_frame) {
@@ -198,7 +199,7 @@ void NetworkConnection::service_traffic() {
   sys_check_timeouts();
 }
 
-void NetworkConnection::setup() {
+void NetworkUsb::begin() {
   init_lwip();
   while (!netif_is_up(&netif_data)) {}
 

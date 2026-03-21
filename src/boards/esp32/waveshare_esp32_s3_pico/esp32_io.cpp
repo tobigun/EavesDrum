@@ -9,6 +9,8 @@
 #define NUMPIXELS 1
 #define BRIGHTNESS 12
 
+#define PIN_WIFI_BUTTON 0
+
 static bool ledEnabled[] = {false, false, false};
 
 static void ledUpdateColor();
@@ -67,6 +69,13 @@ void DrumIO::led(LedId id, bool enable) {
     ledEnabled[(int) id] = enable;
     ledUpdateColor();
   }
+}
+
+bool DrumIO::isButtonPressed(ButtonId id) {
+  if (id == ButtonId::Wifi) {
+    return digitalRead(PIN_WIFI_BUTTON) == LOW;
+  }
+  return false;
 }
 
 void DrumIO::reset() {

@@ -12,10 +12,12 @@
 #define __isPicoW false
 #endif
 
-#define GPIO_LED_0 LED_BUILTIN // Use the built-in LED pin
-#define GPIO_LED_1 4
-#define GPIO_LED_2 5
+#define PIN_LED_0 LED_BUILTIN // Use the built-in LED pin
+#define PIN_LED_1 4
+#define PIN_LED_2 5
 
+#define PIN_SWITCH_1 2
+#define PIN_SWITCH_2 3
 
 // ADC_BASE_PIN define does not work correctly here, use our own definition
 #define ADC_PICO_PICO2_BASE_PIN 26
@@ -31,10 +33,12 @@ static uint dma_chan;
 
 
 static void ledInit();
+static void buttonInit();
 
 
 void DrumIO::setup(bool usePwmPowerSupply) {
   ledInit();
+  buttonInit();
 
 #ifdef OVERCLOCK_ADC
   uint32_t adc_clk_freq_hz = clock_get_hz(clk_sys);
@@ -121,14 +125,19 @@ void DrumIO::writeDigitalOutPin(pin_size_t pinNumber, pin_status_t status) {
 }
 
 static void ledInit() {
-  pinMode(GPIO_LED_0, OUTPUT);
-  digitalWrite(GPIO_LED_0, HIGH);
+  pinMode(PIN_LED_0, OUTPUT);
+  digitalWrite(PIN_LED_0, HIGH);
 
-  pinMode(GPIO_LED_1, OUTPUT);
-  digitalWrite(GPIO_LED_1, LOW);
+  pinMode(PIN_LED_1, OUTPUT);
+  digitalWrite(PIN_LED_1, LOW);
 
-  pinMode(GPIO_LED_2, OUTPUT);
-  digitalWrite(GPIO_LED_2, LOW);
+  pinMode(PIN_LED_2, OUTPUT);
+  digitalWrite(PIN_LED_2, LOW);
+}
+
+static void buttonInit() {
+  pinMode(PIN_SWITCH_1, INPUT_PULLUP);
+  pinMode(PIN_SWITCH_2, INPUT_PULLUP);
 }
 
 void DrumIO::led(LedId id, bool enable) {
@@ -137,17 +146,17 @@ void DrumIO::led(LedId id, bool enable) {
     //if (__isPicoW) {
     //  return; // LED 0 used by BLE
     //}
-    //ledPin = GPIO_LED_0;
-    ledPin = GPIO_LED_2;
+    //ledPin = PIN_LED_0;
+    ledPin = PIN_LED_2;
   } else if (id == LedId::HitIndicator) {
-    ledPin = GPIO_LED_1;
+    ledPin = PIN_LED_1;
   } else if (id == LedId::Network) {
     return;
-  } else if (id == LedId::Ble) {
+  } else if (id == LedId::MidiConnected) {
     if (!__isPicoW) {
       return; // BLE not supported
     }
-    ledPin = GPIO_LED_0;
+    ledPin = PIN_LED_0;
   } else {
     return;
   }
@@ -164,6 +173,13 @@ void DrumIO::led(LedId id, bool enable) {
 
   bool enabledByHighLevel = (__isPicoW || ledPin != LED_BUILTIN); // Built-in LED of Pico (not PicoW) is low active
   digitalWrite(ledPin, (enable == enabledByHighLevel) ? HIGH : LOW);
+}
+
+bool DrumIO::isButtonPressed(ButtonId id) {
+  if (id == ButtonId::Wifi) {
+    return digitalRead(PIN_SWITCH_1) == LOW;
+  }
+  return false;
 }
 
 void DrumIO::reset() {

@@ -146,7 +146,7 @@ static void onConnectionChanged(BleClientStatus status, bool isScanning) {
       : (status == BleClientStatus::Connecting ? "connecting"
       : "disconnected"),
     isScanning);
-  DrumIO::led(LedId::Ble, status == BleClientStatus::Connected);
+  DrumIO::led(LedId::MidiConnected, status == BleClientStatus::Connected);
   webUI.sendBleStatus(status, isScanning);
 }
 
@@ -168,7 +168,7 @@ static void updateConnectionStatus() {
   static bool blinkState = false;
   if (clientStatus == BleClientStatus::Connecting) {
     // waiting for connection, blink the LED
-    DrumIO::led(LedId::Ble, blinkState);
+    DrumIO::led(LedId::MidiConnected, blinkState);
     blinkState = !blinkState;
   }
 }

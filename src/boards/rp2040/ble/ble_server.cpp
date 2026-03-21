@@ -40,14 +40,14 @@ static void updateConnectionStatus() {
 
   if (wasConnected != isConnected) {
     logInfo("BLE server state changed: %s\n", isConnected ? "connected" : "disconnected");
-    DrumIO::led(LedId::Ble, isConnected);
+    DrumIO::led(LedId::MidiConnected, isConnected);
     return;
   }
 
   static bool blinkState = false;
   if (ble_midi_server_is_initialized() && !isConnected) {
     // waiting for connection, blink the LED
-    DrumIO::led(LedId::Ble, blinkState);
+    DrumIO::led(LedId::MidiConnected, blinkState);
     blinkState = !blinkState;
   }
 }

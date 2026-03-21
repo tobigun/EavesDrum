@@ -6,29 +6,18 @@
 #include "event_log.h"
 #include "log.h"
 #include "midi_transport.h"
-#include "network.h"
-#include "trigger_button.h"
+#include "network_connection.h"
 #include "usb.h"
 #include "version.h"
 #include "webui.h"
-#include "wifi_connect.h"
 
 #include <Arduino.h>
 
-NetworkConnection network;
-
 DrumKit drumKit;
-
-#ifdef USE_WIFI
-static WifiConnect wifi;
-#endif
 
 static void logVersion();
 static void blinkLed();
 static void ledTest();
-
-static void initWifi();
-static void updateWifiState();
 
 void setup() {  
   DrumIO::setup(true);
@@ -48,9 +37,7 @@ void setup() {
 
   setupUsb();
 
-  initWifi();
-
-  network.setup();
+  networkConnection.begin();
   webUI.setup(drumKit);
 
 #if ENABLE_MASS_STORAGE
@@ -67,9 +54,7 @@ void loop() {
 
   drumKit.updateDrums();
 
-  updateWifiState();
-
-  network.service_traffic();
+  networkConnection.update();
   midiTransport.update();
 
   // touchSense();
@@ -84,14 +69,14 @@ static void ledTest() {
   DrumIO::led(LedId::WatchDog, true);
   DrumIO::led(LedId::HitIndicator, true);
   DrumIO::led(LedId::Network, true);
-  DrumIO::led(LedId::Ble, true);
+  DrumIO::led(LedId::MidiConnected, true);
 
   delay(200);
 
   DrumIO::led(LedId::WatchDog, false);
   DrumIO::led(LedId::HitIndicator, false);
   DrumIO::led(LedId::Network, false);
-  DrumIO::led(LedId::Ble, false);
+  DrumIO::led(LedId::MidiConnected, false);
 }
 
 static void blinkLed() {
@@ -104,27 +89,4 @@ static void blinkLed() {
     DrumIO::led(LedId::WatchDog, led_state);
     last_time = cur_time;
   }
-}
-
-static void initWifi() {
-#ifdef USE_WIFI
-  triggerButton.init();
-
-  EDRUM_DEBUGLN("Connecting ...");
-  DrumIO::led(LedId::Network, false);
-  wifi.connect();
-  // wifi.startServer();
-  DrumIO::led(LedId::Network, true);
-  EDRUM_DEBUGLN("Connected");
-#endif
-}
-
-static void updateWifiState() {
-#ifdef USE_WIFI
-  if (triggerButton.isPressed()) {
-    DrumIO::led(LedId::Network, false);
-    wifi.provision();
-    DrumIO::led(LedId::Network, true);
-  }
-#endif
 }
