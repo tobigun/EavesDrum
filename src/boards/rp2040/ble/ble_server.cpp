@@ -1,9 +1,8 @@
 // Copyright (c) 2025 Tobias Gunkel
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "ble_server.h"
-
 #include "ble_midi_server.h"
+#include "midi_transport_ble_server.h"
 #include "ble_server_midi_profile.h"
 #include "log.h"
 #include "drum_io.h"
@@ -13,8 +12,6 @@ static const uint8_t scan_resp_data[SCAN_RESP_DATA_SIZE] = {
   // Name
   SCAN_RESP_DATA_SIZE-1, BLUETOOTH_DATA_TYPE_COMPLETE_LOCAL_NAME, 'E', 'a', 'v', 'e', 's', 'D', 'r', 'u', 'm', ' ', 'B', 'L', 'E', ' ', 'M', 'I', 'D', 'I'
 };
-
-BleServer bleServer;
 
 bool isConnected = false;
 
@@ -55,26 +52,15 @@ static void updateConnectionStatus() {
   }
 }
 
-static void updateEnabledState(bool enabled) {
-  static bool wasEnabled = false;
-  if (enabled == wasEnabled) {
-    return;
-  }
-
-  wasEnabled = enabled;
-  if (enabled) {
-    startServer();
-  } else {
-    stopServer();
-  }
+void MidiTransport_BleServer::begin() {
+  startServer();
 }
 
-void BleServer::updateServer(bool enabled) {
-  updateEnabledState(enabled);
-  if (!enabled) {
-    return;
-  }
+void MidiTransport_BleServer::shutdown() {
+  stopServer();
+}
 
+void MidiTransport_BleServer::update() {
   uint32_t currentTimeMs = millis();
 
   static uint32_t lastSyncTimeMs = 0;

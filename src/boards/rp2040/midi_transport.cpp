@@ -3,10 +3,11 @@
 #include "midi_serial_usb_device.h"
 #include "midi_serial_usb_host.h"
 #ifdef HAS_BLUETOOTH
-#include "ble/midi_serial_ble_client.h"
-#include "ble/midi_serial_ble_server.h"
+#include "ble/midi_transport_ble_client.h"
+#include "ble/midi_transport_ble_server.h"
 #endif
 #include "midi_transport_guitar_hero.h"
+#include <SPISlave.h> // required for MidiTransport_GuitarHero
 
 MidiSerialUsbDevice midiSerialUsbDevice;
 MidiTransport_ArduinoMidi<MidiSerialUsbDevice> midiTransportUsbDevice(midiSerialUsbDevice);
@@ -16,10 +17,9 @@ MidiTransport_ArduinoMidi<MidiSerialUsbHost> midiTransportUsbHost(midiSerialUsbH
   
 #ifdef HAS_BLUETOOTH
 MidiSerialBleClient midiSerialBleClient;
-MidiTransport_ArduinoMidi<MidiSerialBleClient> midiTransportBleClient(midiSerialBleClient);
+MidiTransport_BleClient midiTransportBleClient(midiSerialBleClient);
 
-MidiSerialBleServer midiSerialBleServer;
-MidiTransport_ArduinoMidi<MidiSerialBleServer> midiTransportBleServer(midiSerialBleServer);
+MidiTransport_BleServer midiTransportBleServer;
 #endif
 
 MidiTransport_ArduinoMidi<SerialUART> midiTransportDin(Serial1);
@@ -30,10 +30,10 @@ MidiTransportInstances midiTransportInstances = {
   .usbDevice = &midiTransportUsbDevice,
   .usbHost = &midiTransportUsbHost,
   .serialDin = &midiTransportDin,
-  .guitarHeroDrum = &midiTransportGuitarHero,
 #ifdef HAS_BLUETOOTH
   .bleClient = &midiTransportBleClient,
   .bleServer = &midiTransportBleServer,
 #endif
+  .guitarHeroDrum = &midiTransportGuitarHero,
 };
 MidiTransportMultiplexer midiTransport(midiTransportInstances);

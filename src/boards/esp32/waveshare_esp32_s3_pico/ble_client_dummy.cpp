@@ -19,5 +19,3 @@ const BleClientPairingInfo& BleClient::getPairingInfo() const {
 bool BleClient::isScanning() const { return false; }
 
 void BleClient::startDeviceScan() {}
-
-void BleClient::updateClient(bool enabled) {}

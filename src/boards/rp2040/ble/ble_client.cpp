@@ -1,15 +1,16 @@
 // Copyright (c) 2025 Tobias Gunkel
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <vector>
-#include <btstack.h>
-
 #include "ble_client.h"
 
 #include "ble_midi_client.h"
-#include "log.h"
 #include "drum_io.h"
+#include "log.h"
+#include "midi_transport_ble_client.h"
 #include "webui.h"
+
+#include <btstack.h>
+#include <vector>
 
 #define CLIENT_PROFILE_NAME "EavesDrum BLE MIDI"
 
@@ -28,7 +29,7 @@ static Ble_Scan_Result_t scanResults[BLEMC_MAX_SCAN_ITEMS];
 
 static void stopDeviceScan();
 static void updateConnectionStatus();
-  
+
 static void startClient() {
   ble_midi_client_init(CLIENT_PROFILE_NAME, strlen(CLIENT_PROFILE_NAME),
       IO_CAPABILITY_NO_INPUT_NO_OUTPUT,
@@ -78,7 +79,7 @@ const BleClientPairingInfo& BleClient::getPairingInfo() const {
 static uint64_t bdaddrToInt(bd_addr_t& bdaddr) {
   uint64_t result = 0;
   for (uint8_t i = 0; i < BD_ADDR_LEN; i++) {
-    result += ((uint64_t) bdaddr[i]) << (8 * i);
+    result += ((uint64_t)bdaddr[i]) << (8 * i);
   }
   return result;
 }
@@ -106,7 +107,7 @@ static void stopDeviceScan() {
 static void updateScanStatus(uint32_t& scanStartTimeMs) {
   uint32_t currentTimeMs = millis();
   if (scanStartTimeMs) {
-    if(currentTimeMs - scanStartTimeMs > CLIENT_SCAN_TIMEOUT_MS) {
+    if (currentTimeMs - scanStartTimeMs > CLIENT_SCAN_TIMEOUT_MS) {
       scanStartTimeMs = 0;
       stopDeviceScan();
     }
@@ -172,26 +173,15 @@ static void updateConnectionStatus() {
   }
 }
 
-static void updateEnabledState(bool enabled) {
-  static bool wasEnabled = false;
-  if (enabled == wasEnabled) {
-    return;
-  }
-
-  wasEnabled = enabled;
-  if (enabled) {
-    startClient();
-  } else {
-    stopClient();
-  }
+void MidiTransport_BleClient::begin() {
+  startClient();
 }
 
-void BleClient::updateClient(bool enabled) {
-  updateEnabledState(enabled);
-  if (!enabled) {
-    return;
-  }
+void MidiTransport_BleClient::shutdown() {
+  stopClient();
+}
 
+void MidiTransport_BleClient::update() {
   updateScanStatus(scanStartTimeMs);
 
   uint32_t currentTimeMs = millis();
@@ -201,15 +191,15 @@ void BleClient::updateClient(bool enabled) {
     lastSyncTimeMs = currentTimeMs;
 
     updateConnectionStatus();
-    
-    if (isScanning() && scanResultAvailable) {
+
+    if (bleClient.isScanning() && scanResultAvailable) {
       sendScanResultsToWebUI();
       scanResultAvailable = false;
     }
   }
 
   static uint32_t lastConnectionCheckTime = 0;
-  if (!isScanning() && currentTimeMs - lastConnectionCheckTime > 1000) {
+  if (!bleClient.isScanning() && currentTimeMs - lastConnectionCheckTime > 1000) {
     lastConnectionCheckTime = currentTimeMs;
     if (!pairingInfo.address.isEmpty() && !ble_midi_client_is_connected()) {
       reconnect();

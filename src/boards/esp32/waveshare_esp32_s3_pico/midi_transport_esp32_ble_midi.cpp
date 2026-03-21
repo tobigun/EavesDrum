@@ -2,13 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "midi_transport_esp32_ble_midi.h"
-#include "ble_server.h"
-
 #include <BLEMidi.h>
-
-BleServer bleServer;
-
-void BleServer::updateServer(bool enabled) {}
 
 void MidiTransport_Esp32BleMidi::begin() {
   //BLEMidiServer.setOnConnectCallback(onBluetoothConnected);

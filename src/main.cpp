@@ -13,16 +13,6 @@
 #include "webui.h"
 #include "wifi_connect.h"
 
-#ifdef HAS_BLUETOOTH
-#include "ble_client.h"
-#include "ble_server.h"
-#endif
-
-#if __has_include(<tusb.h>)
-#include <tusb.h>
-#define HAS_TINY_USB
-#endif
-
 #include <Arduino.h>
 
 NetworkConnection network;
@@ -36,16 +26,12 @@ static WifiConnect wifi;
 static void logVersion();
 static void blinkLed();
 static void ledTest();
-static void reconnectUsb();
-static void updateBluetooth();
 
 static void initWifi();
 static void updateWifiState();
 
 void setup() {  
   DrumIO::setup(true);
-
-  reconnectUsb();
 
 #ifdef ENABLE_SERIAL_DEBUG
   SerialDebug.begin(LOG_BAUD);
@@ -71,7 +57,7 @@ void setup() {
   enableMassStorageDevice();
 #endif
 
-  updateBluetooth();
+  midiTransport.update();
 
   // setupTouch();
 }
@@ -85,7 +71,6 @@ void loop() {
 
   network.service_traffic();
   midiTransport.update();
-  updateBluetooth();
 
   // touchSense();
 }
@@ -119,24 +104,6 @@ static void blinkLed() {
     DrumIO::led(LedId::WatchDog, led_state);
     last_time = cur_time;
   }
-}
-
-static void reconnectUsb() {
-#ifdef HAS_TINY_USB
-  if (tud_mounted()) {
-    tud_disconnect();
-    delay(10);
-    tud_connect();
-  }
-#endif
-}
-
-static void updateBluetooth() {
-#ifdef HAS_BLUETOOTH
-  MidiOutputMode mode = drumKit.getMidiOutputMode();
-  bleClient.updateClient(mode == MidiOutputMode::BleClient);
-  bleServer.updateServer(mode == MidiOutputMode::BleServer);
-#endif
 }
 
 static void initWifi() {

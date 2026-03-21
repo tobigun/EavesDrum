@@ -1,6 +1,9 @@
+#include "midi_transport_guitar_hero.h"
+
+#ifdef ENABLE_MIDI_GUITAR_HERO_TRANSPORT
+
 #include <SPI.h>
 #include <SPISlave.h>
-#include "midi_transport_guitar_hero.h"
 
 // Protocol information:
 // https://blog.laplante.io/2012/08/16/hack-a-guitar-hero-drumset-to-use-it-with-any-computer-over-usb-part2/
@@ -122,3 +125,5 @@ void MidiTransport_GuitarHero::sendNoteOn(uint8_t inNoteNumber, uint8_t inVeloci
     pendingPadHits[hitSlotIndex] = inVelocity;
   }
 }
+
+#endif

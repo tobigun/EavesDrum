@@ -5,6 +5,10 @@
 
 #include "midi_transport.h"
 
+#if __has_include(<SPISlave.h>)
+#include <SPISlave.h>
+#define ENABLE_MIDI_GUITAR_HERO_TRANSPORT
+
 class MidiTransport_GuitarHero : public MidiTransport {
 public:
   virtual void begin();
@@ -21,3 +25,5 @@ public:
 
   virtual void sendControlChange(uint8_t inControlNumber, uint8_t inControlValue, midi_channel_t inChannel) {}
 };
+
+#endif

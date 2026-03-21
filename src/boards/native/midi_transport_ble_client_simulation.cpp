@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Tobias Gunkel
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "ble_client.h"
+#include "midi_transport_ble_client_simulation.h"
 
 #include "log.h"
 #include "webui.h"
@@ -85,25 +85,14 @@ static void updateScanStatus(uint32_t& clientScanStartTimeMs) {
   }
 }
 
-static void updateEnabledState(bool enabled) {
-  static bool wasEnabled = false;
-  if (enabled == wasEnabled) {
-    return;
-  }
-
-  wasEnabled = enabled;
-  if (enabled) {
-    startClient();
-  } else {
-    stopClient();
-  }
+void MidiTransport_BleSimulation::begin(){
+  startClient();
 }
 
-void BleClient::updateClient(bool enabled) {
-  updateEnabledState(enabled);
-  if (!enabled) {
-    return;
-  }
+void MidiTransport_BleSimulation::shutdown(){
+  stopClient();
+}
 
+void MidiTransport_BleSimulation::update(){
   updateScanStatus(clientScanStartTimeMs);
 }

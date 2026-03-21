@@ -21,8 +21,6 @@ enum class BleClientStatus {
 
 class BleClient {
 public:
-  void updateClient(bool enabled);
-
   BleClientStatus getStatus() const;
 
   void startDeviceScan();

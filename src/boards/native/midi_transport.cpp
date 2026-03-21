@@ -7,13 +7,17 @@ MidiTransport_PortMidi nativeMidiTransport;
 MidiTransport_Dummy nativeMidiTransport;
 #endif
 
+#ifdef HAS_BLUETOOTH
+#include "midi_transport_ble_client_simulation.h"
+MidiTransport_BleSimulation midiTransportBleClientSimulation;
+#endif
 
 MidiTransportInstances midiTransportInstances = {
   .usbDevice = &nativeMidiTransport,
   .usbHost = &nativeMidiTransport,
   .serialDin = &nativeMidiTransport,
 #ifdef HAS_BLUETOOTH
-  .bleClient = &nativeMidiTransport,
+  .bleClient = &midiTransportBleClientSimulation,
   .bleServer = &nativeMidiTransport,
 #endif
 };
