@@ -5,6 +5,7 @@
 #include "pad_sound_playback.h"
 #include "simulation.h"
 #include "monitor.h"
+#include "usb_device.h"
 
 #include <Arduino.h>
 #include <ESPAsyncWebServer.h>
@@ -40,7 +41,7 @@ static sensor_value_t sensorValue = 0;
 
 static std::shared_ptr<PadSoundPlayback> padPlayback;
 
-void setupUsb() {}
+void UsbDevice::begin() {}
 
 void NetworkUsb::begin() {
 }

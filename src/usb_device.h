@@ -3,4 +3,7 @@
 
 #pragma once
 
-void setupUsb();
+class UsbDevice {
+public:
+  static void begin();
+};

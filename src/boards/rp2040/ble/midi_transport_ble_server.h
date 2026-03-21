@@ -13,9 +13,7 @@ public:
     : MidiTransport_ArduinoMidi<MidiSerialBleServer>(midiSerialBleServer) {}
 
   virtual void begin();
-
   virtual void shutdown();
-
   virtual void update();
 
 private:

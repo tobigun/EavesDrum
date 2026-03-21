@@ -1,6 +1,7 @@
 #include <USB.h>
 #include <USBMIDI.h>
 #include <esp32-hal-tinyusb.h>
+#include "usb_device.h"
 
 extern "C" uint16_t tusb_drum_midi_load_descriptor(uint8_t *dst, uint8_t *itf) {
   uint8_t str_index = tinyusb_add_string_descriptor("EavesDrum MIDI");
@@ -15,6 +16,6 @@ extern "C" uint16_t tusb_drum_midi_load_descriptor(uint8_t *dst, uint8_t *itf) {
   return TUD_MIDI_DESC_LEN;
 }
 
-void setupUsb() {
+void UsbDevice::begin() {
   tinyusb_enable_interface(USB_INTERFACE_MIDI, TUD_MIDI_DESC_LEN, tusb_drum_midi_load_descriptor);
 }

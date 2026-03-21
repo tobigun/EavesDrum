@@ -15,14 +15,11 @@ MidiSerialUsbHost midiSerialUsbHost;
 MidiTransport_ArduinoMidi<MidiSerialUsbHost> midiTransportUsbHost(midiSerialUsbHost);
   
 #ifdef HAS_BLUETOOTH
-MidiSerialBleClient midiSerialBleClient;
-MidiTransport_BleClient midiTransportBleClient(midiSerialBleClient);
-
+MidiTransport_BleClient midiTransportBleClient;
 MidiTransport_BleServer midiTransportBleServer;
 #endif
 
 MidiTransport_ArduinoMidi<SerialUART> midiTransportDin(Serial1);
-
 MidiTransport_GuitarHero midiTransportGuitarHero;
 
 MidiTransportInstances midiTransportInstances = {

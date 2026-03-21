@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <tusb.h>
+#include "usb_device.h"
 
 // Big, global USB mutex, shared with all USB devices to make sure we don't
 // have multiple cores updating the TUSB state in parallel
@@ -31,7 +32,7 @@ static int64_t timer_task(__unused alarm_id_t id, __unused void* user_data)
   return USB_TASK_INTERVAL;
 }
 
-void setupUsb()
+void UsbDevice::begin()
 {
   mutex_init(&__usb_mutex);
 

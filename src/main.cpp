@@ -7,7 +7,7 @@
 #include "log.h"
 #include "midi_transport.h"
 #include "network_connection.h"
-#include "usb.h"
+#include "usb_device.h"
 #include "version.h"
 #include "webui.h"
 
@@ -35,7 +35,7 @@ void setup() {
 
   midiTransport.begin();
 
-  setupUsb();
+  UsbDevice::begin();
 
   networkConnection.begin();
   webUI.setup(drumKit);

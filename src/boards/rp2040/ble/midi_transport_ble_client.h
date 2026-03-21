@@ -9,12 +9,13 @@
 
 class MidiTransport_BleClient : public MidiTransport_ArduinoMidi<MidiSerialBleClient> {
 public:
-  MidiTransport_BleClient(MidiSerialBleClient& serialPort)
-    : MidiTransport_ArduinoMidi<MidiSerialBleClient>(serialPort) {}
+  MidiTransport_BleClient()
+    : MidiTransport_ArduinoMidi<MidiSerialBleClient>(midiSerialBleClient) {}
 
-  virtual void begin();
+  void begin() override;
+  void shutdown() override;
+  void update() override;
 
-  virtual void shutdown();
-
-  virtual void update();
+private:
+  MidiSerialBleClient midiSerialBleClient;
 };
