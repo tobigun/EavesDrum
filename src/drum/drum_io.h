@@ -15,7 +15,7 @@ enum class LedId {
   WatchDog = 0,
   HitIndicator = 1,
   Network = 2,
-  Ble = 3
+  MidiConnected = 3
 };
 
 enum class ButtonId {

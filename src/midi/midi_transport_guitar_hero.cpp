@@ -4,6 +4,7 @@
 
 #include <SPI.h>
 #include <SPISlave.h>
+#include "drum_io.h"
 
 // Protocol information:
 // https://blog.laplante.io/2012/08/16/hack-a-guitar-hero-drumset-to-use-it-with-any-computer-over-usb-part2/
@@ -112,11 +113,15 @@ void MidiTransport_GuitarHero::begin() {
   }, RISING);
 
   reinitializeSPI();
+
+  DrumIO::led(LedId::MidiConnected, true);
 } 
 
 void MidiTransport_GuitarHero::shutdown() {
   detachInterrupt(digitalPinToInterrupt(PIN_CS));
   DRUM_SPI.end();
+
+  DrumIO::led(LedId::MidiConnected, false);
 }
 
 void MidiTransport_GuitarHero::sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) {

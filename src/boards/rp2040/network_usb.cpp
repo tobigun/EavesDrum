@@ -25,7 +25,7 @@
  * THE SOFTWARE.
  */
 
- #include "network.h"
+ #include "network_connection.h"
 
 #include "drum_io.h"
 
