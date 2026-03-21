@@ -16,8 +16,8 @@
 DrumKit drumKit;
 
 static void logVersion();
-static void blinkLed();
 static void ledTest();
+static void blinkLed();
 
 void setup() {  
   DrumIO::setup(true);
@@ -57,6 +57,8 @@ void loop() {
   networkConnection.update();
   midiTransport.update();
 
+  DrumIO::resetWatchdog();
+
   // touchSense();
 }
 
@@ -66,10 +68,10 @@ static void logVersion() {
 }
 
 static void ledTest() {
-  DrumIO::led(LedId::WatchDog, true);
   DrumIO::led(LedId::HitIndicator, true);
   DrumIO::led(LedId::Network, true);
   DrumIO::led(LedId::MidiConnected, true);
+  DrumIO::led(LedId::WatchDog, true);
 
   delay(200);
 

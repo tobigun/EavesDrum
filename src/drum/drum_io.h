@@ -12,10 +12,10 @@
 #define NUM_SAMPLES 2
 
 enum class LedId {
-  WatchDog = 0,
-  HitIndicator = 1,
-  Network = 2,
-  MidiConnected = 3
+  HitIndicator,
+  Network,
+  MidiConnected,
+  WatchDog,
 };
 
 enum class ButtonId {
@@ -41,6 +41,8 @@ public:
   static void led(LedId id, bool enable);
 
   static bool isButtonPressed(ButtonId id);
+
+  static void resetWatchdog();
 
   static void reset();
 };

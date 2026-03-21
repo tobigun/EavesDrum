@@ -12,9 +12,9 @@
 #define __isPicoW false
 #endif
 
-#define PIN_LED_0 LED_BUILTIN // Use the built-in LED pin
-#define PIN_LED_1 4
-#define PIN_LED_2 5
+#define PIN_LED_0 LED_BUILTIN // built-in LED (green)
+#define PIN_LED_1 4 // red
+#define PIN_LED_2 5 // white/blue
 
 #define PIN_SWITCH_1 2
 #define PIN_SWITCH_2 3
@@ -28,6 +28,8 @@
 
 #define AIRCR_Register (*((volatile uint32_t*)(PPB_BASE + 0x0ED0C)))
 
+#define WATCHDOG_TIMEOUT_MS 10000
+
 static dma_channel_config cfg;
 static uint dma_chan;
 
@@ -37,6 +39,8 @@ static void buttonInit();
 
 
 void DrumIO::setup(bool usePwmPowerSupply) {
+  watchdog_enable(WATCHDOG_TIMEOUT_MS, true);
+
   ledInit();
   buttonInit();
 
@@ -142,20 +146,11 @@ static void buttonInit() {
 
 void DrumIO::led(LedId id, bool enable) {
   pin_size_t ledPin;
-  if (id == LedId::WatchDog) {
-    //if (__isPicoW) {
-    //  return; // LED 0 used by BLE
-    //}
-    //ledPin = PIN_LED_0;
+  if (id == LedId::HitIndicator) {
     ledPin = PIN_LED_2;
-  } else if (id == LedId::HitIndicator) {
-    ledPin = PIN_LED_1;
   } else if (id == LedId::Network) {
-    return;
+    ledPin = PIN_LED_1;
   } else if (id == LedId::MidiConnected) {
-    if (!__isPicoW) {
-      return; // BLE not supported
-    }
     ledPin = PIN_LED_0;
   } else {
     return;
@@ -180,6 +175,10 @@ bool DrumIO::isButtonPressed(ButtonId id) {
     return digitalRead(PIN_SWITCH_1) == LOW;
   }
   return false;
+}
+
+void DrumIO::resetWatchdog() {
+  watchdog_update();
 }
 
 void DrumIO::reset() {
