@@ -4,7 +4,7 @@
 #include "midi_transport_esp32_ble_midi.h"
 #include <BLEMidi.h>
 
-void MidiTransport_Esp32BleMidi::begin() {
+void MidiTransport_Esp32BleMidi::start() {
   //BLEMidiServer.setOnConnectCallback(onBluetoothConnected);
   //BLEMidiServer.setOnDisconnectCallback(onBluetoothDisconnected);
   BLEMidiServer.begin("EavesDrum BLE MIDI");

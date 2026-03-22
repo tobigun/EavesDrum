@@ -9,7 +9,7 @@
 
 class MidiTransport_PortMidi : public MidiTransport {
 public:
-  void begin() override;
+  void start() override;
 
   void sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) override;
 

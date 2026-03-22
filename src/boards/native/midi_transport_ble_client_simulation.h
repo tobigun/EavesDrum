@@ -9,7 +9,7 @@
 
 class MidiTransport_BleSimulation : public MidiTransport_PortMidi {
 public:
-  void begin() override;
+  void start() override;
 
   void shutdown() override;
 

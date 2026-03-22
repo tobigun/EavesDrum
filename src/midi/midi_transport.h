@@ -43,9 +43,9 @@ typedef uint8_t midi_channel_t;
 
 class MidiTransport {
 public:
-  virtual void begin() = 0;
+  virtual void start() = 0;
 
-  virtual void shutdown() {}
+  virtual void stop() {}
 
   virtual void update() {}
 
@@ -78,8 +78,8 @@ public:
   void setOutputMode(MidiOutputMode mode) {
     MidiTransport* newMidiTransport = getTransportInstance(mode);
     if (initialized && newMidiTransport != selectedTransport) {
-      selectedTransport->shutdown();      
-      newMidiTransport->begin();
+      selectedTransport->stop();      
+      newMidiTransport->start();
     }
     selectedTransport = newMidiTransport;
   }
@@ -107,14 +107,14 @@ public:
     return supportedModes;
   }
 
-  virtual void begin() {
+  void start() override {
     initialized = true;
-    selectedTransport->begin();
+    selectedTransport->start();
   }
 
-  virtual void shutdown() {
+  void stop() override {
     initialized = false;
-    selectedTransport->shutdown();
+    selectedTransport->stop();
   }
 
   virtual void update() {

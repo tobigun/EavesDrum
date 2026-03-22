@@ -34,7 +34,11 @@ enum class LogMode {
   NoNewline
 };
 
+#ifdef ENABLE_SERIAL_DEBUG
 #define DEFAULT_LOG_LEVEL Level::Info
+#else
+#define DEFAULT_LOG_LEVEL Level::None
+#endif
 
 #ifdef __cplusplus
 extern "C" {

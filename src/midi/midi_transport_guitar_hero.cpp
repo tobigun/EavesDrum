@@ -100,7 +100,7 @@ void reinitializeSPI() {
   DRUM_SPI.setData(&preamble, 1);
 }
 
-void MidiTransport_GuitarHero::begin() {
+void MidiTransport_GuitarHero::start() {
   DRUM_SPI.setRX(PIN_RX);
   DRUM_SPI.setCS(PIN_CS);
   DRUM_SPI.setSCK(PIN_SCK);
@@ -117,7 +117,7 @@ void MidiTransport_GuitarHero::begin() {
   DrumIO::led(LedId::MidiConnected, true);
 } 
 
-void MidiTransport_GuitarHero::shutdown() {
+void MidiTransport_GuitarHero::stop() {
   detachInterrupt(digitalPinToInterrupt(PIN_CS));
   DRUM_SPI.end();
 

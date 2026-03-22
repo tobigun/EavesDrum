@@ -5,6 +5,7 @@
 
 #include "drum_io.h"
 #include "midi_transport_arduino_midi.h"
+#include "serialMIDI.h"
 
 class MidiTransport_Serial : public MidiTransport_ArduinoMidi {
 public:
@@ -13,24 +14,32 @@ public:
       serial(serial) {}
 
   void begin() override {
+    DrumIO::led(LedId::MidiConnected, true);
+
+#ifdef ENABLE_SERIAL_DEBUG
     if (isLogSerial()) {
       logInfo("Serial Port used by MIDI transport. Logging disabled\n");
       serial.flush();
       setLogLevel(Level::None);
     }
-    DrumIO::led(LedId::MidiConnected, true);
+#endif
 
-    MidiTransport_ArduinoMidi::begin();
+    serial.begin(settings.BaudRate);
   }
 
-  void shutdown() override {
-    MidiTransport_ArduinoMidi::shutdown();
-
-    if (isLogSerial()) {
-      SerialDebug.begin(LOG_BAUD);
-      setLogLevel(DEFAULT_LOG_LEVEL);
-    }
+  void stop() override {
     DrumIO::led(LedId::MidiConnected, false);
+
+#ifdef ENABLE_SERIAL_DEBUG
+    if (isLogSerial()) {
+      // reset logging
+      serial.begin(LOG_BAUD);
+      setLogLevel(DEFAULT_LOG_LEVEL);
+      return;
+    }
+#endif
+
+    serial.end();
   }
 
   size_t write(uint8_t b) override {
@@ -43,4 +52,5 @@ public:
 
 private:
   SerialUART& serial;
+  MIDI_NAMESPACE::DefaultSerialSettings settings;
 };

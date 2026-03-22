@@ -80,7 +80,7 @@ void MidiTransport_TinyUsbHost::update() {
   }
 }
 
-void MidiTransport_TinyUsbHost::shutdown() {
+void MidiTransport_TinyUsbHost::stop() {
   tuh_deinit(BOARD_TUH_RHPORT);
 }
 

@@ -9,7 +9,7 @@
 
 class MidiTransport_Esp32BleMidi : public MidiTransport {
 public:
-  virtual void begin();
+  virtual void start();
   virtual void sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel);
   virtual void sendNoteOff(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel);
   virtual void sendAfterTouch(uint8_t inPressure, midi_channel_t inChannel);

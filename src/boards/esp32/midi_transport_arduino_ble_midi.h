@@ -13,7 +13,7 @@
 
 class MidiTransport_ArduinoBleMidi : public MidiTransport {
 public:
-  void begin() {
+  void start() {
     //BLEMIDI_INSTANCE.setHandleConnected(onBluetoothConnected);
     //BLEMIDI_INSTANCE.setHandleDisconnected(onBluetoothDisconnected);
 

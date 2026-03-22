@@ -17,6 +17,8 @@ public:
 public: // Transport implementation for MidiInterface
   static const bool thruActivated = false;
 
+  virtual void begin() {}
+
   virtual bool beginTransmission(MIDI_NAMESPACE::MidiType midiType) { return true; }
 
   virtual void endTransmission() {}
@@ -28,13 +30,13 @@ public: // Transport implementation for MidiInterface
   unsigned available() { return 0; } // read not used by EavesDrum
 
 public: // MidiTransport implementation
-  void begin() override {
+  void start() override final {
     // Initialize MIDI, and listen to all MIDI channels
-    // This will also call serial port's begin()
+    // This will also call the begin() method
     midiInterface.begin(MIDI_CHANNEL_OMNI);
   }
 
-  void shutdown() override {}
+  void stop() override {}
 
   void sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) override {
     midiInterface.sendNoteOn(inNoteNumber, inVelocity, inChannel);

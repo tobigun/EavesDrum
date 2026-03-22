@@ -21,7 +21,7 @@ public:
     DrumIO::led(LedId::MidiConnected, true);
   }
 
-  void shutdown() override {
+  void stop() override {
     DrumIO::led(LedId::MidiConnected, false);
   }
 

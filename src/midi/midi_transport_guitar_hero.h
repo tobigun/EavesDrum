@@ -11,19 +11,19 @@
 
 class MidiTransport_GuitarHero : public MidiTransport {
 public:
-  virtual void begin();
+  void start() override;
 
-  virtual void shutdown();
+  void stop() override;
 
-  virtual void sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel);
+  void sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) override;
 
-  virtual void sendNoteOff(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) {}
+  void sendNoteOff(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) override {}
 
-  virtual void sendAfterTouch(uint8_t inPressure, midi_channel_t inChannel) {}
+  void sendAfterTouch(uint8_t inPressure, midi_channel_t inChannel) override {}
 
-  virtual void sendAfterTouch(uint8_t inNoteNumber, uint8_t inPressure, midi_channel_t inChannel) {}
+  void sendAfterTouch(uint8_t inNoteNumber, uint8_t inPressure, midi_channel_t inChannel) override {}
 
-  virtual void sendControlChange(uint8_t inControlNumber, uint8_t inControlValue, midi_channel_t inChannel) {}
+  void sendControlChange(uint8_t inControlNumber, uint8_t inControlValue, midi_channel_t inChannel) override {}
 };
 
 #endif

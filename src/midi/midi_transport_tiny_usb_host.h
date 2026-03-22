@@ -20,7 +20,7 @@ class MidiTransport_TinyUsbHost : public MidiTransport_ArduinoMidi {
 public:
   void begin() override;
   void update() override;
-  void shutdown() override;
+  void stop() override;
 
   void endTransmission() override {
     tuh_midi_write_flush(getDeviceIndex());

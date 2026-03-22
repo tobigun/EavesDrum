@@ -29,7 +29,7 @@ void setup() {
   // Note: config must be loaded before USB is started, otherwise USB will not initialize correctly
   DrumConfigMapper::loadAndApplyDrumKitConfig(drumKit);
 
-  midiTransport.begin();
+  midiTransport.start();
 
   UsbDevice::begin();
 
