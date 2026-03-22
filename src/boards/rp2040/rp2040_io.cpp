@@ -36,7 +36,7 @@ static uint dma_chan;
 
 static void ledInit();
 static void buttonInit();
-
+static void adcInit();
 
 void DrumIO::setup(bool usePwmPowerSupply) {
   watchdog_enable(WATCHDOG_TIMEOUT_MS, true);
@@ -57,6 +57,10 @@ void DrumIO::setup(bool usePwmPowerSupply) {
     digitalWrite(SMPS_MODE_PIN, SMPS_MODE_PWM);
   }
 
+  adcInit();
+}
+
+static void adcInit() {
   adc_init();
 
   // https://www.hackster.io/AlexWulff/adc-sampling-and-fft-on-raspberry-pi-pico-f883dd
