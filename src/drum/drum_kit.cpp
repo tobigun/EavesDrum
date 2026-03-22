@@ -81,7 +81,7 @@ void DrumKit::stabilizeMultiplexerOffsetVoltage(time_us_t senseTimeUs) {
     return;
   }
 
-  logInfo("Flush Mux: %ld ms\n", (senseTimeUs - lastMuxReadTimeUs) / 1000);
+  logInfo("Flush Mux: %ld ms", (senseTimeUs - lastMuxReadTimeUs) / 1000);
   flushMultiplexers();
   lastMuxReadTimeUs = micros();
 }

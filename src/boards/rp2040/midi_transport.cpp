@@ -1,7 +1,7 @@
 #include "midi_transport.h"
 #include "midi_transport_arduino_midi.h"
 #include "midi_transport_usb_device.h"
-#include "midi_serial_usb_host.h"
+#include "midi_transport_usb_host.h"
 #ifdef HAS_BLUETOOTH
 #include "ble/midi_transport_ble_client.h"
 #include "ble/midi_transport_ble_server.h"
@@ -10,9 +10,7 @@
 #include <SPISlave.h> // required for MidiTransport_GuitarHero
 
 MidiTransport_UsbDevice midiTransportUsbDevice;
-
-MidiSerialUsbHost midiSerialUsbHost;
-MidiTransport_ArduinoMidi<MidiSerialUsbHost> midiTransportUsbHost(midiSerialUsbHost);
+MidiTransport_UsbHost midiTransportUsbHost;
   
 #ifdef HAS_BLUETOOTH
 MidiTransport_BleClient midiTransportBleClient;

@@ -29,6 +29,7 @@ public:
 
   void sendBleScanResult(const std::vector<BleDeviceInfo>& results);
   void sendBleStatus(BleClientStatus status, bool isScanning, AsyncWebSocketClient* client = nullptr);
+  void sendUsbHostStatus(const String& deviceName, AsyncWebSocketClient* client = nullptr);
 
 private:
   void initHttpServer();
@@ -53,6 +54,7 @@ private:
   void handleScanBleDevicesRequest(AsyncWebSocketClient* client);
   void handleSetBlePairingRequest(JsonObjectConst argsNode, AsyncWebSocketClient* client);
   void handleGetBleStatusRequest(AsyncWebSocketClient* client);
+  void handleGetUsbHostStatusRequest(AsyncWebSocketClient* client);
 
   void sendConfig(AsyncWebSocketClient* client);
   

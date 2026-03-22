@@ -4,7 +4,22 @@
 import { useContext, useState, useEffect } from "react";
 import { MidiOutputMode, updateConfig, useConfig } from "@config";
 import { connection, DrumCommand } from "@/connection/connection";
-import { Box, Stack, Select, MenuItem, Button, darken, useTheme, List, ListItem, ListItemText, ListItemButton, ListItemIcon, IconButton } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Select,
+  MenuItem, 
+  Button, 
+  darken, 
+  useTheme,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemButton, 
+  ListItemIcon,
+  IconButton,
+  TextField
+} from "@mui/material";
 import StarIcon from '@mui/icons-material/Star';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ConnectionStateContext } from "@/connection/connection-state";
@@ -26,6 +41,7 @@ export function MidiOutputModeSelect() {
   const [isScanning, setIsScanning] = useState(false);
   const [selectedBleDevice, setSelectedBleDevice] = useState<string>("");
   const [bleConnectionStatus, setBleConnectionStatus] = useState<BleConnectionStatus>(BleConnectionStatus.Disconnected);
+  const [usbHostDeviceName, setUsbHostDeviceName] = useState<string>("");
 
   // listen for BLE device list messages coming from the websocket
   useEffect(() => {
@@ -42,17 +58,25 @@ export function MidiOutputModeSelect() {
       setIsScanning(scanning);
     };
 
+    const handleUsbHostStatus = (status: any) => {
+      const deviceName: string = status["deviceName"] ?? "";
+      setUsbHostDeviceName(deviceName);
+    };
+
     const scanResulthandle = connection.registerOnJsonDataListener("bleDevices", handleBleDevices);
     const statusHandle = connection.registerOnJsonDataListener("bleStatus", handleBleStatus);
+    const usbHostStatusHandle = connection.registerOnJsonDataListener("usbHostStatus", handleUsbHostStatus);
     const onConnectionChangeListenerHandle = connection.registerOnChangeListener(connected => {
       if (connected) {
         connection.sendCommand(DrumCommand.getBleStatus, {});
+        connection.sendCommand(DrumCommand.getUsbHostStatus, {});
       }
     });
 
     return () => {
       connection.unregisterListener(scanResulthandle);
       connection.unregisterListener(statusHandle);
+      connection.unregisterListener(usbHostStatusHandle);
       connection.unregisterListener(onConnectionChangeListenerHandle);
     };
   }, []);
@@ -167,6 +191,22 @@ export function MidiOutputModeSelect() {
               {isScanning ? "Scanning..." : "Scan Devices"}
             </Button>
           </Stack>
+        </MidiSettingsBox>
+      )}
+
+      {midiOutputMode === MidiOutputMode.UsbHost && (
+        <MidiSettingsBox label="USB Host Settings">
+          <TextField
+            label="Connected Device"
+            value={usbHostDeviceName || "Not connected"}
+            size="small"
+            fullWidth
+            slotProps={{
+              input: {
+                readOnly: true
+              }
+            }}
+          />
         </MidiSettingsBox>
       )}
     </Stack>

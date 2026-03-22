@@ -46,33 +46,32 @@ public:
   }
 
   bool isConnected() {
-    return dev_idx != TUSB_INDEX_INVALID_8;
+    return getDeviceIndex() != TUSB_INDEX_INVALID_8;
   }
 
-  uint8_t getDeviceIndex() { return dev_idx; }
-  void setDeviceIndex(uint8_t idx) { dev_idx = idx; }
+  uint8_t getDeviceIndex();
 
   // Stream interface to use with MIDI Library
   virtual int read(void) {
     if (!isConnected()) return -1;
     uint8_t ch;
-    return tuh_midi_stream_read(dev_idx, 0, &ch, 1) ? (int)ch : (-1);
+    return tuh_midi_stream_read(getDeviceIndex(), 0, &ch, 1) ? (int)ch : (-1);
   }
 
   virtual size_t write(uint8_t b) {
     if (!isConnected()) return 0;
-    return tuh_midi_stream_write(dev_idx, 0, &b, 1);
+    return tuh_midi_stream_write(getDeviceIndex(), 0, &b, 1);
   }
 
   virtual int available(void) {
     if (!isConnected()) return false;
-    return tuh_midi_read_available(dev_idx);
+    return tuh_midi_read_available(getDeviceIndex());
   }
 
   virtual int peek(void) { return -1; } // MIDI Library does not use peek
 
   virtual void flush(void) { // MIDI Library does not use flush
-    tuh_midi_write_flush(dev_idx);
+    tuh_midi_write_flush(getDeviceIndex());
   }
 
   using Stream::write;
@@ -80,20 +79,13 @@ public:
   // Raw MIDI USB packet interface.
   bool writePacket(const uint8_t packet[4]) {
     if (!isConnected()) return false;
-    return tuh_midi_packet_write(dev_idx, packet);
+    return tuh_midi_packet_write(getDeviceIndex(), packet);
   }
 
   bool readPacket(uint8_t packet[4]) {
     if (!isConnected()) return false;
-    return tuh_midi_packet_read(dev_idx, packet);
+    return tuh_midi_packet_read(getDeviceIndex(), packet);
   }
-
-  void printConnectedDevice();
-
-private:
-  uint8_t dev_idx = TUSB_INDEX_INVALID_8;
 };
-
-extern MidiSerialUsbHost usbh_midi;
 
 #endif

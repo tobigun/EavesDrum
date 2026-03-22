@@ -8,6 +8,7 @@
 #include "event_log.h"
 #include "log.h"
 #include "midi_transport.h"
+#include "midi/midi_transport_usb_host.h"
 #include "monitor.h"
 #include "version.h"
 #if HAS_BLUETOOTH
@@ -352,6 +353,24 @@ void WebUI::sendBleStatus(BleClientStatus status, bool isScanning, AsyncWebSocke
   sendJsonToWebSocket(doc, client);
 }
 
+void WebUI::handleGetUsbHostStatusRequest(AsyncWebSocketClient* client) {
+#ifdef ENABLE_MIDI_USB_HOST_TRANSPORT
+  sendUsbHostStatus(midiTransportUsbHost.getConnectedDeviceName(), client);
+#endif
+}
+
+void WebUI::sendUsbHostStatus(const String& deviceName, AsyncWebSocketClient* client) {
+  JsonDocument doc;
+  JsonObject statusNode = doc["usbHostStatus"].to<JsonObject>();
+  if (deviceName.length() > 0) {
+    statusNode["deviceName"] = deviceName;
+  } else {
+    statusNode["deviceName"] = nullptr;
+  }
+
+  sendJsonToWebSocket(doc, client);
+}
+
 void WebUI::handleCommand(String cmd, JsonObject& argsNode, AsyncWebSocketClient* client) {
   if (cmd == "getConfig") {
     handleGetConfigRequest(client);
@@ -387,6 +406,8 @@ void WebUI::handleCommand(String cmd, JsonObject& argsNode, AsyncWebSocketClient
     handleSetBlePairingRequest(argsNode, client);
   } else if (cmd == "getBleStatus") {
     handleGetBleStatusRequest(client);
+  } else if (cmd == "getUsbHostStatus") {
+    handleGetUsbHostStatusRequest(client);
   } else {
     logInfo("Cmd: %s\n", cmd.c_str());
   }

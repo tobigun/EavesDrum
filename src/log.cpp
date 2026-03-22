@@ -26,13 +26,16 @@ void setLogLevel(Level level) {
   minLogLevel = level;
 }
 
-static void logCharBuffer(Level level, const char* message) {
-  SerialDebug.printf("%s%s\n", levelToString(level), message);
+static void logCharBuffer(Level level, const char* message, LogMode mode) {
+  SerialDebug.printf("%s%s%s",
+    mode == LogMode::NoPrefixOrNewline ? "" : levelToString(level),
+    message,
+    mode == LogMode::Default ? "\n" : "");
 }
 
-void logString(Level level, String message) {
+void logString(Level level, String message, LogMode mode) {
   if (minLogLevel != Level::None && level >= minLogLevel) {
-    logCharBuffer(level, message.c_str());
+    logCharBuffer(level, message.c_str(), mode);
   }
 }
 
@@ -40,9 +43,9 @@ void logString(Level level, String message) {
   if (level < minLogLevel) return; \
   va_list args; \
   va_start(args, format); \
-  char formatBuffer[128]; \
+  char formatBuffer[256]; \
   vsnprintf(formatBuffer, sizeof(formatBuffer), format, args); \
-  logCharBuffer(level, formatBuffer); \
+  logCharBuffer(level, formatBuffer, LogMode::Default); \
   va_end(args);
 
 void logDebug(const char* format, ...) {

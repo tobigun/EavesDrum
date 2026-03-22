@@ -178,9 +178,7 @@ public:
     if (midiOutputMode != mode) {
       logInfo("Switching MIDI output: %d\n", (int) mode);
       midiOutputMode = mode;
-      midiTransport.shutdown();
       midiTransport.setOutputMode(mode);
-      midiTransport.begin();
     }
   }
 

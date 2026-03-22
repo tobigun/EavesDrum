@@ -77,6 +77,10 @@ public:
 
   void setOutputMode(MidiOutputMode mode) {
     MidiTransport* newMidiTransport = getTransportInstance(mode);
+    if (initialized && newMidiTransport != selectedTransport) {
+      selectedTransport->shutdown();      
+      newMidiTransport->begin();
+    }
     selectedTransport = newMidiTransport;
   }
   
@@ -104,7 +108,13 @@ public:
   }
 
   virtual void begin() {
+    initialized = true;
     selectedTransport->begin();
+  }
+
+  virtual void shutdown() {
+    initialized = false;
+    selectedTransport->shutdown();
   }
 
   virtual void update() {
@@ -154,6 +164,7 @@ private:
 private:
   MidiTransportInstances& instances;
   MidiTransport* selectedTransport;
+  bool initialized = false;
 };
 
 extern MidiTransportMultiplexer midiTransport;

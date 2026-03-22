@@ -20,7 +20,8 @@ export enum DrumCommand {
   getStats = "getStats",
   scanBleDevices = "scanBleDevices",
   blePair = "blePair",
-  getBleStatus = "getBleStatus"
+  getBleStatus = "getBleStatus",
+  getUsbHostStatus = "getUsbHostStatus"
 }
 
 enum ConnectionEventType {

@@ -28,6 +28,12 @@ enum class Level {
   None,
 };
 
+enum class LogMode {
+  Default,
+  NoPrefixOrNewline,
+  NoNewline
+};
+
 #define DEFAULT_LOG_LEVEL Level::Info
 
 #ifdef __cplusplus
@@ -43,7 +49,7 @@ void logError(const char* format, ...);
 }
 #endif
 
-void logString(Level level, String message);
+void logString(Level level, String message, LogMode mode = LogMode::Default);
 
 const char* levelToString(Level level);
 
