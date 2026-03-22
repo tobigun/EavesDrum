@@ -23,6 +23,7 @@
  * THE SOFTWARE.
  */
 
+ // TODO why not LED?
 #include "midi_transport_tiny_usb_host.h"
 
 #ifdef ENABLE_MIDI_TINY_USB_HOST_TRANSPORT
