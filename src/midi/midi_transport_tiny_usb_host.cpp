@@ -23,7 +23,6 @@
  * THE SOFTWARE.
  */
 
- // TODO why not LED?
 #include "midi_transport_tiny_usb_host.h"
 
 #ifdef ENABLE_MIDI_TINY_USB_HOST_TRANSPORT
@@ -43,22 +42,51 @@ void updateConnectedDeviceInfo();
 
 int getFreeDmaChannelForPioUsb() {
   // pio usb wants a fixed dma channel. Lower channels are unlikely free so query for an unused channel
-  int usbDmaTx = dma_claim_unused_channel(true);
-  dma_channel_unclaim(usbDmaTx);
-  return usbDmaTx;
+  int dmaChannel = dma_claim_unused_channel(true);
+  if (dmaChannel < 0) {
+    return -1;
+  }
+  dma_channel_unclaim(dmaChannel);
+  return dmaChannel;
+}
+
+// search a free PIO that has free state machines for all three programs.
+int getFreePio() {
+  for (int pioIndex = NUM_PIOS - 1; pioIndex > 0; --pioIndex) {
+      PIO pio = pio_get_instance(pioIndex);
+      if (pio_sm_is_claimed(pio, 0) || pio_sm_is_claimed(pio, 1) || pio_sm_is_claimed(pio, 2) || pio_sm_is_claimed(pio, 3)) {
+        continue;
+      }
+      return pioIndex;
+  }
+  return -1;
 }
 
 void MidiTransport_TinyUsbHost::begin() {
   DrumIO::led(LedId::MidiConnected, false);
 
-  int usbDmaTx = getFreeDmaChannelForPioUsb();
+  if (tuh_inited()) {
+    return;
+  }
+
+  int dmaChannelTx = getFreeDmaChannelForPioUsb();
+  if (dmaChannelTx < 0) {
+    eventLog.log(Level::Error, "No free DMA channel available for PIO USB Host");
+    return;
+  }
+
+  int pioIndex = getFreePio();
+  if (pioIndex < 0) {
+    eventLog.log(Level::Error, "No free PIO available for PIO USB Host");
+    return;
+  }
 
   pio_usb_configuration_t pio_cfg =   {
     PIO_USB_DP_PIN_DEFAULT,
-    PIO_USB_TX_DEFAULT,
+    (uint8_t) pioIndex, // TX PIO
     PIO_SM_USB_TX_DEFAULT,
-    (uint8_t) usbDmaTx,
-    PIO_USB_RX_DEFAULT,
+    (uint8_t) dmaChannelTx,
+    (uint8_t) pioIndex, // RX PIO (use one PIO for RX and TX)
     PIO_SM_USB_RX_DEFAULT,
     PIO_SM_USB_EOP_DEFAULT,
     NULL,
@@ -81,7 +109,10 @@ void MidiTransport_TinyUsbHost::update() {
 }
 
 void MidiTransport_TinyUsbHost::stop() {
-  tuh_deinit(BOARD_TUH_RHPORT);
+  // Pico PIO does not release its resources (PIO, DMA channels, alarm pool timers) on deinit.
+  // As we can also not release the resources from here (especially not the alarm pool as we do not have access to the pointer),
+  // we won't call tuh_deinit here. This avoids crashes when switching USB Host on and off.
+  //tuh_deinit(BOARD_TUH_RHPORT);
 }
 
 String MidiTransport_TinyUsbHost::getConnectedDeviceName() {
