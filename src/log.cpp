@@ -26,12 +26,14 @@ void setLogLevel(Level level) {
   minLogLevel = level;
 }
 
+#ifdef ENABLE_SERIAL_DEBUG
 static void logCharBuffer(Level level, const char* message, LogMode mode) {
   SerialDebug.printf("%s%s%s",
     mode == LogMode::NoPrefixOrNewline ? "" : levelToString(level),
     message,
     mode == LogMode::Default ? "\n" : "");
 }
+#endif
 
 void logString(Level level, String message, LogMode mode) {
 #ifdef ENABLE_SERIAL_DEBUG

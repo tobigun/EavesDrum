@@ -3,6 +3,10 @@
 
 #pragma once
 
+#if __has_include(<portmidi.h>)
+#define ENABLE_MIDI_PORTMIDI_TRANSPORT
+#endif
+
 #ifdef ENABLE_MIDI_PORTMIDI_TRANSPORT
 
 #include "midi_transport.h"

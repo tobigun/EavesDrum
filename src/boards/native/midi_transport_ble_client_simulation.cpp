@@ -1,6 +1,8 @@
 // Copyright (c) 2025 Tobias Gunkel
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#ifdef HAS_BLUETOOTH
+
 #include "midi_transport_ble_client_simulation.h"
 
 #include "log.h"
@@ -89,10 +91,12 @@ void MidiTransport_BleSimulation::start(){
   startClient();
 }
 
-void MidiTransport_BleSimulation::shutdown(){
+void MidiTransport_BleSimulation::stop(){
   stopClient();
 }
 
 void MidiTransport_BleSimulation::update(){
   updateScanStatus(clientScanStartTimeMs);
 }
+
+#endif

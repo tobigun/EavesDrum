@@ -1,9 +1,9 @@
 // Copyright (c) 2025 Tobias Gunkel
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include "midi_transport_portmidi.h"
 #ifdef ENABLE_MIDI_PORTMIDI_TRANSPORT
 
-#include "midi_transport_portmidi.h"
 #include "portmidi.h"
 #include "porttime.h"
 
