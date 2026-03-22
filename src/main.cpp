@@ -16,8 +16,6 @@
 DrumKit drumKit;
 
 static void logVersion();
-static void ledTest();
-static void blinkLed();
 
 void setup() {  
   DrumIO::setup(true);
@@ -25,8 +23,6 @@ void setup() {
 #ifdef ENABLE_SERIAL_DEBUG
   SerialDebug.begin(LOG_BAUD);
 #endif
-
-  ledTest();
 
   logVersion();
 
@@ -52,8 +48,6 @@ void setup() {
 }
 
 void loop() {
-  blinkLed();
-
   drumKit.updateDrums();
 
   networkConnection.update();
@@ -69,30 +63,4 @@ void loop() {
 static void logVersion() {
   eventLog.log(Level::Info, String("Version: ") + Version::getPackageVersion()
     + " (Git: " + Version::getGitCommitHash() + ", Date: " + Version::getBuildTime() + ")");
-}
-
-static void ledTest() {
-  DrumIO::led(LedId::HitIndicator, true);
-  DrumIO::led(LedId::Network, true);
-  DrumIO::led(LedId::MidiConnected, true);
-  DrumIO::led(LedId::WatchDog, true);
-
-  delay(200);
-
-  DrumIO::led(LedId::WatchDog, false);
-  DrumIO::led(LedId::HitIndicator, false);
-  DrumIO::led(LedId::Network, false);
-  DrumIO::led(LedId::MidiConnected, false);
-}
-
-static void blinkLed() {
-  static uint32_t last_time = 0;
-  static int led_state = HIGH;
-  uint32_t cur_time = millis();
-
-  if (cur_time - last_time > 1000) {
-    led_state = !led_state;
-    DrumIO::led(LedId::WatchDog, led_state);
-    last_time = cur_time;
-  }
 }

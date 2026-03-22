@@ -132,6 +132,20 @@ void DrumIO::writeDigitalOutPin(pin_size_t pinNumber, pin_status_t status) {
   digitalWriteFast(pinNumber, status);
 }
 
+static void ledTest() {
+  DrumIO::led(LedId::HitIndicator, true);
+  DrumIO::led(LedId::Network, true);
+  DrumIO::led(LedId::MidiConnected, true);
+  DrumIO::led(LedId::WatchDog, true);
+
+  delay(200);
+
+  DrumIO::led(LedId::WatchDog, false);
+  DrumIO::led(LedId::HitIndicator, false);
+  DrumIO::led(LedId::Network, false);
+  DrumIO::led(LedId::MidiConnected, false);
+}
+
 static void ledInit() {
   pinMode(PIN_LED_0, OUTPUT);
   digitalWrite(PIN_LED_0, HIGH);
@@ -141,6 +155,8 @@ static void ledInit() {
 
   pinMode(PIN_LED_2, OUTPUT);
   digitalWrite(PIN_LED_2, LOW);
+
+  ledTest();
 }
 
 static void buttonInit() {
@@ -170,8 +186,7 @@ void DrumIO::led(LedId id, bool enable) {
     lastBuiltinLedEnable = enable;
   }
 
-  bool enabledByHighLevel = (__isPicoW || ledPin != LED_BUILTIN); // Built-in LED of Pico (not PicoW) is low active
-  digitalWrite(ledPin, (enable == enabledByHighLevel) ? HIGH : LOW);
+  digitalWrite(ledPin, enable ? HIGH : LOW);
 }
 
 bool DrumIO::isButtonPressed(ButtonId id) {
@@ -181,7 +196,20 @@ bool DrumIO::isButtonPressed(ButtonId id) {
   return false;
 }
 
+static void blinkLed() {
+  static uint32_t last_time = 0;
+  static int led_state = HIGH;
+  uint32_t cur_time = millis();
+
+  if (cur_time - last_time > 1000) {
+    led_state = !led_state;
+    DrumIO::led(LedId::WatchDog, led_state);
+    last_time = cur_time;
+  }
+}
+
 void DrumIO::resetWatchdog() {
+  blinkLed();
   watchdog_update();
 }
 
