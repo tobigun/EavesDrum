@@ -78,6 +78,9 @@ bool DrumIO::isButtonPressed(ButtonId id) {
   return false;
 }
 
+void DrumIO::resetWatchdog() {
+}
+
 void DrumIO::reset() {
   logInfo("Reset\n");
   esp_restart();

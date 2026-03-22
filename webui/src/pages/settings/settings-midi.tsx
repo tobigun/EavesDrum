@@ -73,6 +73,10 @@ export function MidiOutputModeSelect() {
       }
     });
 
+    // initial fetch of BLE and USB host status
+    connection.sendCommand(DrumCommand.getBleStatus, {});
+    connection.sendCommand(DrumCommand.getUsbHostStatus, {});
+
     return () => {
       connection.unregisterListener(scanResulthandle);
       connection.unregisterListener(statusHandle);

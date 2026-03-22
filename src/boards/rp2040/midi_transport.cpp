@@ -1,28 +1,27 @@
-#include "midi_transport.h"
-#include "midi_transport_arduino_midi.h"
-#include "midi_transport_usb_device.h"
-#include "midi_transport_usb_host.h"
+#include "midi_transport_tiny_usb_device.h"
+#include "midi_transport_tiny_usb_host.h"
 #ifdef HAS_BLUETOOTH
 #include "ble/midi_transport_ble_client.h"
 #include "ble/midi_transport_ble_server.h"
 #endif
+#include "midi_transport_serial.h"
 #include "midi_transport_guitar_hero.h"
 #include <SPISlave.h> // required for MidiTransport_GuitarHero
 
 MidiTransport_UsbDevice midiTransportUsbDevice;
-MidiTransport_UsbHost midiTransportUsbHost;
+MidiTransport_TinyUsbHost midiTransportTinyUsbHost;
   
 #ifdef HAS_BLUETOOTH
 MidiTransport_BleClient midiTransportBleClient;
 MidiTransport_BleServer midiTransportBleServer;
 #endif
 
-MidiTransport_ArduinoMidi<SerialUART> midiTransportDin(Serial1);
+MidiTransport_Serial midiTransportDin(Serial1);
 MidiTransport_GuitarHero midiTransportGuitarHero;
 
 MidiTransportInstances midiTransportInstances = {
   .usbDevice = &midiTransportUsbDevice,
-  .usbHost = &midiTransportUsbHost,
+  .usbHost = &midiTransportTinyUsbHost,
   .serialDin = &midiTransportDin,
 #ifdef HAS_BLUETOOTH
   .bleClient = &midiTransportBleClient,

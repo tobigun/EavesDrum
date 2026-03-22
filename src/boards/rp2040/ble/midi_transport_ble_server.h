@@ -3,19 +3,16 @@
 
 #pragma once
 
-#include "midi_transport.h"
 #include "midi_transport_arduino_midi.h"
-#include "midi_serial_ble_server.h"
+#include "ble_midi_server.h"
 
-class MidiTransport_BleServer : public MidiTransport_ArduinoMidi<MidiSerialBleServer> {
+class MidiTransport_BleServer : public MidiTransport_ArduinoMidi {
 public:
-  MidiTransport_BleServer()
-    : MidiTransport_ArduinoMidi<MidiSerialBleServer>(midiSerialBleServer) {}
+  void begin() override;
+  void shutdown() override;
+  void update() override;
 
-  virtual void begin();
-  virtual void shutdown();
-  virtual void update();
-
-private:
-  MidiSerialBleServer midiSerialBleServer;
+  size_t write(uint8_t b) override {
+    return ble_midi_server_stream_write(1, &b);
+  }
 };

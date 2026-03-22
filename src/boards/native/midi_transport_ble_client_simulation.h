@@ -9,11 +9,11 @@
 
 class MidiTransport_BleSimulation : public MidiTransport_PortMidi {
 public:
-  virtual void begin();
+  void begin() override;
 
-  virtual void shutdown();
+  void shutdown() override;
 
-  virtual void update();
+  void update() override;
 };
 
 #endif

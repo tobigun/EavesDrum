@@ -7,7 +7,7 @@
 #include "drum_kit.h"
 #include "midi_transport.h"
 #include "monitor.h"
-#include "network.h"
+#include "network_connection.h"
 #include "webui.h"
 #include "simulation.h"
 

@@ -23,9 +23,9 @@
  * THE SOFTWARE.
  */
 
-#include "midi_transport_usb_host.h"
+#include "midi_transport_tiny_usb_host.h"
 
-#ifdef ENABLE_MIDI_USB_HOST_TRANSPORT
+#ifdef ENABLE_MIDI_TINY_USB_HOST_TRANSPORT
 
 #include <tusb.h>
 #include "log.h"
@@ -47,7 +47,7 @@ int getFreeDmaChannelForPioUsb() {
   return usbDmaTx;
 }
 
-void MidiTransport_UsbHost::begin() {
+void MidiTransport_TinyUsbHost::begin() {
   DrumIO::led(LedId::MidiConnected, false);
 
   int usbDmaTx = getFreeDmaChannelForPioUsb();
@@ -71,7 +71,7 @@ void MidiTransport_UsbHost::begin() {
   tuh_init(BOARD_TUH_RHPORT);
 }
 
-void MidiTransport_UsbHost::update() {
+void MidiTransport_TinyUsbHost::update() {
   tuh_task_ext(0, false);
   if (connectedDeviceNameDirty) {
     updateConnectedDeviceInfo();
@@ -79,15 +79,15 @@ void MidiTransport_UsbHost::update() {
   }
 }
 
-void MidiTransport_UsbHost::shutdown() {
+void MidiTransport_TinyUsbHost::shutdown() {
   tuh_deinit(BOARD_TUH_RHPORT);
 }
 
-String MidiTransport_UsbHost::getConnectedDeviceName() {
+String MidiTransport_TinyUsbHost::getConnectedDeviceName() {
   return connectedDeviceName;
 }
 
-uint8_t MidiSerialUsbHost::getDeviceIndex() {
+uint8_t MidiTransport_TinyUsbHost::getDeviceIndex() {
   return dev_idx;
 }
 
