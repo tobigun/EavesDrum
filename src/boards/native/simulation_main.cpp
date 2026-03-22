@@ -42,9 +42,9 @@ static sensor_value_t sensorValue = 0;
 static std::shared_ptr<PadSoundPlayback> padPlayback;
 
 void UsbDevice::begin() {}
+void UsbDevice::update() {}
 
-void NetworkUsb::begin() {
-}
+void NetworkUsb::begin() {}
 
 void NetworkUsb::update() {
   AsyncWebServer::poll();

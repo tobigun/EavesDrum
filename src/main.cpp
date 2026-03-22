@@ -38,6 +38,8 @@ void setup() {
   UsbDevice::begin();
 
   networkConnection.begin();
+
+  // TODO: move WebUI server to core1
   webUI.setup(drumKit);
 
 #if ENABLE_MASS_STORAGE
@@ -56,6 +58,8 @@ void loop() {
 
   networkConnection.update();
   midiTransport.update();
+
+  UsbDevice::update();
 
   DrumIO::resetWatchdog();
 

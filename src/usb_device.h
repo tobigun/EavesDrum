@@ -6,4 +6,5 @@
 class UsbDevice {
 public:
   static void begin();
+  static void update();
 };

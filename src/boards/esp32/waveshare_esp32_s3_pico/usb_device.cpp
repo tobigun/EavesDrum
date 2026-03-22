@@ -19,3 +19,6 @@ extern "C" uint16_t tusb_drum_midi_load_descriptor(uint8_t *dst, uint8_t *itf) {
 void UsbDevice::begin() {
   tinyusb_enable_interface(USB_INTERFACE_MIDI, TUD_MIDI_DESC_LEN, tusb_drum_midi_load_descriptor);
 }
+
+void UsbDevice::update() {
+}
