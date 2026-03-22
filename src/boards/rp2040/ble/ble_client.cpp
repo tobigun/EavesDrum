@@ -177,7 +177,7 @@ void MidiTransport_BleClient::begin() {
   startClient();
 }
 
-void MidiTransport_BleClient::shutdown() {
+void MidiTransport_BleClient::stop() {
   stopClient();
 }
 

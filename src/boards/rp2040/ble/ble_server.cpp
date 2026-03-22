@@ -56,7 +56,7 @@ void MidiTransport_BleServer::begin() {
   startServer();
 }
 
-void MidiTransport_BleServer::shutdown() {
+void MidiTransport_BleServer::stop() {
   stopServer();
 }
 

@@ -8,8 +8,9 @@ on:
 env:
   PICO1_ARTIFACT: pico-build
   PICO2_ARTIFACT: pico2-build
+  PICOW_ARTIFACT: picow-build
+  PICO2W_ARTIFACT: pico2w-build
   FS_ARTIFACT: webui-build
-  ERLANG_VERSION: 27
 
 jobs:
   build-firmware:
@@ -17,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        environment: ["pico", "pico2", "esp32"]
+        environment: ["pico", "pico2", "picow", "pico2w", "esp32"]
     runs-on: ubuntu-24.04     
     steps:
       - name: Checkout Code
@@ -50,7 +51,7 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: 'npm'
           cache-dependency-path: webui/package-lock.json
 
@@ -119,13 +120,15 @@ jobs:
         run: |
           PICO1_BUILD_DIR=${{ env.PICO1_ARTIFACT }} \
           PICO2_BUILD_DIR=${{ env.PICO2_ARTIFACT }} \
+          PICOW_BUILD_DIR=${{ env.PICOW_ARTIFACT }} \
+          PICO2W_BUILD_DIR=${{ env.PICO2W_ARTIFACT }} \
           FS_IMAGE_DIR=${{ env.FS_ARTIFACT }} \
           PICOTOOL_DIR=picotool \
           OUTPUT_DIR=output \
           ./combine-uf2.sh
 
       - name: Upload UF2 artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: eavesdrum-firmware
           path: output/*.uf2

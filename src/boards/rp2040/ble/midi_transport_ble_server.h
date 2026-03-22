@@ -9,7 +9,7 @@
 class MidiTransport_BleServer : public MidiTransport_ArduinoMidi {
 public:
   void begin() override;
-  void shutdown() override;
+  void stop() override;
   void update() override;
 
   size_t write(uint8_t b) override {
