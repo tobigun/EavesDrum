@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build ${{ matrix.environment }} firmware
         uses: ./.github/actions/platformio-build
@@ -31,7 +31,7 @@ jobs:
           save-cache: ${{ matrix.environment != 'esp32' }}
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: matrix.environment != 'esp32'
         with:
           name: ${{ matrix.environment }}-build
@@ -45,17 +45,17 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup NodeJS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: 'npm'
           cache-dependency-path: webui/package-lock.json
 
       - name: Cache node_modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: webui/node_modules
           key: ${{ runner.os }}-node_modules-${{ hashFiles('webui/package-lock.json') }}
@@ -74,7 +74,7 @@ jobs:
           save-cache: false
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.FS_ARTIFACT }}
           path: .pio/build/pico/littlefs.bin
@@ -85,7 +85,7 @@ jobs:
     runs-on: ubuntu-24.04     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run tests
         uses: ./.github/actions/platformio-build
@@ -102,10 +102,10 @@ jobs:
       - build-filesystem
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Retrieve all build Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
 
       - name: Retrieve Picotool
         uses: robinraju/release-downloader@v1
