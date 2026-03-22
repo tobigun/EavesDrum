@@ -8,6 +8,9 @@
 #include "midi_transport_guitar_hero.h"
 #include <SPISlave.h> // required for MidiTransport_GuitarHero
 
+#define PIN_MIDI_TX 20
+#define PIN_MIDI_RX 21
+
 MidiTransport_UsbDevice midiTransportUsbDevice;
 MidiTransport_TinyUsbHost midiTransportTinyUsbHost;
   
@@ -16,7 +19,7 @@ MidiTransport_BleClient midiTransportBleClient;
 MidiTransport_BleServer midiTransportBleServer;
 #endif
 
-MidiTransport_Serial midiTransportDin(Serial1);
+MidiTransport_Serial midiTransportDin(Serial2, PIN_MIDI_TX, PIN_MIDI_RX);
 MidiTransport_GuitarHero midiTransportGuitarHero;
 
 MidiTransportInstances midiTransportInstances = {

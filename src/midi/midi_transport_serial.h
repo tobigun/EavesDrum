@@ -9,9 +9,11 @@
 
 class MidiTransport_Serial : public MidiTransport_ArduinoMidi {
 public:
-  MidiTransport_Serial(SerialUART& serial)
+  MidiTransport_Serial(SerialUART& serial, pin_size_t txPin, pin_size_t rxPin)
     : MidiTransport_ArduinoMidi(),
-      serial(serial) {}
+      serial(serial),
+      txPin(txPin),
+      rxPin(rxPin) {}
 
   void begin() override {
     DrumIO::led(LedId::MidiConnected, true);
@@ -21,8 +23,12 @@ public:
       logInfo("Serial Port used by MIDI transport. Logging disabled\n");
       serial.flush();
       setLogLevel(Level::None);
+      serial.end();
     }
 #endif
+
+    serial.setTX(txPin);
+    serial.setRX(rxPin);
 
     serial.begin(settings.BaudRate);
   }
@@ -52,5 +58,7 @@ public:
 
 private:
   SerialUART& serial;
+  pin_size_t txPin;
+  pin_size_t rxPin;
   MIDI_NAMESPACE::DefaultSerialSettings settings;
 };
