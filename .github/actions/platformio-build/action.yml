@@ -13,6 +13,9 @@ inputs:
   save-cache:
     description: Whether the PlatformIO cache should be saved (or used restored)
     default: "true"
+  cache:
+    description: Whether the PlatformIO cache should be saved (or used restored)
+    default: "default"
 runs:
   using: "composite"
   steps:
@@ -36,7 +39,7 @@ runs:
           ~/.platformio/.cache
           ~/.platformio/packages
           ~/.platformio/platforms
-        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
+        key: ${{ runner.os }}-platformio-${{ inputs.cache }}-${{ hashFiles('**/platformio.ini') }}
         restore-keys: ${{ runner.os }}-platformio-
 
     - name: Install PlatformIO Core (newest version)

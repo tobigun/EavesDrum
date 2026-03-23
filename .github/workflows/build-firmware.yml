@@ -28,7 +28,7 @@ jobs:
         with:
           command: run
           environment: ${{ matrix.environment }}
-          save-cache: ${{ matrix.environment != 'esp32' }}
+          cache: ${{ matrix.environment != 'esp32' && 'pico' || 'esp32' }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
