@@ -6,6 +6,7 @@ set -e
 
 PICO1_BUILD_DIR=${PICO1_BUILD_DIR:-".pio/build/pico"}
 PICO2_BUILD_DIR=${PICO2_BUILD_DIR:-".pio/build/pico2"}
+PICO2W_BUILD_DIR=${PICO2W_BUILD_DIR:-".pio/build/pico2w"}
 FS_IMAGE_DIR=${FS_IMAGE_DIR:-"$PICO1_BUILD_DIR"}
 OUTPUT_DIR=${OUTPUT_DIR:-.uf2-out}
 
@@ -20,10 +21,14 @@ python merge-uf2.py --build $PICO1_BUILD_DIR --fsbin $FS_IMAGE_DIR/littlefs.bin 
 PICO2_COMBINED_UF2=$OUTPUT_DIR/eavesdrum-pico2.uf2
 python merge-uf2.py --build $PICO2_BUILD_DIR --fsbin $FS_IMAGE_DIR/littlefs.bin --target $PICO2_COMBINED_UF2
 
+PICO2W_COMBINED_UF2=$OUTPUT_DIR/eavesdrum-pico2w.uf2
+python merge-uf2.py --build $PICO2W_BUILD_DIR --fsbin $FS_IMAGE_DIR/littlefs.bin --target $PICO2W_COMBINED_UF2
+
 # copy filesystem for articat upload
 cp $FS_IMAGE_DIR/littlefs.uf2 $OUTPUT_DIR/eavesdrum-fs.uf2
 cp $PICO1_BUILD_DIR/firmware.uf2 $OUTPUT_DIR/eavesdrum-pico1_no_fs.uf2
 cp $PICO2_BUILD_DIR/firmware.uf2 $OUTPUT_DIR/eavesdrum-pico2_no_fs.uf2
+cp $PICO2W_BUILD_DIR/firmware.uf2 $OUTPUT_DIR/eavesdrum-pico2w_no_fs.uf2
 
 # Make universal (Pico 1 + 2) UF2
 # Note: deactivated as the Windows Explorer will show an error message that copying the UF2 file failed as the
