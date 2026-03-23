@@ -71,6 +71,7 @@ jobs:
           command: run
           target: buildfs
           environment: pico
+          cache: 'pico'
           save-cache: false
 
       - name: Upload Artifact
@@ -92,6 +93,7 @@ jobs:
         with:
           command: test
           environment: native-linux
+          cache: 'pico'
           save-cache: false
 
   combine-images:

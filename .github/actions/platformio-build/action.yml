@@ -15,7 +15,7 @@ inputs:
     default: "true"
   cache:
     description: Whether the PlatformIO cache should be saved (or used restored)
-    default: "default"
+    required: true
 runs:
   using: "composite"
   steps:
