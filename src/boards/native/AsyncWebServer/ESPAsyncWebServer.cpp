@@ -59,7 +59,7 @@ static void handleEvent(struct mg_connection* connection, int ev, void* ev_data)
       if (access(filePath.c_str(), F_OK) == 0 || access(filePathGz.c_str(), F_OK) == 0) {
         mg_http_serve_dir(connection, hm, &serveOpts);
       } else {
-        AsyncWebServer* server = (AsyncWebServer*) connection->fn_data;
+        AsyncWebServer* server = (AsyncWebServer*)connection->fn_data;
         Serial.printf("Web: 404 Not Found: %s\n", filePath.c_str());
         mg_http_reply(connection, 404, "Content-Type: text/plain\r\n", "%s", server->_notFoundContent.c_str());
       }
@@ -73,17 +73,34 @@ static void handleEvent(struct mg_connection* connection, int ev, void* ev_data)
     AsyncWebSocketClient* client = socket->client(connection->id);
 
     struct mg_ws_message* wm = (struct mg_ws_message*)ev_data;
-    socket->_handler(socket, client,
+
+    AwsFrameInfo frameInfo = {
+      .final = (wm->flags & 0x80) != 0,
+      .message_opcode = (uint8_t)(wm->flags & 0x0f),
+      .len = wm->data.len,
+      .index = 0,
+      .num = 0
+    };
+
+    socket->_handler(
+        socket, client,
         ev == MG_EV_WS_MSG ? WS_EVT_DATA : WS_EVT_CONNECT,
-        NULL,
-        (uint8_t*)wm->data.buf, wm->data.len);
+        &frameInfo,
+        (uint8_t*)wm->data.buf,
+        wm->data.len);
   } else if (ev == MG_EV_CLOSE) {
     Serial.printf("Web: Connection %lu closed\n", connection->id);
     AsyncWebSocket* socket = getWebSocket(connection);
     if (socket->hasClient(connection->id)) {
       Serial.printf("Web: Websocket on connection %lu closed\n", connection->id);
       AsyncWebSocketClient* client = socket->client(connection->id);
-      socket->_handler(socket, client, WS_EVT_DISCONNECT, NULL, NULL, 0);
+      socket->_handler(
+        socket,
+        client,
+        WS_EVT_DISCONNECT,
+        NULL,
+        NULL,
+        0);
       socket->removeClient(connection->id);
       delete client;
     }

@@ -7,8 +7,8 @@
 #include "drum_kit.h"
 #include "event_log.h"
 #include "log.h"
-#include "midi_transport.h"
 #include "midi/midi_transport_tiny_usb_host.h"
+#include "midi_transport.h"
 #include "monitor.h"
 #include "version.h"
 #if HAS_BLUETOOTH
@@ -53,7 +53,7 @@ void WebUI::sendConfig(AsyncWebSocketClient* client) {
   if (isConfigDirty) {
     infoNode["isDirty"] = isConfigDirty;
   }
-  
+
   JsonDocument doc;
   doc["config"] = configNode;
   sendJsonToWebSocket(doc, client);
@@ -147,7 +147,7 @@ void WebUI::handleSetPadConfig(JsonObjectConst configNode, AsyncWebSocketClient*
       isConfigDirty = true;
       sendConfigRequired = true;
     }
-    
+
     if (nodeValue[CONFIG_NAME_PROP].is<String>()) {
       String name = nodeValue[CONFIG_NAME_PROP];
       pad.setName(name);
@@ -213,11 +213,11 @@ void WebUI::handleSetConfigRequest(AsyncWebSocketClient* client, JsonObjectConst
   }
 
   sendJsonToWebSocket(resultDoc, client);
-  
+
   logInfo("Config applied. Reset required ...\n");
   if (!DrumIO::requestReset(1000)) { // wait a bit until the result was sent
-     // only send new config if reset was not successful (e.g. on PC), as otherwise the client will request the config again after reconnecting
-     sendConfig(client);
+    // only send new config if reset was not successful (e.g. on PC), as otherwise the client will request the config again after reconnecting
+    sendConfig(client);
   }
 }
 
@@ -355,14 +355,22 @@ void WebUI::sendBleStatus(BleClientStatus status, bool isScanning, AsyncWebSocke
   JsonObject devicesNode = doc["bleStatus"].to<JsonObject>();
 
   switch (status) {
-  case BleClientStatus::Disconnected: devicesNode["status"] = "disconnected"; break;
-  case BleClientStatus::Connecting: devicesNode["status"] = "connecting"; break;
-  case BleClientStatus::Connected: devicesNode["status"] = "connected"; break;
-  default: devicesNode["status"] = "unknown"; break;
+  case BleClientStatus::Disconnected:
+    devicesNode["status"] = "disconnected";
+    break;
+  case BleClientStatus::Connecting:
+    devicesNode["status"] = "connecting";
+    break;
+  case BleClientStatus::Connected:
+    devicesNode["status"] = "connected";
+    break;
+  default:
+    devicesNode["status"] = "unknown";
+    break;
   }
-  
+
   devicesNode["scanning"] = isScanning;
-  
+
   sendJsonToWebSocket(doc, client);
 }
 
@@ -422,67 +430,98 @@ void WebUI::handleCommand(String cmd, JsonObject& argsNode, AsyncWebSocketClient
   } else if (cmd == "getUsbHostStatus") {
     handleGetUsbHostStatusRequest(client);
   } else {
-    logInfo("Cmd: %s\n", cmd.c_str());
+    logInfo("Cmd: %s", cmd.c_str());
   }
 }
 
 void WebUI::onWsEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len) {
   switch (type) {
-  case WS_EVT_PONG: {
-    break;
-  }
-  case WS_EVT_ERROR: {
-    break;
-  }
   case WS_EVT_CONNECT: {
-    connections[client->id()] = client;
+    logInfo("WebSocket client connected: %d", client->id());
+    client->setCloseClientOnQueueFull(false);
+    client->ping();
     break;
   }
+
   case WS_EVT_DISCONNECT: {
-    connections.erase(client->id());
     pendingWsTextByClient.erase(client->id());
+    logInfo("WebSocket client disconnected: %d", client->id());
     break;
   }
+
   case WS_EVT_DATA: {
-    if (data == nullptr || len == 0) {
+    AwsFrameInfo* frameInfo = (AwsFrameInfo*)arg;
+    if (!frameInfo) {
+      logError("Received WebSocket message without frame info");
       return;
     }
 
-    AwsFrameInfo* frameInfo = reinterpret_cast<AwsFrameInfo*>(arg);
-    if (!frameInfo || frameInfo->opcode != WS_TEXT) {
+    logDebug("index: %" PRIu64 ", len: %" PRIu64 ", final: %" PRIu8 ", opcode: %" PRIu8 ", framelen: %d\n",
+      frameInfo->index, frameInfo->len, frameInfo->final, frameInfo->message_opcode, len);
+
+    if (frameInfo->message_opcode != WS_TEXT) {
+      logWarn("WebSocket binary message received -> ignore");
       return;
     }
 
-    String& message = pendingWsTextByClient[client->id()];
-    if (frameInfo->index == 0) {
-      message = "";
-    }
-    message.concat(reinterpret_cast<const char*>(data), len);
+    String frame = String((const char *)data, len);
 
-    // Parse only after the full text message has been assembled.
-    if (!frameInfo->final || (frameInfo->index + len) < frameInfo->len) {
+    bool isCompleteFrame = frameInfo->final && frameInfo->index == 0 && frameInfo->len == len;
+    if (isCompleteFrame) { // data contains complete frame
+      client->ping();
+      handleTextMessage(client, frame);
+      pendingWsTextByClient.erase(client->id());
       return;
-    }
+    } else { // data contains fragment of message
+      bool hasPreviousFragments = pendingWsTextByClient.contains(client->id());
 
-    JsonDocument doc;
-    DeserializationError error = deserializeJson(doc, message);
-    pendingWsTextByClient.erase(client->id());
-    if (error) {
-      eventLog.log(Level::Error, String("Deserialization failed: ") + error.c_str());
-      return;
-    }
+      bool isMessageStart = frameInfo->index == 0 && frameInfo->num == 0;
+      if (isMessageStart) {
+        if (hasPreviousFragments) {
+          logError("Received fragment with index=0 but previous fragments exist -> reset buffer");
+        }
+        pendingWsTextByClient[client->id()] = frame;
+      } else {
+        if (!hasPreviousFragments) {
+          logError("Received WebSocket message fragment but no previous fragments exist -> ignore");
+          return;
+        }
+        pendingWsTextByClient[client->id()] += frame;
+      }
 
-    for (auto cmdNode : doc.as<JsonObject>()) {
-      const String cmd = cmdNode.key().c_str();
-      JsonObject cmdArgsNode = cmdNode.value();
-      handleCommand(cmd, cmdArgsNode, client);
+      // check for message end
+      bool isMessageEnd = (frameInfo->index + len) == frameInfo->len && frameInfo->final;
+      if (isMessageEnd) {
+        String& message = pendingWsTextByClient[client->id()];
+        handleTextMessage(client, message);
+        pendingWsTextByClient.erase(client->id());
+      }
     }
-
     break;
   }
-  default: {
+
+  case WS_EVT_ERROR:
+    logError("WebSocket error");
+    break;
+
+  case WS_EVT_PONG:
+  default:
     break;
   }
+}
+
+void WebUI::handleTextMessage(AsyncWebSocketClient* client, const String& message) {
+  JsonDocument doc;
+  DeserializationError error = deserializeJson(doc, message);
+  if (error) {
+    eventLog.log(Level::Error, String("Deserialization failed: ") + error.c_str());
+    return;
+  }
+
+  for (auto cmdNode : doc.as<JsonObject>()) {
+    const String cmd = cmdNode.key().c_str();
+    JsonObject cmdArgsNode = cmdNode.value();
+    handleCommand(cmd, cmdArgsNode, client);
   }
 }
 
@@ -511,7 +550,7 @@ void WebUI::initHttpServer() {
 
   server->begin();
 
-  logInfo("UI Initialized\n");
+  logInfo("UI Initialized");
 }
 
 void WebUI::setup(DrumKit& drumKit) {
@@ -531,19 +570,9 @@ void WebUI::sendJsonToWebSocket(JsonDocument json, AsyncWebSocketClient* client)
 }
 
 void WebUI::sendTextToWebSocket(const String& text) {
-  for (auto connection : connections) {
-    AsyncWebSocketClient* client = connection.second;
-    if (client->canSend()) {
-      client->text(text);
-    }  
-  }
+  ws->textAll(text);
 }
 
 void WebUI::sendBinaryToWebSocket(uint8_t* messageBuffer, size_t size) {
-  for (auto connection : connections) {
-    AsyncWebSocketClient* client = connection.second;
-    if (client->canSend()) {
-      client->binary(messageBuffer, size);
-    }
-  }
+  ws->binaryAll(messageBuffer, size);
 }

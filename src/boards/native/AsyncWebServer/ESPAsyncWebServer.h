@@ -99,11 +99,31 @@ public:
   uint32_t id() const;
   void text(const String& t);
   bool canSend() { return true; }
+  void setCloseClientOnQueueFull(bool close) {}
+  void ping() {}
 
   void binary(uint8_t* message, size_t len);
 
 private:
   void* _connection;
+};
+
+typedef enum
+{
+  WS_CONTINUATION,
+  WS_TEXT,
+  WS_BINARY,
+  WS_DISCONNECT = 0x08,
+  WS_PING,
+  WS_PONG
+} AwsFrameType;
+
+struct AwsFrameInfo {
+  bool final;
+  uint8_t message_opcode;
+  size_t len;
+  size_t index;
+  uint8_t num;
 };
 
 class AsyncWebSocket {
@@ -134,7 +154,19 @@ public:
   void removeClient(int id) {
     _connections.erase(id);
   }
+
+  void textAll(const String& message) {
+    for (auto& [id, client] : _connections) {
+      client->text(message);
+    }
+  }
   
+  void binaryAll(uint8_t* message, size_t len) {
+    for (auto& [id, client] : _connections) {
+      client->binary(message, len);
+    }
+  }
+
 private:
   const char* _root;
   std::map<int, AsyncWebSocketClient*> _connections;

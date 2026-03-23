@@ -9,11 +9,7 @@
 
 #include <Arduino.h>
 
-#if defined(ARDUINO_ARCH_RP2040)
-#include <AsyncWebServer_RP2040W.h>
-#else
 #include <ESPAsyncWebServer.h>
-#endif
 
 struct BleDeviceInfo {
   String name;
@@ -36,7 +32,8 @@ private:
   void onWsEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len);
 
   void handleCommand(String cmd, JsonObject& argsNode, AsyncWebSocketClient* client);
-  
+  void handleTextMessage(AsyncWebSocketClient* client, const String& message);
+
   void handleSetConfigRequest(AsyncWebSocketClient* client, JsonObjectConst configNode);
   void handleSetSettingsRequest(AsyncWebSocketClient* client, JsonObjectConst configNode);
   void handleSetMappingsRequest(JsonObject mappingsNode);
@@ -69,7 +66,6 @@ private:
 
   bool isConfigDirty = false;
 
-  std::map<int, AsyncWebSocketClient*> connections;
   std::map<int, String> pendingWsTextByClient;
 };
 

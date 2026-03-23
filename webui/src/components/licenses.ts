@@ -28,11 +28,11 @@ export const licenses = {
       name: "littlefs-project / LittleFS",
       license: "BSD-3-Clause license (Copyright: The littlefs authors / Arm Limited. All rights reserved)",
     }, {
-      name: "khoih-prog / AsyncWebServer_RP2040W",
-      license: "LGPL-3.0 license (Copyright: Khoi Hoang)",
+      name: "ESP32Async / ESPAsyncWebServer",
+      license: "LGPL-3.0 license (Copyright: ESP32Async)",
     }, {
-      name: "khoih-prog / AsyncTCP_RP2040W",
-      license: "LGPL-3.0 license (Copyright: Khoi Hoang)",
+      name: "ayushsharma82 / RPAsyncTCP",
+      license: "LGPL-3.0 license (Copyright: Ayush Sharma, Khoi Hoang, Hristo Gochkov)",
     }, {
       name: "sekigon-gonnoc / Pico-PIO-USB",
       license: "MIT License (Copyright: sekigon-gonnoc)",  
