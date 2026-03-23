@@ -1,6 +1,8 @@
 #ifndef DEBUG_H_
 #define DEBUG_H_
 
-void panic();
+#include <Arduino.h>
+
+#define panic() panic("AsyncTCP panic at %s:%d\n", __FILE__, __LINE__)
 
 #endif
