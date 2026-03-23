@@ -55,7 +55,7 @@ void loop() {
 
   UsbDevice::update();
 
-  DrumIO::resetWatchdog();
+  DrumIO::update();
 
   // touchSense();
 }

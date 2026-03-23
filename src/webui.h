@@ -70,6 +70,7 @@ private:
   bool isConfigDirty = false;
 
   std::map<int, AsyncWebSocketClient*> connections;
+  std::map<int, String> pendingWsTextByClient;
 };
 
 extern WebUI webUI;

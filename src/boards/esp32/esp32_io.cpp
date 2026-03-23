@@ -11,6 +11,8 @@
 
 #define PIN_WIFI_BUTTON 0
 
+static uint32_t resetScheduledAtMs = 0;
+
 static bool ledEnabled[] = {false, false, false};
 
 static void ledUpdateColor();
@@ -78,10 +80,23 @@ bool DrumIO::isButtonPressed(ButtonId id) {
   return false;
 }
 
-void DrumIO::resetWatchdog() {
-}
-
-void DrumIO::reset() {
+void reset() {
   logInfo("Reset\n");
   esp_restart();
+}
+
+void DrumIO::update() {
+  if (resetScheduledAtMs != 0 && millis() >= resetScheduledAtMs) {
+    reset();
+  }
+}
+
+bool DrumIO::requestReset(uint32_t delayMs) {
+  if (delayMs == 0) {
+    reset();
+  } else {
+    logInfo("Reset initiated in %u ms\n", delayMs);
+    resetScheduledAtMs = millis() + delayMs;
+  }
+  return true;
 }

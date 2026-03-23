@@ -27,6 +27,8 @@ public:
   DrumIO() = delete;
 
 public:
+  static void update();
+
   static void setup(bool usePwmPowerSupply);
 
   static bool initAnalogInPin(pin_size_t pin);
@@ -42,7 +44,9 @@ public:
 
   static bool isButtonPressed(ButtonId id);
 
-  static void resetWatchdog();
-
-  static void reset();
+  /**
+   * Request a hardware reset after the given delay.
+   * This only returns if delayMs > 0 or if only a soft reset was performed instead (e.g. on PC).
+   */
+  static bool requestReset(uint32_t delayMs = 0);
 };

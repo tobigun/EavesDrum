@@ -68,7 +68,7 @@ private:
 
   // Low level
 public:
-  static void writeDrumKitConfig(JsonDocument doc);
+  static bool writeDrumKitConfig(JsonDocument doc);
 private:
   static JsonDocument loadDrumKitConfig();
 };

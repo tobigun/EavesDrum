@@ -30,16 +30,18 @@
 
 #define WATCHDOG_TIMEOUT_MS 10000
 
-static dma_channel_config cfg;
-static uint dma_chan;
-
+static dma_channel_config adcDmaCfg;
+static uint adcDmaChannel;
+static uint32_t resetScheduledAtMs = 0;
 
 static void ledInit();
 static void buttonInit();
 static void adcInit();
 
 void DrumIO::setup(bool usePwmPowerSupply) {
+#ifdef WATCHDOG_TIMEOUT_MS
   watchdog_enable(WATCHDOG_TIMEOUT_MS, true);
+#endif
 
   ledInit();
   buttonInit();
@@ -72,16 +74,16 @@ static void adcInit() {
       true // Shift each sample to 8 bits when pushing to FIFO
   );
 
-  dma_chan = dma_claim_unused_channel(true);
-  cfg = dma_channel_get_default_config(dma_chan);
+  adcDmaChannel = dma_claim_unused_channel(true);
+  adcDmaCfg = dma_channel_get_default_config(adcDmaChannel);
 
   // Reading from constant address, writing to incrementing byte addresses
-  channel_config_set_transfer_data_size(&cfg, DMA_SIZE_8);
-  channel_config_set_read_increment(&cfg, false);
-  channel_config_set_write_increment(&cfg, true);
+  channel_config_set_transfer_data_size(&adcDmaCfg, DMA_SIZE_8);
+  channel_config_set_read_increment(&adcDmaCfg, false);
+  channel_config_set_write_increment(&adcDmaCfg, true);
 
   // Pace transfers based on availability of ADC samples
-  channel_config_set_dreq(&cfg, DREQ_ADC);
+  channel_config_set_dreq(&adcDmaCfg, DREQ_ADC);
 }
 
 bool DrumIO::initAnalogInPin(pin_size_t analogInPin) {
@@ -97,7 +99,7 @@ static void readAdcPinInternal(pin_size_t pin, uint8_t* captureBuffer, uint8_t n
   adc_select_input(pin - __FIRSTANALOGGPIO);
   adc_fifo_drain();
 
-  dma_channel_configure(dma_chan, &cfg,
+  dma_channel_configure(adcDmaChannel, &adcDmaCfg,
       captureBuffer, // dst
       &adc_hw->fifo, // src
       numSamples, // transfer count
@@ -105,7 +107,7 @@ static void readAdcPinInternal(pin_size_t pin, uint8_t* captureBuffer, uint8_t n
   );
 
   adc_run(true);
-  dma_channel_wait_for_finish_blocking(dma_chan);
+  dma_channel_wait_for_finish_blocking(adcDmaChannel);
   adc_run(false);
 }
 
@@ -208,12 +210,28 @@ static void blinkLed() {
   }
 }
 
-void DrumIO::resetWatchdog() {
-  blinkLed();
-  watchdog_update();
-}
-
-void DrumIO::reset() {
+void reset() {
   logInfo("Reset\n");
   AIRCR_Register = 0x5FA0004;
+}
+
+void DrumIO::update() {
+  blinkLed();
+#ifdef WATCHDOG_TIMEOUT_MS
+  watchdog_update();
+#endif
+
+  if (resetScheduledAtMs != 0 && millis() >= resetScheduledAtMs) {
+    reset();
+  }
+}
+
+bool DrumIO::requestReset(uint32_t delayMs) {
+  if (delayMs == 0) {
+    reset();
+  } else {
+    logInfo("Reset initiated in %u ms\n", delayMs);
+    resetScheduledAtMs = millis() + delayMs;
+  }
+  return true;
 }

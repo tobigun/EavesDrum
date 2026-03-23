@@ -36,7 +36,10 @@ async function applyConfig(configNode: any, dropProps: ConfigDropProps) : Promis
   if (filter === undefined && containsNonMappingSection(configNode)) {
     await validateConfig(configNode);
     // config with at least one non-mapping section was dropped on overall config upload area -> replace sections
-    connection.sendSetConfigCommand(configNode);
+    const setConfigResult = await connection.sendSetConfigCommand(configNode);
+    if (!setConfigResult.success) {
+      throw setConfigResult.message || "Applying config failed";
+    }
     return true;
   }
   

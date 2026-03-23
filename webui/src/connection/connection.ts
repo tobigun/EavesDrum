@@ -35,6 +35,11 @@ interface EventListenerHandle {
     listener: EventListener;
 }
 
+export interface SetConfigResult {
+  success: boolean;
+  message?: string;
+}
+
 export class Connection {
   websock?: WebSocket;
   timeoutID?: number;
@@ -124,8 +129,27 @@ export class Connection {
     this.sendCommandWithDirtyFlag(DrumCommand.setGeneral, { ...values }, true);
   }
 
-  sendSetConfigCommand(values: Partial<DrumPadConfig>) {
-    this.sendCommandWithDirtyFlag(DrumCommand.setConfig, { ...values }, true);
+  sendSetConfigCommand(values: Partial<DrumPadConfig>, timeoutMs = 10_000): Promise<SetConfigResult> {
+    return new Promise((resolve, reject) => {
+      let timeoutHandle = 0;
+
+      const onResultHandle = this.registerOnJsonDataListener('setConfigResult', (result: SetConfigResult) => {
+        cleanup();
+        resolve(result);
+      });
+
+      const cleanup = () => {
+        clearTimeout(timeoutHandle);
+        this.unregisterListener(onResultHandle);
+      };
+
+      timeoutHandle = window.setTimeout(() => {
+        cleanup();
+        reject(new Error('No response for config change from backend'));
+      }, timeoutMs);
+
+      this.sendCommandWithDirtyFlag(DrumCommand.setConfig, { ...values }, true);
+    });
   }
 
   sendSetPadConfigCommand(padIndex: number, values: Partial<DrumPadConfig>) {

@@ -199,12 +199,26 @@ void WebUI::handleSetConfigRequest(AsyncWebSocketClient* client, JsonObjectConst
   for (JsonPairConst keyValuePair : configNode) {
     configDoc[keyValuePair.key()] = keyValuePair.value();
   }
-  DrumConfigMapper::writeDrumKitConfig(configDoc);
-  DrumIO::reset();
 
-  // we reach this only if we performed a soft reset (e.g. on PC)
+  const bool writeSuccess = DrumConfigMapper::writeDrumKitConfig(configDoc);
   isConfigDirty = false;
-  sendConfig(client);
+
+  JsonDocument resultDoc;
+  JsonObject resultNode = resultDoc["setConfigResult"].to<JsonObject>();
+  resultNode["success"] = writeSuccess;
+  if (!writeSuccess) {
+    resultNode["message"] = "Could not write config file";
+    sendJsonToWebSocket(resultDoc, client);
+    return;
+  }
+
+  sendJsonToWebSocket(resultDoc, client);
+  
+  logInfo("Config applied. Reset required ...\n");
+  if (!DrumIO::requestReset(1000)) { // wait a bit until the result was sent
+     // only send new config if reset was not successful (e.g. on PC), as otherwise the client will request the config again after reconnecting
+     sendConfig(client);
+  }
 }
 
 void WebUI::handleSetMappingsRequest(JsonObject mappingsNode) {
@@ -275,11 +289,10 @@ void WebUI::handleSaveConfigRequest(AsyncWebSocketClient* client) {
 }
 
 void WebUI::handleRestoreConfigRequest(AsyncWebSocketClient* client) {
-  DrumIO::reset();
-
-  // we reach this only if we performed a soft reset (e.g. on PC)
-  isConfigDirty = false;
-  sendConfig(client);
+  if (!DrumIO::requestReset()) {
+    isConfigDirty = false;
+    sendConfig(client);
+  }
 }
 
 void WebUI::handleLatencyTestRequest(JsonObjectConst argsNode, AsyncWebSocketClient* client) {
@@ -427,14 +440,33 @@ void WebUI::onWsEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsE
   }
   case WS_EVT_DISCONNECT: {
     connections.erase(client->id());
+    pendingWsTextByClient.erase(client->id());
+    break;
   }
   case WS_EVT_DATA: {
     if (data == nullptr || len == 0) {
       return;
     }
 
+    AwsFrameInfo* frameInfo = reinterpret_cast<AwsFrameInfo*>(arg);
+    if (!frameInfo || frameInfo->opcode != WS_TEXT) {
+      return;
+    }
+
+    String& message = pendingWsTextByClient[client->id()];
+    if (frameInfo->index == 0) {
+      message = "";
+    }
+    message.concat(reinterpret_cast<const char*>(data), len);
+
+    // Parse only after the full text message has been assembled.
+    if (!frameInfo->final || (frameInfo->index + len) < frameInfo->len) {
+      return;
+    }
+
     JsonDocument doc;
-    DeserializationError error = deserializeJson(doc, data, len);
+    DeserializationError error = deserializeJson(doc, message);
+    pendingWsTextByClient.erase(client->id());
     if (error) {
       eventLog.log(Level::Error, String("Deserialization failed: ") + error.c_str());
       return;

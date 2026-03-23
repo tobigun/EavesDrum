@@ -64,11 +64,12 @@ void DrumIO::writeDigitalOutPin(pin_size_t pinNumber, pin_status_t status) {
 void DrumIO::led(LedId id, bool enable) {
 }
 
-void DrumIO::resetWatchdog() {
+void DrumIO::update() {
 }
 
-void DrumIO::reset() {
-  logInfo("Reset\n");
+bool DrumIO::requestReset(uint32_t delayMs) {
   drumKit = DrumKit();
   DrumConfigMapper::loadAndApplyDrumKitConfig(drumKit);
+  logInfo("Soft reset performed\n");
+  return false;
 }

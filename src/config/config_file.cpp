@@ -48,7 +48,8 @@ JsonDocument DrumConfigMapper::loadDrumKitConfig() {
   return loadConfigFile(configFile);
 }
 
-void DrumConfigMapper::writeDrumKitConfig(JsonDocument doc) {
+bool DrumConfigMapper::writeDrumKitConfig(JsonDocument doc) {
+  bool writeSuccess = false;
   noInterrupts();
 
   fs::File configFile = ConfigFS.open(CONFIG_FILE_PATH, "w");
@@ -58,7 +59,9 @@ void DrumConfigMapper::writeDrumKitConfig(JsonDocument doc) {
     configFile.print("# yaml-language-server: $schema=" CONFIG_SCHEMA_URL); // Note: no newline, as YAMLduino already adds one
     serializeYml(doc, configFile);
     configFile.close();
+    writeSuccess = true;
   }
 
   interrupts();
+  return writeSuccess;
 }
