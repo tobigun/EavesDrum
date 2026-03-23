@@ -39,6 +39,7 @@ extern "C"
 
 #include "lwip/ethip6.h"
 #include "lwip/init.h"
+#include "lwip/netif.h"
 #include "lwip/timeouts.h"
 
 #define INIT_IP4(a, b, c, d) {PP_HTONL(LWIP_MAKEU32(a, b, c, d))}
@@ -51,6 +52,20 @@ static struct netif netif_data;
 
 // shared between tud_network_recv_cb() and service_traffic()
 static struct pbuf* received_frame = 0;
+
+static bool usb_link_up = false;
+
+static void apply_link_state(bool is_up) {
+  usb_link_up = is_up;
+  if (is_up) {
+    netif_set_link_up(&netif_data);
+  } else {
+    netif_set_link_down(&netif_data);
+  }
+
+  // RP2040 device stack is always on rhport 0
+  tud_network_link_state(0, is_up);
+}
 
 /*
  * this is used by this code, ./class/net/net_driver.c, and usb_descriptors.c
@@ -140,6 +155,23 @@ static void init_lwip() {
   netif_create_ip6_linklocal_address(netif, 1);
 #endif
   netif_set_default(netif);
+  apply_link_state(false);
+}
+
+extern "C" void tud_mount_cb(void) {
+  apply_link_state(true);
+}
+
+extern "C" void tud_umount_cb(void) {
+  apply_link_state(false);
+}
+
+extern "C" void tud_suspend_cb(bool /*remote_wakeup_en*/) {
+  apply_link_state(false);
+}
+
+extern "C" void tud_resume_cb(void) {
+  apply_link_state(true);
 }
 
 /* handle any DNS requests from dns-server */
