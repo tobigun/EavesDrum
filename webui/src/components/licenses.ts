@@ -32,7 +32,10 @@ export const licenses = {
       license: "LGPL-3.0 license (Copyright: Khoi Hoang)",
     }, {
       name: "khoih-prog / AsyncTCP_RP2040W",
-      license: "LGPL-3.0 license (Copyright: Khoi Hoang)",  
+      license: "LGPL-3.0 license (Copyright: Khoi Hoang)",
+    }, {
+      name: "sekigon-gonnoc / Pico-PIO-USB",
+      license: "MIT License (Copyright: sekigon-gonnoc)",  
     }, {
       name: "rppicomidi / pico-w-ble-midi-lib",
       license: "MIT License (Copyright: rppicomidi)",  
