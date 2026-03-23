@@ -181,8 +181,8 @@ class SerialDummy {
 public:
   void begin(int baud) {}
 
-  void print(const char* str) { ::printf(str); }
-  void print(arduino::String str) { ::printf(str.c_str()); }
+  void print(const char* str) { ::printf("%s", str); }
+  void print(arduino::String str) { ::printf("%s", str.c_str()); }
   void printf(const char* format, ...) {
     va_list args;
     va_start(args, format);
