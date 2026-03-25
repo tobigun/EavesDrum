@@ -1,0 +1,280 @@
+(footprint "SW_Push_SMD_Thru"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "CK components KSC6 tactile switch https://www.ckswitches.com/media/1972/ksc6.pdf")
+	(tags "tactile switch ksc6")
+	(property "Reference" "SW3"
+		(at 1.5 -4.5 180)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "e4a689bd-76b2-472f-8889-636a9aabfb14")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SW_Push"
+		(at 0 -4.23 180)
+		(layer "F.Fab")
+		(uuid "c283bf73-992e-4ca0-bde6-8ab587a18de7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "~"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "a3a6ca78-4bca-4527-ab06-34413dbe9450")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "Push button switch, generic, two pins"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "912dce4e-9b74-42c3-999e-6034978a6ed4")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "LCSC" "C455095"
+		(at 0 0 90)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "dabf3244-c6b5-4028-91d1-04ab50809b27")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -3.21 -1)
+		(end -3.21 1)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e40a3b58-9381-4d43-839f-62f58c55efa2")
+	)
+	(fp_line
+		(start -2.5 3.21)
+		(end 2.5 3.21)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "b5120cd9-998c-492a-b86f-9615a172ac56")
+	)
+	(fp_line
+		(start 2.5 -3.21)
+		(end -2.5 -3.21)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "d7b6dcd5-e88a-4102-a793-c09befc81ba6")
+	)
+	(fp_line
+		(start 3.21 1)
+		(end 3.21 -1)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "be081685-757c-4dbb-9889-c390b86cb22d")
+	)
+	(fp_line
+		(start -4.55 -3.35)
+		(end 4.55 -3.35)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "1d26b81c-8de1-489c-9a29-474b58436a79")
+	)
+	(fp_line
+		(start -4.55 3.35)
+		(end -4.55 -3.35)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "33b402ee-a7ee-4076-89b4-94c5db647c92")
+	)
+	(fp_line
+		(start 4.55 -3.35)
+		(end 4.55 3.35)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "661271e4-9a19-4581-aec8-a4ad87127b51")
+	)
+	(fp_line
+		(start 4.55 3.35)
+		(end -4.55 3.35)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "eac1c449-89ca-4e7e-896f-4686469536d8")
+	)
+	(fp_line
+		(start -3.1 -3.1)
+		(end 3.1 -3.1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "e61eebdf-b5ae-4e5e-9090-d7cb2674ac7e")
+	)
+	(fp_line
+		(start -3.1 3.1)
+		(end -3.1 -3.1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "f1da74db-82da-44f3-ba26-d6e245b1973e")
+	)
+	(fp_line
+		(start 3.1 -3.1)
+		(end 3.1 3.1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "af865410-929a-4f20-9e15-95f7e47c1549")
+	)
+	(fp_line
+		(start 3.1 3.1)
+		(end -3.1 3.1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "849ab25c-88cd-4dcb-b592-c64bf028aa6c")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 1.45 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "e76786d6-44fc-4309-9dc8-f722d95b566e")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 180)
+		(layer "F.Fab")
+		(uuid "dd1f8bdf-3a17-48e7-8313-f372d07c5824")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at -3.25 -2.25 90)
+		(size 2 2)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "59cf8567-5cc3-4199-816d-382455acf101")
+	)
+	(pad "1" smd rect
+		(at -2.9 -2)
+		(size 2.8 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "f01ee04f-c22c-429d-9115-f9ebc401b959")
+	)
+	(pad "1" smd rect
+		(at 2.9 -2)
+		(size 2.8 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "32dfc3e4-b533-4297-9687-6f4490b7e39b")
+	)
+	(pad "1" thru_hole circle
+		(at 3.25 -2.25 90)
+		(size 2 2)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "0c05c1bc-965a-42a6-93b1-377ba6ca1aa8")
+	)
+	(pad "2" thru_hole circle
+		(at -3.25 2.25 90)
+		(size 2 2)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "39b31d55-7a68-4502-8d79-ffeaa2301d57")
+	)
+	(pad "2" smd rect
+		(at -2.9 2)
+		(size 2.8 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "9e26e8c7-32a9-495e-86c0-2e26ce3d9ae6")
+	)
+	(pad "2" smd rect
+		(at 2.9 2)
+		(size 2.8 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "7ddf9c0d-0ed1-4529-a550-7abe0d702e06")
+	)
+	(pad "2" thru_hole circle
+		(at 3.25 2.25 90)
+		(size 2 2)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "152ebbc7-800f-4a55-b289-b286d60368be")
+	)
+	(embedded_fonts no)
+	(model "${KICAD9_3DMODEL_DIR}/Button_Switch_SMD.3dshapes/SW_push_1P1T_NO_CK_KSC6xxJxxx.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

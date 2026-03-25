@@ -1,3 +1,4 @@
 (sym_lib_table
   (version 7)
+  (lib (name "Conn_01x44_Socket_3_rows_sym")(type "KiCad")(uri "${KIPRJMOD}/libraries/symbols/Conn_01x44_Socket_3_rows_sym.kicad_sym")(options "")(descr ""))
 )

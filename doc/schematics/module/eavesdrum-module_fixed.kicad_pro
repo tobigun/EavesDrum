@@ -60,7 +60,7 @@
       ],
       "drc_exclusions": [
         [
-          "text_thickness|68754123|87194156|14b89a15-2c80-4e34-bc32-6c5ace050dc0|00000000-0000-0000-0000-000000000000",
+          "text_thickness|68954123|85294156|14b89a15-2c80-4e34-bc32-6c5ace050dc0|00000000-0000-0000-0000-000000000000",
           ""
         ]
       ],
@@ -141,7 +141,7 @@
         "min_text_height": 0.5,
         "min_text_thickness": 0.08,
         "min_through_hole_diameter": 0.3,
-        "min_track_width": 0.25,
+        "min_track_width": 0.2,
         "min_via_annular_width": 0.1,
         "min_via_diameter": 0.5,
         "solder_mask_to_copper_clearance": 0.005,
@@ -192,7 +192,8 @@
         }
       ],
       "track_widths": [
-        0.0
+        0.0,
+        0.1
       ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
@@ -505,20 +506,6 @@
         "track_width": 0.5,
         "via_diameter": 0.6,
         "via_drill": 0.3
-      },
-      {
-        "clearance": 0.2,
-        "diff_pair_gap": 0.25,
-        "diff_pair_width": 0.2,
-        "microvia_diameter": 0.3,
-        "microvia_drill": 0.1,
-        "name": "Sub-D",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 1,
-        "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 0.28,
-        "via_diameter": 0.6,
-        "via_drill": 0.3
       }
     ],
     "meta": {
@@ -534,10 +521,6 @@
       {
         "netclass": "Power",
         "pattern": "GND"
-      },
-      {
-        "netclass": "Sub-D",
-        "pattern": "/in*"
       }
     ]
   },
