@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "SUB-D-44-HD-Pins")(type "KiCad")(uri "${KIPRJMOD}/libraries/SUB-D-44-HD-Pins.kicad_sym")(options "")(descr ""))
+  (lib (name "EavesDrum")(type "KiCad")(uri "${KIPRJMOD}/libraries/EavesDrum.kicad_sym")(options "")(descr ""))
+)
