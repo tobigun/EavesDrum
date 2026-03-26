@@ -56,6 +56,14 @@
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
+> [!IMPORTANT]
+> A new hardware revision (1.2) is on its way. It offers a MIDI USB-Host port and a MIDI 5-pin DIN connector.
+> Though the current hardware revision (1.1) is still supported and also supports the new output modes,
+> you will have to build and add your own USB-Host/DIN connectors via the 50-pin expansion port to use them.
+> 
+> It will take some time (two weeks or a month) until the first prototypes arrive and I will be able to test the new design.
+> So feel free to try revision 1.2 but keep in mind that it is highly experimental at the moment.
+
 ## Welcome to EavesDrum!
 
 EavesDrum is an open-source e-drum trigger module project designed for drummers and makers.
