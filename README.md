@@ -84,7 +84,7 @@ The trigger module acts as a USB MIDI device - simply connect it to your noteboo
 
 ### EavesDrum Trigger Module
 
-<img src="doc/images/module.jpg" height="400px"/>
+<img src="doc/images/1.2/module.png" height="400px"/>
 
 DIY ultra-low-volume metal mesh cymbal setup:
 
@@ -131,6 +131,25 @@ System overview:
        - See sections below for schematics and Gerber files.
      - DIY drums and cymbals
        - See sections below for schematics and Gerber files.
+- **MIDI Output:**
+  - USB Device (Default)
+    - Connect EavesDrum to a PC and use a Drum Software like EZdrummer or Superior Drummer to convert the trigger signals to high quality drum sounds. 
+  - USB Host
+    - Connect a USB device to EavesDrum, e.g. a Drum Module and trigger sounds on that device
+      - Tested with a Yamaha EAD-10
+      - Device must be compatible with USB Full-Speed device. This does not apply to EFNOTE's 3/5/7 devices as they require a USB High-Speed device.
+  - DIN 5-Pin
+    - Connect legacy drum modules or devices that still have a DIN 5-pin connector and trigger sounds on them.
+  - Bluetooth LE Client (Pico2W only)
+    - This can be used to connect to a device that can act as a Bluetooth LE MIDI Server, e.g. EFNOTE's 3/5/7 drum modules.
+  - Bluetooth LE Server (Pico2W only)
+    - Activate the BLE Server mode and connect a smartphone or tablet to EavesDrum and trigger sounds in an app. This can also be used to connect a computer wireless. 
+    - Tested with Android (smartphone) and Windows (PC).
+      -  On Android most MIDI apps will require the "MIDI+BTLE" app to use BLE as they do not support it directly.
+      - Windows does not support BLE MIDI out-of-the-box. You will need a BLE connector app like [BLE-MIDI Bridge](https://github.com/Maxime-J/BLE-MIDI-Bridge) or [MIDIberry](https://apps.microsoft.com/detail/9n39720h2m05) together with a virtual loopback MIDI cable software like [loopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html).
+      - macOS or iOS has not been tested yet but might work
+  - Guitar Hero Drum-Kit (SPI)
+    - If you have an old Guitar Hero Drum-Kit (e.g. for the Wii), attach EavesDrum to the controllers internal SPI connector and play Guitar Hero on your retro console with your modern drum kit.
 - **MIDI Mappings:** <a id="midi-mappings"></a>
   - Mappings are freely customizable via the UI.
   - It already contains Midi-Mappings for:
@@ -145,10 +164,10 @@ System overview:
 - **Affordable:** you might be able to make an assembled trigger module for approx. 20€.
   - See the section [Build your own EavesDrum trigger module](#use-the-reference-design).
 - **Supported Microcontrollers:**
-  - Raspberry Pi Pico 2 (recommended).
-  - Raspberry Pi Pico.
-  - A port for the Waveshare ESP32-S3 Pico with Wi-Fi UI and BLE MIDI was started but not finished.
-    - As the Pico (2)W also supports Wi-Fi and BLE (not implemented yet), the only relevant difference to the Pico is that the ESP32-S3 has two instead of one ADC. In turn, USB network is more difficult than with Pico due to the TinyUSB implementation.
+  - Raspberry Pi Pico2
+  - Raspberry Pi Pico2W (comes with a WIFI and Bluetooth module)
+    - Required for MIDI over Bluetooth LE.
+    - Also provides a WIFI Access Point to reach the EavesDrum WebUI wirelessly. 
 
 - **Open Source:** Source code and PCB Gerber files are available for customization and extension.
 - **WebUI Configuration:** Browser-based interface for setting up and tweaking trigger parameters such as sensitivity, threshold, retrigger prevention, and more. No app required as the UI runs directly on the trigger module.
@@ -186,9 +205,10 @@ System overview:
 All you need is:
     - A computer with a drum software (see [MIDI Mappings](#midi-mappings) to give you a short overview).
       - A PC or Mac is recommended.
-        - although there is no minimum requirement, a slow CPU might increase the [Latency](#latency).
-      - An Apple iPad with Garage Band might also work, but you need an Apple Camera Connection Kit if your iPad still has a lightning but no USB-C connector. BLE Midi is not yet supported.
-      - An Android smartphone / tablet is not recommended due to the lack of good drumming apps.
+        - Although there is no minimum requirement, a slow CPU might increase the [Latency](#latency).
+        - USB and Bluetooth LE is supported
+      - An Apple iPad with Garage Band might also work (although untested) with either USB-C (or an Apple Camera Connection Kit for Lightning connectors) or with Bluetooth LE.
+      -  Android smartphones / tablets also work (via USB or Bluetooth LE) but lack good drumming apps.
     - A decent audio interface with low latency, preferably one with dedicated ASIO drivers. See [the section about latency](#latency) for more information.
     - Something to drum on, i.e. drum pads, cymbals and a Hi-Hat pedal. Or just a cheap piezo if you want to DIY your own drum.
 
@@ -202,10 +222,14 @@ All you need is:
    - The board will now be detected as an USB flash drive.
    - Drag & Drop the firmware .uf2 file onto the drive.
 3. **Start the WebUI:**<br/>
-   - After flashing is done, the device should be detected as an USB network device.
+   - Connect EavesDrum to a computer, tablet or smartphone
+     - via USB: EavesDrum will be detected as a network device
+     - via WIFI AccessPoint (only with Pico2W)
+       - The AccessPoint (AP) can be activated by pressing and holding the WIFI button at power-up until the network LED lights up. For security and performance reasons, the AP is only active for one session until the module is powered down.
+       - Connect to the AP named "EavesDrum". No credentials are required.
    - Open your browser and navigate to the WebUI by entering either
-     - the static IP <a href="http://192.168.7.1">http://192.168.7.1</a> or
-     - the DNS name <a href="http://eaves.drum/">http://eaves.drum</a>.
+     - the static IP: http://192.168.7.1 (USB) or http://192.168.4.1 (WIFI AP)
+     - the DNS name http://eaves.drum</a>.
 4. **Calibrate:**<br/>
    - [Calibrate the voltage offset with the UI Wizard](#calibration)
 5. **Connect Drums:**<br/>
