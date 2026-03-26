@@ -1168,6 +1168,206 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Jumper:Jumper_3_Open"
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom no)
+			(on_board yes)
+			(property "Reference" "JP"
+				(at -2.54 -2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Jumper_3_Open"
+				(at 0 2.794 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Jumper, 3-pole, both open"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "Jumper SPDT"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Jumper* TestPoint*3Pads* TestPoint*Bridge*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Jumper_3_Open_0_0"
+				(circle
+					(center -3.302 0)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 0 0)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 3.302 0)
+					(radius 0.508)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Jumper_3_Open_0_1"
+				(arc
+					(start -3.048 1.016)
+					(mid -1.651 1.4992)
+					(end -0.254 1.016)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -0.508) (xy 0 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.254 1.016)
+					(mid 1.651 1.4992)
+					(end 3.048 1.016)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Jumper_3_Open_1_1"
+				(pin passive line
+					(at -6.35 0 0)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.54)
+					(name "C"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 6.35 0 180)
+					(length 2.54)
+					(name "B"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "SUB-D-44-HD-Pins:Conn_01x44_Pins_3_rows"
 			(pin_names
 				(offset 1.016)
@@ -3950,10 +4150,6 @@
 		(uuid "1d445ae7-d78d-47f1-b0b2-e7217c819046")
 	)
 	(no_connect
-		(at 140.97 124.46)
-		(uuid "1dc5117d-c167-48ad-aa36-3896cfe07438")
-	)
-	(no_connect
 		(at 41.91 66.04)
 		(uuid "1e4b697c-746b-40c7-adf8-3402ba81cbc7")
 	)
@@ -4144,10 +4340,6 @@
 	(no_connect
 		(at 41.91 177.8)
 		(uuid "ce7c3a9e-e905-4c5a-8892-afd3a4488b12")
-	)
-	(no_connect
-		(at 140.97 142.24)
-		(uuid "cfa25ab6-b986-4885-89d9-0ee3d88f5d4d")
 	)
 	(no_connect
 		(at 74.93 77.47)
@@ -4901,6 +5093,16 @@
 		)
 		(uuid "141e9815-856e-4926-8b06-a53f6d016186")
 	)
+	(wire
+		(pts
+			(xy 140.97 124.46) (xy 162.56 124.46)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "16442851-93ad-4a4f-9a8d-74ff2c5f5555")
+	)
 	(bus
 		(pts
 			(xy 209.55 45.72) (xy 207.01 45.72)
@@ -5050,6 +5252,16 @@
 			(type default)
 		)
 		(uuid "270f207f-1677-4793-b1d6-43b61a8a5de7")
+	)
+	(wire
+		(pts
+			(xy 168.91 119.38) (xy 168.91 120.65)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "27d9f1c6-fa4e-4c7b-80b3-6ebc8cf2b344")
 	)
 	(wire
 		(pts
@@ -5233,6 +5445,16 @@
 	)
 	(wire
 		(pts
+			(xy 156.21 119.38) (xy 156.21 120.65)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4f3a9b69-3ddc-4b55-b83b-e789e6f95aba")
+	)
+	(wire
+		(pts
 			(xy 217.17 48.26) (xy 217.17 55.88)
 		)
 		(stroke
@@ -5290,6 +5512,16 @@
 			(type default)
 		)
 		(uuid "533bad7f-b773-454f-9850-a7eb044d3d98")
+	)
+	(wire
+		(pts
+			(xy 156.21 137.16) (xy 156.21 138.43)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "54a7ee51-4afd-40e1-a578-bc25f2a86ec3")
 	)
 	(wire
 		(pts
@@ -6293,6 +6525,16 @@
 	)
 	(wire
 		(pts
+			(xy 168.91 137.16) (xy 168.91 138.43)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cc073f74-78fc-4dc5-acff-f85b942e115e")
+	)
+	(wire
+		(pts
 			(xy 237.49 54.61) (xy 237.49 55.88)
 		)
 		(stroke
@@ -6310,6 +6552,16 @@
 			(type default)
 		)
 		(uuid "cf60ceaa-98db-4f74-94ac-20e7d971d043")
+	)
+	(wire
+		(pts
+			(xy 140.97 142.24) (xy 162.56 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d1fa07c1-60ec-4723-94e2-da0148e6f7b0")
 	)
 	(wire
 		(pts
@@ -8774,6 +9026,142 @@
 		)
 	)
 	(symbol
+		(lib_id "Jumper:Jumper_3_Open")
+		(at 162.56 120.65 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0fde92a2-8f1a-4e3f-bd82-5466d5a9efcb")
+		(property "Reference" "JP7"
+			(at 162.56 117.602 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Jumper_3_Open"
+			(at 162.56 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"
+			(at 162.56 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 162.56 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Jumper, 3-pole, both open"
+			(at 162.56 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "81502d1e-c16c-4071-b5ad-35b4dc8c095c")
+		)
+		(pin "3"
+			(uuid "b20a3980-c75b-40f2-885f-78124cc5a88a")
+		)
+		(pin "1"
+			(uuid "416c3178-1888-4e15-8175-37a910de461b")
+		)
+		(instances
+			(project ""
+				(path "/d8192455-7854-4608-8247-9605049dbf4b"
+					(reference "JP7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 168.91 119.38 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "13178f27-da0a-45c1-b385-9efb7f1e855b")
+		(property "Reference" "#PWR032"
+			(at 168.91 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 169.164 114.808 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 168.91 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 168.91 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 168.91 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "28bad4d8-3a1f-4ecd-8f24-cacea66fa086")
+		)
+		(instances
+			(project "eavesdrum_connector"
+				(path "/d8192455-7854-4608-8247-9605049dbf4b"
+					(reference "#PWR032")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+3.3V")
 		(at 224.79 139.7 0)
 		(unit 1)
@@ -9069,6 +9457,71 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+5V")
+		(at 168.91 137.16 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2dc3b390-f9e2-46d0-8501-9949df4dfbfb")
+		(property "Reference" "#PWR031"
+			(at 168.91 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 169.164 132.588 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 168.91 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 168.91 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 168.91 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "2b4d592a-48cb-4f12-a3af-51dd20e0f56b")
+		)
+		(instances
+			(project "eavesdrum_connector"
+				(path "/d8192455-7854-4608-8247-9605049dbf4b"
+					(reference "#PWR031")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "EavesDrum:AudioJack3_Dual_Ground_Switch")
 		(at 135.89 102.87 0)
 		(mirror x)
@@ -9162,6 +9615,71 @@
 			(project "eavesdrum_connector"
 				(path "/d8192455-7854-4608-8247-9605049dbf4b"
 					(reference "J10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3.3V")
+		(at 156.21 119.38 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "333ebf12-ef6b-4f69-bd69-a5be1f5670d4")
+		(property "Reference" "#PWR029"
+			(at 156.21 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3.3V"
+			(at 156.464 114.046 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 156.21 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 156.21 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "2bce5c75-24af-4833-8d23-02ccaaa66a25")
+		)
+		(instances
+			(project "eavesdrum_connector"
+				(path "/d8192455-7854-4608-8247-9605049dbf4b"
+					(reference "#PWR029")
 					(unit 1)
 				)
 			)
@@ -10692,6 +11210,77 @@
 		)
 	)
 	(symbol
+		(lib_id "Jumper:Jumper_3_Open")
+		(at 162.56 138.43 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "647da4ca-98cb-4248-bdd0-ff57412cbf21")
+		(property "Reference" "JP8"
+			(at 162.306 135.128 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Jumper_3_Open"
+			(at 162.56 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"
+			(at 162.56 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 162.56 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Jumper, 3-pole, both open"
+			(at 162.56 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "ed9be10f-e3e8-430b-a57e-83659954ae69")
+		)
+		(pin "2"
+			(uuid "3c31386f-85e4-4af1-a101-785a93b11205")
+		)
+		(pin "1"
+			(uuid "68eb5f66-01e0-4101-98fe-7a0e840bb000")
+		)
+		(instances
+			(project ""
+				(path "/d8192455-7854-4608-8247-9605049dbf4b"
+					(reference "JP8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:PWR_FLAG")
 		(at 245.11 54.61 0)
 		(unit 1)
@@ -11047,6 +11636,71 @@
 			(project "eavesdrum_connector"
 				(path "/d8192455-7854-4608-8247-9605049dbf4b"
 					(reference "#PWR01")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3.3V")
+		(at 156.21 137.16 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7e4a0cd0-309a-43f4-934d-c80c6f8bf540")
+		(property "Reference" "#PWR030"
+			(at 156.21 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3.3V"
+			(at 156.464 131.826 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 156.21 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 156.21 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e76246e0-6691-4380-af70-bd251d06899d")
+		)
+		(instances
+			(project "eavesdrum_connector"
+				(path "/d8192455-7854-4608-8247-9605049dbf4b"
+					(reference "#PWR030")
 					(unit 1)
 				)
 			)
