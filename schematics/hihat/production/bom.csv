@@ -1,0 +1,6 @@
+﻿Designator,Footprint,Quantity,Value,LCSC Part #
+J1,PinHeader_1x03_P2.54mm_Vertical,1,Conn_01x03,
+R1,Potentiometer_ACP_CA9-VSMD_Vertical,1,5k,C719177
+R2,R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal,1,100,
+R3,R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal,1,10k,
+U1,tcrt5000,1,TCRT5000,
