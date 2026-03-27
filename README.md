@@ -352,9 +352,9 @@ This is the default configuration for the outputs:
 |9| in2_3, in2_4, in2_5 | Cymbal 3 (Bow, Edge, Cup) |
 |10| in2_6, in2_7, in2_8 | Hi-Hat (Bow, Edge, Cup) |
 |11| in2_9, in2_10 | Tom 4 (Main, Rim) |
-|12| in2_11 (sel0), in2_12 (sel1) | Tom 5 (Main, Rim) |
-|13| in2_13 (sel2), in2_14 (sel3), in2_15 (sel4) | Cymbal 4 (Bow, Edge, Cup) |
-|Pedal| adc2, hh_vcc (optical only) | Hi-Hat Pedal (resistive or optical)<br>- For resistive controllers: adjust the `ADC2 DC offset` potentiometer to the (+) direction (~4kOhm)<br>- For optical (TCRT5000) controllers: adjust the `ADC2 DC offset` potentiometer to the middle (~69kOhm)<br>This will adjust the sensitivity of the ADC2 channel. You can fine-tune this setting in the UI later. |
+|12| in2_11, in2_12 | Tom 5 (Main, Rim) |
+|13| in2_13, in2_14, in2_15 | Cymbal 4 (Bow, Edge, Cup) |
+|Pedal| adc2, +3.3V/5V (optical only) | Hi-Hat Pedal (resistive or optical)<br>- For resistive controllers: adjust the `ADC2 DC offset` potentiometer to the (+) direction (~4kOhm)<br>- For optical (TCRT5000) controllers: adjust the `ADC2 DC offset` potentiometer to the middle (~69kOhm)<br>This will adjust the sensitivity of the ADC2 channel. You can fine-tune this setting in the UI later. |
 
 <a id="pad-connectors"></a>
 
