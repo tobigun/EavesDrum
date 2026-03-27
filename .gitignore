@@ -18,16 +18,16 @@ uf2tool
 .uf2-out
 
 # schematics
-doc/schematics/**/*.*-bak
-doc/schematics/**/*-backups
-doc/schematics/**/production
-doc/schematics/**/_autosave-*
-doc/schematics/**/fabrication-toolkit-options.json
-doc/schematics/**/fp-info-cache
-doc/schematics/**/*.kicad_prl
-doc/schematics/**/~*.lck
-doc/schematics/**/#auto_saved_files#
-doc/schematics/**/freerouting.dsn
+schematics/**/*.*-bak
+schematics/**/*-backups
+schematics/**/production
+schematics/**/_autosave-*
+schematics/**/fabrication-toolkit-options.json
+schematics/**/fp-info-cache
+schematics/**/*.kicad_prl
+schematics/**/~*.lck
+schematics/**/#auto_saved_files#
+schematics/**/freerouting.dsn
 gerber
 production_files
 project.db
