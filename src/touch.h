@@ -10,10 +10,10 @@ public:
   TouchSensor(pin_size_t pin);
   ~TouchSensor();
 
+  void init();
   uint32_t sense();
 
 private:
-  void init();
   uint32_t readTouch();
 
 private:

@@ -12,9 +12,14 @@
 #define __isPicoW false
 #endif
 
+#include "touch.h"
+
 #define PIN_LED_0 LED_BUILTIN // built-in LED (green)
 #define PIN_LED_1 4 // red
 #define PIN_LED_2 5 // white/blue
+#if 0
+#define PIN_LED_3 9 // yellow
+#endif
 
 #define PIN_SWITCH_1 2
 #define PIN_SWITCH_2 3
@@ -33,6 +38,11 @@
 static dma_channel_config adcDmaCfg;
 static uint adcDmaChannel;
 static uint32_t resetScheduledAtMs = 0;
+
+//#define USE_TOUCH
+#ifdef USE_TOUCH
+TouchSensor touchSensor(16);
+#endif
 
 static void ledInit();
 static void buttonInit();
@@ -60,6 +70,10 @@ void DrumIO::setup(bool usePwmPowerSupply) {
   }
 
   adcInit();
+
+#ifdef USE_TOUCH
+  touchSensor.init();
+#endif
 }
 
 static void adcInit() {
@@ -158,6 +172,11 @@ static void ledInit() {
   pinMode(PIN_LED_2, OUTPUT);
   digitalWrite(PIN_LED_2, LOW);
 
+#ifdef PIN_LED_3
+  pinMode(PIN_LED_3, OUTPUT);
+  digitalWrite(PIN_LED_3, LOW);
+#endif
+
   ledTest();
 }
 
@@ -174,6 +193,12 @@ void DrumIO::led(LedId id, bool enable) {
     ledPin = PIN_LED_1;
   } else if (id == LedId::MidiConnected) {
     ledPin = PIN_LED_0;
+  } else if (id == LedId::WatchDog) {
+#ifdef PIN_LED_3
+    ledPin = PIN_LED_3;
+#else
+    return;
+#endif
   } else {
     return;
   }
@@ -219,6 +244,10 @@ void DrumIO::update() {
   blinkLed();
 #ifdef WATCHDOG_TIMEOUT_MS
   watchdog_update();
+#endif
+
+#ifdef USE_TOUCH
+  touchSensor.sense();
 #endif
 
   if (resetScheduledAtMs != 0 && millis() >= resetScheduledAtMs) {

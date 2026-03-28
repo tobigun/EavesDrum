@@ -10,19 +10,19 @@
 
 //#define PROFILE_CAPSENSE
 
-TouchSensor::TouchSensor(pin_size_t pin) : pin(pin) {
-  gpio_init(pin);
-  gpio_pull_up(pin);
-
-  programOffset = pio_add_program(pio, &capsense_program);
-  init();
-}
+TouchSensor::TouchSensor(pin_size_t pin)
+  : pin(pin) {}
 
 TouchSensor::~TouchSensor() {
   pio_remove_program(pio, &capsense_program, programOffset);
 }
 
-void TouchSensor::init() {
+void TouchSensor::init() {  
+  gpio_init(pin);
+  gpio_pull_up(pin);
+
+  programOffset = pio_add_program(pio, &capsense_program);
+
   pio_sm_config c = capsense_program_get_default_config(programOffset);
 
   // Map the state machine's OUT pin group to one pin, namely the `pin` parameter to this function.
