@@ -9,8 +9,10 @@ import CymbalIcon from '@mui/icons-material/Album';
 import DrumIcon from '@mui/icons-material/CircleOutlined';
 import ZoneIcon from '@mui/icons-material/AdsClick';
 import PedalIcon from '@mui/icons-material/ClosedCaption';
-import ChokeIcon from '@mui/icons-material/MusicOff';
-import NoChokeIcon from '@mui/icons-material/MusicNote';
+import ChokeRimIcon from '@mui/icons-material/TripOrigin';
+import ChokeCupIcon from '@mui/icons-material/RadioButtonChecked';
+import TouchIcon from '@mui/icons-material/TouchApp';
+import NoChokeIcon from '@mui/icons-material/NotInterested';
 import PiezoIcon from '@mui/icons-material/RadioButtonChecked';
 import SwitchIcon from '@mui/icons-material/ToggleOn';
 import { NestedList, NestedListItemInfo } from "./nested-list";
@@ -35,6 +37,7 @@ export function PadTypeSelector({padIndex}: {
   const padType = useConfig(config => config.pads[padIndex].settings.padType);
   const zonesType = useConfig(config => config.pads[padIndex].settings.zonesType);
   const chokeType = useConfig(config => config.pads[padIndex].settings.chokeType) ?? ChokeType.None;
+  const touchSensor = useConfig(config => config.pads[padIndex].touchSensor);
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement>();
   const [openMenuTopLevel, setOpenMenuTopLevel] = useState<MenuTopLevel>(MenuTopLevel.HideMenu);
@@ -51,18 +54,19 @@ export function PadTypeSelector({padIndex}: {
 
   function getMenuList() {
     const zonesCount = getZonesCount(zonesType);
+    const hasTouchSensor = touchSensor !== undefined;
     switch (openMenuTopLevel) {
     case MenuTopLevel.PadType:
-      return <NestedList header={HEADER_PAD_TYPE} itemInfos={getPadTypeItems(padType)} onValueChange={onZoneCountChanged}
+      return <NestedList header={HEADER_PAD_TYPE} itemInfos={getPadTypeItems(padType, hasTouchSensor)} onValueChange={onZoneCountChanged}
         parentValueChain={[]} />;
     case MenuTopLevel.ZonesCount:
-      return <NestedList header={HEADER_ZONES_COUNT} itemInfos={getZonesCountItems(padType)} onValueChange={onZoneCountChanged}
+      return <NestedList header={HEADER_ZONES_COUNT} itemInfos={getZonesCountItems(padType, hasTouchSensor)} onValueChange={onZoneCountChanged}
         parentValueChain={[padType]} />;
     case MenuTopLevel.ZonesType:
-      return <NestedList header={HEADER_ZONES_TYPE} itemInfos={getZonesTypeItems(padType, zonesCount)} onValueChange={onZoneCountChanged}
+      return <NestedList header={HEADER_ZONES_TYPE} itemInfos={getZonesTypeItems(padType, zonesCount, hasTouchSensor)} onValueChange={onZoneCountChanged}
         parentValueChain={[padType, zonesCount]} />;
     case MenuTopLevel.ChokeType:
-      return <NestedList header={HEADER_CHOKE_TYPE} itemInfos={getChokeTypeItems(padType, zonesCount)} onValueChange={onZoneCountChanged}
+      return <NestedList header={HEADER_CHOKE_TYPE} itemInfos={getChokeTypeItems(padType, zonesCount, hasTouchSensor)} onValueChange={onZoneCountChanged}
         parentValueChain={[padType, zonesCount, zonesType]} />;
     } 
   }
@@ -113,7 +117,7 @@ function getPadTypeIcon(padType: PadType) {
   }
 }
 
-function getPadTypeItems(currentPadType: PadType): NestedListItemInfo[] {
+function getPadTypeItems(currentPadType: PadType, hasTouchSensor: boolean): NestedListItemInfo[] {
   return Object.values(PadType)
     .filter(padType => (currentPadType === PadType.Pedal && padType === PadType.Pedal)
       || (currentPadType !== PadType.Pedal && padType !== PadType.Pedal))
@@ -121,22 +125,22 @@ function getPadTypeItems(currentPadType: PadType): NestedListItemInfo[] {
       value: padType,
       name: padType,
       icon: getPadTypeIcon(padType),
-      subItems: { header: HEADER_ZONES_COUNT, items: getZonesCountItems(padType) }
+      subItems: { header: HEADER_ZONES_COUNT, items: getZonesCountItems(padType, hasTouchSensor) }
     }));
 }
 
-function getZonesCountItems(padType: PadType): NestedListItemInfo[] {  
+function getZonesCountItems(padType: PadType, hasTouchSensor: boolean): NestedListItemInfo[] {  
   return [1, 2, 3]
     .filter(zoneCount => padType !== PadType.Pedal || zoneCount === 1)
     .map(zoneCount => ({
       value: zoneCount,
       name: formatZoneCount(zoneCount),
       icon: <ZoneIcon />,
-      subItems: { header: HEADER_ZONES_TYPE, items: getZonesTypeItems(padType, zoneCount) }
+      subItems: { header: HEADER_ZONES_TYPE, items: getZonesTypeItems(padType, zoneCount, hasTouchSensor) }
     }));
 }
 
-function getZonesTypeItems(padType: PadType, zoneCount: number): NestedListItemInfo[] {
+function getZonesTypeItems(padType: PadType, zoneCount: number, hasTouchSensor: boolean): NestedListItemInfo[] {
   const isPedal = padType === PadType.Pedal;
   return Object.values(ZonesType)
     .filter(zonesType => (isPedal && zonesType === ZonesType.Zones1_Controller)
@@ -145,21 +149,32 @@ function getZonesTypeItems(padType: PadType, zoneCount: number): NestedListItemI
       value: zonesType,
       name: formatZonesTypeNames(zonesType),
       icon: formatZonesTypeIcons(zonesType),
-      subItems: { header: HEADER_CHOKE_TYPE, items: getChokeTypeItems(padType, zoneCount) }
+      subItems: { header: HEADER_CHOKE_TYPE, items: getChokeTypeItems(padType, zoneCount, hasTouchSensor) }
     }));
 }
 
-function getChokeTypeItems(padType: PadType, zoneCount: number): NestedListItemInfo[] {
+function getChokeTypeItems(padType: PadType, zoneCount: number, hasTouchSensor: boolean): NestedListItemInfo[] {
   if (padType != PadType.Cymbal || zoneCount < 2) {
     return []; // No choke for toms/snares and 1-zone cymbals
   }
+    
   return Object.values(ChokeType)
     .filter(chokeType => zoneCount >= 3 || chokeType !== ChokeType.Switch_Cup) // Cup choke only for 3-zone cymbals
+    .filter(chokeType => hasTouchSensor || chokeType !== ChokeType.TouchSensor) // Offer touch only if a sensor is configured
     .map(chokeType => ({
       value: chokeType,
       name: formatChokeTypeNames(chokeType),
-      icon: chokeType === ChokeType.None ? <NoChokeIcon/> : <ChokeIcon />
+      icon: getChokeTypeIcon(chokeType)
     }));
+}
+
+function getChokeTypeIcon(chokeType: ChokeType): ReactElement {
+  switch (chokeType) {
+  case ChokeType.None: return <NoChokeIcon/>;
+  case ChokeType.Switch_Edge: return <ChokeRimIcon />;
+  case ChokeType.Switch_Cup: return <ChokeCupIcon />;
+  case ChokeType.TouchSensor: return <TouchIcon />;
+  }
 }
 
 function formatZoneCount(zoneCount: number): string {
@@ -195,5 +210,6 @@ function formatChokeTypeNames(value: ChokeType): string {
   case ChokeType.None: return 'No Choke';
   case ChokeType.Switch_Edge: return 'Choke: Edge';
   case ChokeType.Switch_Cup: return 'Choke: Cup';
+  case ChokeType.TouchSensor: return 'Choke: Touch';
   }
 }

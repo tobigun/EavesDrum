@@ -27,6 +27,8 @@ public:
 
   void setPins(const DrumPin* pins, pin_size_t pinCount);
 
+  void start();
+
   pin_size_t getPinCount() const { return sensorPinsCount; }
   DrumPin& getPin(pin_size_t index) { return sensorPins[index]; }
   const DrumPin& getPin(pin_size_t index) const { return sensorPins[index]; }

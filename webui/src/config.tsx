@@ -112,6 +112,7 @@ export interface DrumPadConfig {
   enabled: boolean;
   autoCalibrate: boolean;
   pedal?: string; // name of the pedal pad
+  touchSensor?: ConnectorId; // touch sensor connector Id
   connector?: ConnectorId; // undefined: no connector
   settings: DrumPadSettings;
 }
@@ -194,7 +195,7 @@ export enum ChokeType {
   None = 'None',
   Switch_Edge = 'Switch_Edge',
   Switch_Cup = 'Switch_Cup',
-  //TouchSensor // TODO: needs additional pin
+  TouchSensor = 'TouchSensor' 
 }
 
 export enum CurveType {

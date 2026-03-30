@@ -38,7 +38,7 @@ static ChokeType mapStringToChokeType(String value) {
   MAP_STRING_TO_ENUM(None);
   MAP_STRING_TO_ENUM(Switch_Edge);
   MAP_STRING_TO_ENUM(Switch_Cup);
-  // MAP_STRING_TO_ENUM(TouchSensor);
+  MAP_STRING_TO_ENUM(TouchSensor);
   eventLog.log(Level::Warn, String("Unknown choke type '") + value + "' -> using fallback");
   return None;
 }
@@ -196,6 +196,7 @@ static String mapChokeTypeToString(ChokeType value) {
   MAP_ENUM_TO_STRING(None);
   MAP_ENUM_TO_STRING(Switch_Cup);
   MAP_ENUM_TO_STRING(Switch_Edge);
+  MAP_ENUM_TO_STRING(TouchSensor);
   eventLog.log(Level::Warn, String("Unknown choke type '") + (uint8_t)value + "' -> using fallback");
   return mapChokeTypeToString(None);
 }

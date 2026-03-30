@@ -88,6 +88,7 @@
           "enabled": { "type": "boolean" },
           "connector": { "type": "string" },
           "pedal": { "type": "string" },
+          "touchSensor": { "type": "string" },
           "settings": {
             "type": "object",
             "properties": {

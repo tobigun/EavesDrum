@@ -30,11 +30,11 @@ enum class ZonesType {
 };
 
 
-enum class ChokeType {
+enum class ChokeType { // for cymbals only
   None,
-  Switch_Edge, // for Cymbals: Rim switch
-  Switch_Cup, // for Cymbals: Cup switch
-  // TouchSensor // TODO: needs additional pin
+  Switch_Edge, // Rim switch
+  Switch_Cup, // Cup switch
+  TouchSensor // Touch sensor
 };
 
 enum class CurveType {

@@ -111,9 +111,12 @@ connectors:
         channel: 14
       - mux: 1
         channel: 15
-  Jack-Pedal:
+  Pedal1:
     pins:
       - 28
+  Pedal2:
+    pins:
+      - 27
 pads:
   - name: Snare
     role: Snare
@@ -352,7 +355,7 @@ pads:
       moveDetectTolerance: 20
       chickDetectTimeoutMs: 20
       curveType: Linear
-    connector: Jack-Pedal
+    connector: Pedal1
 mappings:
   Snare:
     noteMain: 38
@@ -394,7 +397,7 @@ mappings:
     noteCloseMain: 11
     noteCloseRim: 22
     noteCloseCup: 53
-  HiHat-Pedal:
+  HiHatPedal:
     name: Hi-Hat Pedal
     noteMain: 21
   Ride1:
