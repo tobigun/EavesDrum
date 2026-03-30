@@ -8,12 +8,44 @@
 
 #include <Arduino.h>
 
+#define TOUCH_UNDEFINED UINT32_MAX
+
 #define CALIBRATION_DURATION_MS 2000
 #define MIN_SWITCH_TIME_US 1000
 
 TouchSensorManager touchSensorManager;
 
-constexpr uint8_t oversamplingCount = 2;
+struct TouchCalibrationInfo {
+  bool needsCalibration = true;
+  uint32_t startTimeMs = 0;
+
+  uint32_t minValue = TOUCH_UNDEFINED;
+  uint32_t maxValue = 0;
+};
+
+struct TouchSensorInfo {
+  TouchCalibrationInfo calibration;
+
+  uint32_t switchOnThreshold;
+  uint32_t switchOffThreshold;
+
+  bool isOn = false;
+  uint32_t switchStartUs = 0;
+};
+
+static const PIO pio = pio0;
+static uint stateMachineId = 0;
+static uint programOffset;
+
+static constexpr uint8_t oversamplingCount = 2;
+
+static std::map<DrumPin*, TouchSensorInfo> touchPins;
+
+static void triggerNextSample();
+static inline void checkStateSwitched(TouchSensorInfo& touchInfo, bool newState, uint32_t value);
+static uint32_t tryReadSensor(DrumPin& pin);
+static void startCalibration(TouchSensorInfo& touchInfo);
+static void updateCalibration(TouchSensorInfo& touchInfo, uint32_t value);
 
 void TouchSensorManager::addSensor(DrumPin& pin) { // TODO: handle multiple pins
   gpio_init(pin.index);
@@ -56,25 +88,43 @@ void TouchSensorManager::removeSensor(DrumPin& pin) { // TODO: handle multiple p
   pio_remove_program(pio, &capsense_program, programOffset);
 }
 
-// start sampling once and stop afterwards
-void TouchSensorManager::triggerNextSample() {
-  pio_sm_put(pio, stateMachineId, oversamplingCount);
-}
+bool TouchSensorManager::readSensor(DrumPin& pin) { // TODO: handle multiple pins
+  TouchSensorInfo& touchInfo = touchPins[&pin];
 
-uint32_t TouchSensorManager::tryReadSensor(DrumPin& pin) {
-  if (pio_sm_is_rx_fifo_empty(pio, stateMachineId)) {
-    return TOUCH_UNDEFINED;
+  // read next value
+  uint32_t rawValue = tryReadSensor(pin);
+  if (rawValue == TOUCH_UNDEFINED) {
+    return touchInfo.isOn;
+  }
+  uint32_t value = rawValue / oversamplingCount;
+
+  if (touchInfo.calibration.needsCalibration) {
+    updateCalibration(touchInfo, value);
   }
 
-  // drain FIFO, keeping only the last value (usually there will only be one value)
-  while (pio_sm_get_rx_fifo_level(pio, stateMachineId) > 1) {
-    pio_sm_get(pio, stateMachineId);
+  if (!touchInfo.isOn && (value > touchInfo.switchOnThreshold)) {
+    checkStateSwitched(touchInfo, true, value);
+  } else if (touchInfo.isOn && (value < touchInfo.switchOffThreshold)) {
+    checkStateSwitched(touchInfo, false, value);
+  } else {
+    // reset switching transition time.
+    // If we formerly detected the start of a state switch, it seems to just have been a fluctuation
+    touchInfo.switchStartUs = 0;
   }
 
-  return UINT32_MAX - pio_sm_get(pio, stateMachineId);
+  triggerNextSample();
+
+  return touchInfo.isOn;
 }
 
-void TouchSensorManager::updateCalibration(TouchSensorInfo& touchInfo, uint32_t value) {
+static void startCalibration(TouchSensorInfo& touchInfo) {
+  touchInfo.calibration = TouchCalibrationInfo();
+  touchInfo.calibration.startTimeMs = millis();
+  touchInfo.switchOnThreshold = TOUCH_UNDEFINED;
+  touchInfo.switchOffThreshold = 0;
+}
+
+static void updateCalibration(TouchSensorInfo& touchInfo, uint32_t value) {
   TouchCalibrationInfo& calibration = touchInfo.calibration;
 
   if (value < calibration.minValue) {
@@ -110,31 +160,20 @@ static inline void checkStateSwitched(TouchSensorInfo& touchInfo, bool newState,
   }
 }
 
-bool TouchSensorManager::readSensor(DrumPin& pin) { // TODO: handle multiple pins
-  TouchSensorInfo& touchInfo = touchPins[&pin];
-
-  // read next value
-  uint32_t rawValue = tryReadSensor(pin);
-  if (rawValue == TOUCH_UNDEFINED) {
-    return touchInfo.isOn;
-  }
-  uint32_t value = rawValue / oversamplingCount;
-
-  if (touchInfo.calibration.needsCalibration) {
-    updateCalibration(touchInfo, value);
+static uint32_t tryReadSensor(DrumPin& pin) {
+  if (pio_sm_is_rx_fifo_empty(pio, stateMachineId)) {
+    return TOUCH_UNDEFINED;
   }
 
-  if (!touchInfo.isOn && (value > touchInfo.switchOnThreshold)) {
-    checkStateSwitched(touchInfo, true, value);
-  } else if (touchInfo.isOn && (value < touchInfo.switchOffThreshold)) {
-    checkStateSwitched(touchInfo, false, value);
-  } else {
-    // reset switching transition time.
-    // If we formerly detected the start of a state switch, it seems to just have been a fluctuation
-    touchInfo.switchStartUs = 0;
+  // drain FIFO, keeping only the last value (usually there will only be one value)
+  while (pio_sm_get_rx_fifo_level(pio, stateMachineId) > 1) {
+    pio_sm_get(pio, stateMachineId);
   }
 
-  triggerNextSample();
+  return UINT32_MAX - pio_sm_get(pio, stateMachineId);
+}
 
-  return touchInfo.isOn;
+// start sampling once and stop afterwards
+static void triggerNextSample() {
+  pio_sm_put(pio, stateMachineId, oversamplingCount);
 }
