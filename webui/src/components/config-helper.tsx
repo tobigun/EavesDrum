@@ -3,6 +3,7 @@
 
 import { Config, useConfig } from "@/config";
 import { stringify } from "yaml";
+import configSchema from '@config-resources/config.jsonc?raw';
 
 export function downloadCurrentConfig() {
   const configState = useConfig.getState();
@@ -30,8 +31,6 @@ export function downloadCurrentConfig() {
 };
 
 
-export async function loadJsonSchema(): Promise<any> {
-  const res = await fetch("config.jsonc");
-  const schema = await res.text();
-  return JSON.parse(schema);
+export function loadJsonSchema(): Promise<any> {
+  return new Promise((resolve) => resolve(JSON.parse(configSchema)));
 }

@@ -4,6 +4,7 @@
       "@/*": ["./src/*"],
       "@config": ["./src/config"],
       "@theme": ["./src/theme"],
+      "@config-resources/*": ["../config/*"],
     },
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2022",
