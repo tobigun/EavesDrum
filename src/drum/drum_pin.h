@@ -14,10 +14,8 @@ enum class SignalType {
   Normal,
 
   /**
-   * An ADC can only sample positive voltages if no external negative voltage reference is connected.
-   * Hence, a voltage offset is added to the muxer output to shift the negative half-waves of the piezos into the positive
-   * voltage range so that it can be measured.
-   * The voltage offset must be calibrated by a poti so that 0V results in a value the middle of the value range of the ADC.
+   * Use this type if the ADC is connected to a signal with a voltage offset so that negative and positive half-waves of the piezos can be measured.
+   * The voltage offset must be calibrated with a poti so that 0V results in a value the middle of the value range of the ADC.
    */
   VoltageOffset,
 };
