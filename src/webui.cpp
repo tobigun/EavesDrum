@@ -29,6 +29,7 @@
 #define CONFIG_NAME_PROP "name"
 #define CONFIG_ROLE_PROP "role"
 #define CONFIG_CONNECTOR_PROP "connector"
+#define CONFIG_TOUCH_SENSOR_PROP "touchSensor"
 #define CONFIG_ENABLED_PROP "enabled"
 #define CONFIG_AUTOCALIBRATE_PROP "autoCalibrate"
 
@@ -144,6 +145,20 @@ void WebUI::handleSetPadConfig(JsonObjectConst configNode, AsyncWebSocketClient*
         }
       }
       pad.setConnector(connector);
+      isConfigDirty = true;
+      sendConfigRequired = true;
+    }
+
+    if (!nodeValue[CONFIG_TOUCH_SENSOR_PROP].isUnbound()) {
+      DrumConnector* touchSensor = nullptr;
+      if (!nodeValue[CONFIG_TOUCH_SENSOR_PROP].isNull()) {
+        String touchSensorId = nodeValue[CONFIG_TOUCH_SENSOR_PROP];
+        touchSensor = drumKit->getConnectorById(touchSensorId);
+        if (!touchSensor) {
+          eventLog.log(Level::Error, String("Disable as touchSensorId is invalid: ") + touchSensorId);
+        }
+      }
+      pad.setTouchSensor(touchSensor);
       isConfigDirty = true;
       sendConfigRequired = true;
     }

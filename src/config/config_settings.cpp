@@ -97,6 +97,8 @@ void DrumConfigMapper::applyPadSettings(DrumPad& pad, JsonObjectConst settingsNo
   SETTING_FROM_JSON(settings.chickDetectTimeoutMs, settingsNode["chickDetectTimeoutMs"]);
   SETTING_FROM_JSON(settings.crossNoteEnabled, settingsNode["crossNoteEnabled"]);
   SETTING_FROM_JSON(settings.headRimBias, settingsNode["headRimBias"]);
+
+  pad.reinitializeSettings();
 }
 
 ///////////////////////////// To JSON
