@@ -19,25 +19,33 @@
 
 ///////////////////////////// From JSON
 
+void applyBoardConfig(DrumKit& drumKit, JsonObjectConst generalNode) {
+  if (generalNode[GENERAL_BOARD].isUnbound()) {
+    eventLog.log(Level::Info, "No board version specified (custom board)");
+    return;
+  }
+
+  String boardStr = generalNode[GENERAL_BOARD].as<String>();
+  if (boardStr != "1.1" && boardStr != "1.2") {
+    eventLog.log(Level::Warn, String("Unknown board version: ") + boardStr);
+    return;
+  }
+
+  if (boardStr == "1.1") {
+    drumKit.setBoardVersion(BoardVersion::V1_1);
+  } else if (boardStr == "1.2") {
+    drumKit.setBoardVersion(BoardVersion::V1_2);
+  }
+  eventLog.log(Level::Info, String("Board version: ") + boardStr);
+}
+
 void DrumConfigMapper::applyGeneralConfig(DrumKit& drumKit, JsonObjectConst generalNode) {
   if (!generalNode) {
     eventLog.log(Level::Info, "Config: " GENERAL_SECTION " node missing");
     return;
   }
 
-  if (generalNode[GENERAL_BOARD].is<String>()) {
-    String boardStr = generalNode[GENERAL_BOARD].as<String>();
-    if (boardStr == "1.1" || boardStr == "1.2") {
-      if (boardStr == "1.1") {
-        drumKit.setBoardVersion(BoardVersion::V1_1);
-      } else if (boardStr == "1.2") {
-        drumKit.setBoardVersion(BoardVersion::V1_2);
-      }
-      eventLog.log(Level::Info, String("Board version: ") + boardStr);
-    } else {
-      eventLog.log(Level::Warn, String("Unknown board version: ") + boardStr);
-    }
-  }
+  applyBoardConfig(drumKit, generalNode);
 
   if (generalNode[GENERAL_GATETIME].is<int>()) {
     drumKit.setGateTime(generalNode[GENERAL_GATETIME].as<int>());
@@ -61,14 +69,18 @@ void DrumConfigMapper::applyGeneralConfig(DrumKit& drumKit, JsonObjectConst gene
 
 ///////////////////////////// To JSON
 
-void DrumConfigMapper::convertGeneralConfigToJson(const DrumKit& drumKit, JsonDocument& config) {
-  JsonObject generalNode = config[GENERAL_SECTION].to<JsonObject>();
-
+void convertBoardConfigToJson(const DrumKit& drumKit, JsonObject generalNode) {
   if (drumKit.getBoardVersion() == BoardVersion::V1_1) {
     generalNode[GENERAL_BOARD] = "1.1";
   } else if (drumKit.getBoardVersion() == BoardVersion::V1_2) {
     generalNode[GENERAL_BOARD] = "1.2";
   }
+}
+
+void DrumConfigMapper::convertGeneralConfigToJson(const DrumKit& drumKit, JsonDocument& config) {
+  JsonObject generalNode = config[GENERAL_SECTION].to<JsonObject>();
+
+  convertBoardConfigToJson(drumKit, generalNode);
 
   generalNode[GENERAL_GATETIME] = drumKit.getGateTime();
 

@@ -210,6 +210,7 @@ void WebUI::handleSetSettingsRequest(AsyncWebSocketClient* client, JsonObjectCon
 }
 
 void WebUI::handleSetConfigRequest(AsyncWebSocketClient* client, JsonObjectConst configNode) {
+  // merge old and new config section-wise (i.e. only replace changed sections) as not all sections might be included in the new config 
   JsonDocument configDoc = DrumConfigMapper::getDrumKitConfigAsJson(*drumKit);
   for (JsonPairConst keyValuePair : configNode) {
     configDoc[keyValuePair.key()] = keyValuePair.value();
