@@ -27,10 +27,13 @@ void DrumConfigMapper::applyGeneralConfig(DrumKit& drumKit, JsonObjectConst gene
 
   if (generalNode[GENERAL_BOARD].is<String>()) {
     String boardStr = generalNode[GENERAL_BOARD].as<String>();
-    if (boardStr == "1.1") {
-      drumKit.setBoardVersion(BoardVersion::V1_1);
-    } else if (boardStr == "1.2") {
-      drumKit.setBoardVersion(BoardVersion::V1_2);
+    if (boardStr == "1.1" || boardStr == "1.2") {
+      if (boardStr == "1.1") {
+        drumKit.setBoardVersion(BoardVersion::V1_1);
+      } else if (boardStr == "1.2") {
+        drumKit.setBoardVersion(BoardVersion::V1_2);
+      }
+      eventLog.log(Level::Info, String("Board version: ") + boardStr);
     } else {
       eventLog.log(Level::Warn, String("Unknown board version: ") + boardStr);
     }

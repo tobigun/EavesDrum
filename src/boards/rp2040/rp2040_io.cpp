@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "drum_io.h"
+#include "drum_kit.h"
 #include "log.h"
+#include "touch.h"
+#include "SerialTxUART.h"
 
 #include <Arduino.h>
 #include <hardware/adc.h>
@@ -11,8 +14,6 @@
 #else
 #define __isPicoW false
 #endif
-
-#include "touch.h"
 
 #define PIN_LED_0 LED_BUILTIN // built-in LED (green)
 #define PIN_LED_1 4 // red
@@ -23,6 +24,9 @@
 
 #define PIN_SWITCH_1 2
 #define PIN_SWITCH_2 3
+
+#define PIN_MIDI_SERIAL2_TX 8
+#define PIN_MIDI_SERIAL2_TX_BOARD_V1_1 20
 
 // ADC_BASE_PIN define does not work correctly here, use our own definition
 #define ADC_PICO_PICO2_BASE_PIN 26
@@ -272,4 +276,13 @@ uint32_t DrumIO::getCpuFrequency() {
 void DrumIO::getMemoryStats(uint32_t& total, uint32_t& free) {
   total = rp2040.getTotalHeap();
   free = rp2040.getFreeHeap();
+}
+
+pin_size_t DrumIO::getMidiTxPin(arduino::HardwareSerial& serial) {
+  if (&serial == &SerialTx2 || &serial == &Serial2) {
+    return drumKit.getBoardVersion() == BoardVersion::V1_1
+        ? PIN_MIDI_SERIAL2_TX_BOARD_V1_1
+        : PIN_MIDI_SERIAL2_TX;
+  }
+  return PIN_UNUSED;
 }

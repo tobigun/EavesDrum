@@ -10,14 +10,18 @@
 template<typename SerialType>
 class MidiTransport_Serial : public MidiTransport_ArduinoMidi {
 public:
-  MidiTransport_Serial(SerialType& serial, pin_size_t txPin, bool isSerialPortUsedForLogging = false)
+  MidiTransport_Serial(SerialType& serial, bool isSerialPortUsedForLogging = false)
     : MidiTransport_ArduinoMidi(),
       serial(serial),
-      txPin(txPin),
       isSerialPortUsedForLogging(isSerialPortUsedForLogging) {}
 
   void begin() override {
     DrumIO::led(LedId::MidiConnected, true);
+
+    pin_size_t txPin = DrumIO::getMidiTxPin(serial);
+    if (txPin != PIN_UNUSED) {
+      logInfo("MIDI serial: using TX pin %u", txPin);
+    }
 
 #ifdef ENABLE_SERIAL_DEBUG
     if (isSerialPortUsedForLogging) {
@@ -28,7 +32,9 @@ public:
     }
 #endif
 
-    serial.setTX(txPin);
+    if (txPin != PIN_UNUSED) {
+      serial.setTX(txPin);
+    }    
     serial.begin(settings.BaudRate);
   }
 
@@ -53,7 +59,6 @@ public:
 
 private:
   SerialType& serial;
-  pin_size_t txPin;
   bool isSerialPortUsedForLogging; // set to true if the serial port is shared with logging to disable logging and avoid conflicts
   MIDI_NAMESPACE::DefaultSerialSettings settings;
 };
