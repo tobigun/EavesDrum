@@ -293,6 +293,14 @@ void WebUI::handleStatsRequest(AsyncWebSocketClient* client) {
     statsNode["updateCountPer30s"] = nullptr;
   }
 
+  statsNode["cpuFreq"] = DrumIO::getCpuFrequency();
+
+  uint32_t totalHeap, freeHeap;
+  DrumIO::getMemoryStats(totalHeap, freeHeap);
+  JsonObject memNode = statsNode["mem"].to<JsonObject>();
+  memNode["freeHeap"] = freeHeap;
+  memNode["totalHeap"] = totalHeap;
+
   sendJsonToWebSocket(doc, client);
 }
 

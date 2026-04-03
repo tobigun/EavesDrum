@@ -264,3 +264,12 @@ bool DrumIO::requestReset(uint32_t delayMs) {
   }
   return true;
 }
+
+uint32_t DrumIO::getCpuFrequency() {
+  return rp2040.f_cpu();
+}
+
+void DrumIO::getMemoryStats(uint32_t& total, uint32_t& free) {
+  total = rp2040.getTotalHeap();
+  free = rp2040.getFreeHeap();
+}

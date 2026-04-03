@@ -49,4 +49,11 @@ public:
    * This only returns if delayMs > 0 or if only a soft reset was performed instead (e.g. on PC).
    */
   static bool requestReset(uint32_t delayMs = 0);
+
+  /**
+   * Gets the active CPU speed in Hz
+   */
+  static uint32_t getCpuFrequency();
+
+  static void getMemoryStats(uint32_t& total, uint32_t& free);
 };
