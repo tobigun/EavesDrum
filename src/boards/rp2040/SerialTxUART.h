@@ -27,10 +27,11 @@
 
 extern "C" typedef struct uart_inst uart_inst_t;
 
+// Copy of SerialUART that supports deactivation of the RX pin (which is not used when only sending MIDI) to save one pin.
 #define UART_PIN_NOT_DEFINED      (255u)
-class SerialUART : public arduino::HardwareSerial {
+class SerialTxUART : public arduino::HardwareSerial {
 public:
-    SerialUART(uart_inst_t *uart, pin_size_t tx, pin_size_t rx, pin_size_t rts = UART_PIN_NOT_DEFINED, pin_size_t cts = UART_PIN_NOT_DEFINED);
+    SerialTxUART(uart_inst_t *uart, pin_size_t tx, pin_size_t rx = UART_PIN_NOT_DEFINED, pin_size_t rts = UART_PIN_NOT_DEFINED, pin_size_t cts = UART_PIN_NOT_DEFINED);
 
     // Select the pinout.  Call before .begin()
     bool setRX(pin_size_t pin);
@@ -120,8 +121,8 @@ private:
     void _pumpFIFO(); // User space FIFO transfer
 };
 
-extern SerialUART Serial1; // HW UART 0
-extern SerialUART Serial2; // HW UART 1
+extern SerialTxUART SerialTx1; // HW UART 0
+extern SerialTxUART SerialTx2; // HW UART 1
 
 namespace arduino {
 extern void serialEvent1Run(void) __attribute__((weak));

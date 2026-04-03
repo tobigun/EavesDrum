@@ -7,29 +7,28 @@
 #include "midi_transport_arduino_midi.h"
 #include "serialMIDI.h"
 
+template<typename SerialType>
 class MidiTransport_Serial : public MidiTransport_ArduinoMidi {
 public:
-  MidiTransport_Serial(SerialUART& serial, pin_size_t txPin, pin_size_t rxPin)
+  MidiTransport_Serial(SerialType& serial, pin_size_t txPin, bool isSerialPortUsedForLogging = false)
     : MidiTransport_ArduinoMidi(),
       serial(serial),
       txPin(txPin),
-      rxPin(rxPin) {}
+      isSerialPortUsedForLogging(isSerialPortUsedForLogging) {}
 
   void begin() override {
     DrumIO::led(LedId::MidiConnected, true);
 
 #ifdef ENABLE_SERIAL_DEBUG
-    if (isLogSerial()) {
+    if (isSerialPortUsedForLogging) {
       logInfo("Serial Port used by MIDI transport. Logging disabled\n");
-      serial.flush();
+      SerialDebug.flush();
       setLogLevel(Level::None);
-      serial.end();
+      SerialDebug.end();
     }
 #endif
 
     serial.setTX(txPin);
-    serial.setRX(rxPin);
-
     serial.begin(settings.BaudRate);
   }
 
@@ -37,9 +36,9 @@ public:
     DrumIO::led(LedId::MidiConnected, false);
 
 #ifdef ENABLE_SERIAL_DEBUG
-    if (isLogSerial()) {
+    if (isSerialPortUsedForLogging) {
       // reset logging
-      serial.begin(LOG_BAUD);
+      SerialDebug.begin(LOG_BAUD);
       setLogLevel(DEFAULT_LOG_LEVEL);
       return;
     }
@@ -52,13 +51,9 @@ public:
     return serial.write(b);
   }
 
-  bool isLogSerial() {
-    return &serial == &SerialDebug;
-  }
-
 private:
-  SerialUART& serial;
+  SerialType& serial;
   pin_size_t txPin;
-  pin_size_t rxPin;
+  bool isSerialPortUsedForLogging; // set to true if the serial port is shared with logging to disable logging and avoid conflicts
   MIDI_NAMESPACE::DefaultSerialSettings settings;
 };

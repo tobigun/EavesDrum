@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include "SerialUART.h"
+#include "SerialTxUART.h"
 #include "CoreMutex.h"
 #include <hardware/uart.h>
 #include <hardware/gpio.h>
@@ -31,7 +31,7 @@
 extern void serialEvent1() __attribute__((weak));
 extern void serialEvent2() __attribute__((weak));
 
-bool SerialUART::setRX(pin_size_t pin) {
+bool SerialTxUART::setRX(pin_size_t pin) {
 #if defined(PICO_RP2350) && !PICO_RP2350A // RP2350B
     constexpr uint64_t valid[2] = { __bitset({1, 3, 13, 15, 17, 19, 29, 31, 33, 35, 45, 47}) /* UART0 */,
                                     __bitset({5, 7, 9, 11, 21, 23, 25, 27, 37, 39, 41, 43})  /* UART1 */
@@ -46,7 +46,7 @@ bool SerialUART::setRX(pin_size_t pin) {
                                   };
 #endif
 
-    if ((!_running) && ((1LL << pin) & valid[uart_get_index(_uart)])) {
+    if ((!_running) && ((pin == UART_PIN_NOT_DEFINED) || ((1LL << pin) & valid[uart_get_index(_uart)]))) {
         _rx = pin;
         return true;
     }
@@ -63,7 +63,7 @@ bool SerialUART::setRX(pin_size_t pin) {
     return false;
 }
 
-bool SerialUART::setTX(pin_size_t pin) {
+bool SerialTxUART::setTX(pin_size_t pin) {
 #if defined(PICO_RP2350) && !PICO_RP2350A // RP2350B
     constexpr uint64_t valid[2] = { __bitset({0, 2, 12, 14, 16, 18, 28, 30, 32, 34, 44, 46}) /* UART0 */,
                                     __bitset({4, 6, 8, 10, 20, 22, 24, 26, 36, 38, 40, 42})  /* UART1 */
@@ -94,7 +94,7 @@ bool SerialUART::setTX(pin_size_t pin) {
     return false;
 }
 
-bool SerialUART::setRTS(pin_size_t pin) {
+bool SerialTxUART::setRTS(pin_size_t pin) {
 #if defined(PICO_RP2350) && !PICO_RP2350A // RP2350B
     constexpr uint64_t valid[2] = { __bitset({3, 15, 19, 31, 35, 47}) /* UART0 */,
                                     __bitset({7, 11, 23, 27, 39, 43})  /* UART1 */
@@ -121,7 +121,7 @@ bool SerialUART::setRTS(pin_size_t pin) {
     return false;
 }
 
-bool SerialUART::setCTS(pin_size_t pin) {
+bool SerialTxUART::setCTS(pin_size_t pin) {
 #if defined(PICO_RP2350) && !PICO_RP2350A // RP2350B
     constexpr uint64_t valid[2] = { __bitset({2, 14, 18, 30, 34, 46}) /* UART0 */,
                                     __bitset({6, 10, 22, 26, 38, 42})  /* UART1 */
@@ -147,7 +147,7 @@ bool SerialUART::setCTS(pin_size_t pin) {
     }
     return false;
 }
-bool SerialUART::setPollingMode(bool mode) {
+bool SerialTxUART::setPollingMode(bool mode) {
     if (_running) {
         return false;
     }
@@ -155,7 +155,7 @@ bool SerialUART::setPollingMode(bool mode) {
     return true;
 }
 
-bool SerialUART::setFIFOSize(size_t size) {
+bool SerialTxUART::setFIFOSize(size_t size) {
     if (!size || _running) {
         return false;
     }
@@ -163,7 +163,7 @@ bool SerialUART::setFIFOSize(size_t size) {
     return true;
 }
 
-SerialUART::SerialUART(uart_inst_t *uart, pin_size_t tx, pin_size_t rx, pin_size_t rts, pin_size_t cts) {
+SerialTxUART::SerialTxUART(uart_inst_t *uart, pin_size_t tx, pin_size_t rx, pin_size_t rts, pin_size_t cts) {
     _uart = uart;
     _tx = tx;
     _rx = rx;
@@ -211,7 +211,7 @@ static gpio_function_t __gpioFunction(int pin) {
     }
 }
 
-void SerialUART::begin(unsigned long baud, uint16_t config) {
+void SerialTxUART::begin(unsigned long baud, uint16_t config) {
     if (_running) {
         end();
     }
@@ -220,11 +220,13 @@ void SerialUART::begin(unsigned long baud, uint16_t config) {
     _baud = baud;
 
     _fcnTx = gpio_get_function(_tx);
-    _fcnRx = gpio_get_function(_rx);
     gpio_set_function(_tx, __gpioFunction(_tx));
     gpio_set_outover(_tx, _invertTX ? 1 : 0);
-    gpio_set_function(_rx, __gpioFunction(_rx));
-    gpio_set_inover(_rx, _invertRX ? 1 : 0);
+    if (_rx != UART_PIN_NOT_DEFINED) {
+        _fcnRx = gpio_get_function(_rx);
+        gpio_set_function(_rx, __gpioFunction(_rx));
+        gpio_set_inover(_rx, _invertRX ? 1 : 0);
+    }
     if (_rts != UART_PIN_NOT_DEFINED) {
         _fcnRts = gpio_get_function(_rts);
         gpio_set_function(_rts, GPIO_FUNC_UART);
@@ -292,7 +294,7 @@ void SerialUART::begin(unsigned long baud, uint16_t config) {
     _running = true;
 }
 
-void SerialUART::end() {
+void SerialTxUART::end() {
     if (!_running) {
         return;
     }
@@ -317,8 +319,10 @@ void SerialUART::end() {
     // Restore pin functions
     gpio_set_function(_tx, _fcnTx);
     gpio_set_outover(_tx, 0);
-    gpio_set_function(_rx, _fcnRx);
-    gpio_set_inover(_rx, 0);
+    if (_rx != UART_PIN_NOT_DEFINED) {
+        gpio_set_function(_rx, _fcnRx);
+        gpio_set_inover(_rx, 0);
+    }
     if (_rts != UART_PIN_NOT_DEFINED) {
         gpio_set_function(_rts, _fcnRts);
         gpio_set_outover(_rts, 0);
@@ -329,7 +333,7 @@ void SerialUART::end() {
     }
 }
 
-void SerialUART::_pumpFIFO() {
+void SerialTxUART::_pumpFIFO() {
     // Use the _fifoMutex to guard against the other core potentially
     // running the IRQ (since we can't disable their IRQ handler).
     // We guard against this core by disabling the IRQ handler and
@@ -343,7 +347,7 @@ void SerialUART::_pumpFIFO() {
     irq_set_enabled(irqno, enabled);
 }
 
-int SerialUART::peek() {
+int SerialTxUART::peek() {
     CoreMutex m(&_mutex);
     if (!_running || !m) {
         return -1;
@@ -362,7 +366,7 @@ int SerialUART::peek() {
     }
 }
 
-int SerialUART::read() {
+int SerialTxUART::read() {
     CoreMutex m(&_mutex);
     if (!_running || !m) {
         return -1;
@@ -381,7 +385,7 @@ int SerialUART::read() {
     }
 }
 
-bool SerialUART::overflow() {
+bool SerialTxUART::overflow() {
     if (!_running) {
         return false;
     }
@@ -400,7 +404,7 @@ bool SerialUART::overflow() {
     return ovf;
 }
 
-int SerialUART::available() {
+int SerialTxUART::available() {
     CoreMutex m(&_mutex);
     if (!_running || !m) {
         return 0;
@@ -413,7 +417,7 @@ int SerialUART::available() {
     return _queue->available();
 }
 
-int SerialUART::availableForWrite() {
+int SerialTxUART::availableForWrite() {
     CoreMutex m(&_mutex);
     if (!_running || !m) {
         return 0;
@@ -424,7 +428,7 @@ int SerialUART::availableForWrite() {
     return (uart_is_writable(_uart)) ? 1 : 0;
 }
 
-void SerialUART::flush() {
+void SerialTxUART::flush() {
     CoreMutex m(&_mutex);
     if (!_running || !m) {
         return;
@@ -435,7 +439,7 @@ void SerialUART::flush() {
     uart_tx_wait_blocking(_uart);
 }
 
-size_t SerialUART::write(uint8_t c) {
+size_t SerialTxUART::write(uint8_t c) {
     CoreMutex m(&_mutex);
     if (!_running || !m) {
         return 0;
@@ -447,7 +451,7 @@ size_t SerialUART::write(uint8_t c) {
     return 1;
 }
 
-size_t SerialUART::write(const uint8_t *p, size_t len) {
+size_t SerialTxUART::write(const uint8_t *p, size_t len) {
     CoreMutex m(&_mutex);
     if (!_running || !m) {
         return 0;
@@ -464,11 +468,11 @@ size_t SerialUART::write(const uint8_t *p, size_t len) {
     return len;
 }
 
-SerialUART::operator bool() {
+SerialTxUART::operator bool() {
     return _running;
 }
 
-bool SerialUART::getBreakReceived() {
+bool SerialTxUART::getBreakReceived() {
     if (!_running) {
         return false;
     }
@@ -500,7 +504,7 @@ void arduino::serialEvent2Run(void) {
 }
 
 // IRQ handler, called when FIFO > 1/8 full or when it had held unread data for >32 bit times
-void __not_in_flash_func(SerialUART::_handleIRQ)(bool inIRQ) {
+void __not_in_flash_func(SerialTxUART::_handleIRQ)(bool inIRQ) {
     if (inIRQ) {
         uint32_t owner;
         if (!mutex_try_enter(&_fifoMutex, &owner)) {
@@ -538,31 +542,22 @@ void __not_in_flash_func(SerialUART::_handleIRQ)(bool inIRQ) {
 #define __SERIAL2_DEVICE uart1
 #endif
 
-#if defined(PIN_SERIAL1_RTS)
-SerialUART Serial1(__SERIAL1_DEVICE, PIN_SERIAL1_TX, PIN_SERIAL1_RX, PIN_SERIAL1_RTS, PIN_SERIAL1_CTS);
-#else
-SerialUART Serial1(__SERIAL1_DEVICE, PIN_SERIAL1_TX, PIN_SERIAL1_RX);
-#endif
-
-#if defined(PIN_SERIAL2_RTS)
-SerialUART Serial2(__SERIAL2_DEVICE, PIN_SERIAL2_TX, PIN_SERIAL2_RX, PIN_SERIAL2_RTS, PIN_SERIAL2_CTS);
-#else
-SerialUART Serial2(__SERIAL2_DEVICE, PIN_SERIAL2_TX, PIN_SERIAL2_RX);
-#endif
+SerialTxUART SerialTx1(__SERIAL1_DEVICE, PIN_SERIAL1_TX);
+SerialTxUART SerialTx2(__SERIAL2_DEVICE, PIN_SERIAL2_TX);
 
 
-void __not_in_flash_func(SerialUART::_uart0IRQ)() {
+void __not_in_flash_func(SerialTxUART::_uart0IRQ)() {
     if (__SERIAL1_DEVICE == uart0) {
-        Serial1._handleIRQ();
+        SerialTx1._handleIRQ();
     } else {
-        Serial2._handleIRQ();
+        SerialTx2._handleIRQ();
     }
 }
 
-void __not_in_flash_func(SerialUART::_uart1IRQ)() {
+void __not_in_flash_func(SerialTxUART::_uart1IRQ)() {
     if (__SERIAL2_DEVICE == uart1) {
-        Serial2._handleIRQ();
+        SerialTx2._handleIRQ();
     } else {
-        Serial1._handleIRQ();
+        SerialTx1._handleIRQ();
     }
 }
