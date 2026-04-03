@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/tobigun/EavesDrum/refs/tags/config-schema-v1.0/config/config.jsonc
 general:
+  board: "1.2"
   gateTimeMs: 0
 mux:
   - type: HC4067

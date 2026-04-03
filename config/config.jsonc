@@ -5,6 +5,7 @@
     "general": {
       "type": "object",
       "properties": {
+        "board": { "enum": ["1.1", "1.2"] },
         "gateTimeMs": { "type": "integer" },
         "midiOutputMode": { "enum": [
           "UsbClient",

@@ -9,6 +9,7 @@
 #include "ble_client.h"
 #endif
 
+#define GENERAL_BOARD "board"
 #define GENERAL_GATETIME "gateTimeMs"
 #define GENERAL_MIDI_OUTPUT_MODE "midiOutputMode"
 
@@ -22,6 +23,17 @@ void DrumConfigMapper::applyGeneralConfig(DrumKit& drumKit, JsonObjectConst gene
   if (!generalNode) {
     eventLog.log(Level::Info, "Config: " GENERAL_SECTION " node missing");
     return;
+  }
+
+  if (generalNode[GENERAL_BOARD].is<String>()) {
+    String boardStr = generalNode[GENERAL_BOARD].as<String>();
+    if (boardStr == "1.1") {
+      drumKit.setBoardVersion(BoardVersion::V1_1);
+    } else if (boardStr == "1.2") {
+      drumKit.setBoardVersion(BoardVersion::V1_2);
+    } else {
+      eventLog.log(Level::Warn, String("Unknown board version: ") + boardStr);
+    }
   }
 
   if (generalNode[GENERAL_GATETIME].is<int>()) {
@@ -48,6 +60,13 @@ void DrumConfigMapper::applyGeneralConfig(DrumKit& drumKit, JsonObjectConst gene
 
 void DrumConfigMapper::convertGeneralConfigToJson(const DrumKit& drumKit, JsonDocument& config) {
   JsonObject generalNode = config[GENERAL_SECTION].to<JsonObject>();
+
+  if (drumKit.getBoardVersion() == BoardVersion::V1_1) {
+    generalNode[GENERAL_BOARD] = "1.1";
+  } else if (drumKit.getBoardVersion() == BoardVersion::V1_2) {
+    generalNode[GENERAL_BOARD] = "1.2";
+  }
+
   generalNode[GENERAL_GATETIME] = drumKit.getGateTime();
 
   generalNode[GENERAL_MIDI_OUTPUT_MODE] = midiOutputModeToString(drumKit.getMidiOutputMode());
