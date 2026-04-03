@@ -110,6 +110,6 @@ void DrumIO::getMemoryStats(uint32_t& total, uint32_t& free) {
   free = 0;
 }
 
-pin_size_t DrumIO::getMidiTxPin(arduino::HardwareSerial& serial) {
+pin_size_t DrumIO::getMidiTxPin(HardwareSerial& serial) {
   return PIN_UNUSED;
 }

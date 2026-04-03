@@ -278,7 +278,7 @@ void DrumIO::getMemoryStats(uint32_t& total, uint32_t& free) {
   free = rp2040.getFreeHeap();
 }
 
-pin_size_t DrumIO::getMidiTxPin(arduino::HardwareSerial& serial) {
+pin_size_t DrumIO::getMidiTxPin(HardwareSerial& serial) {
   if (&serial == &SerialTx2 || &serial == &Serial2) {
     return drumKit.getBoardVersion() == BoardVersion::V1_1
         ? PIN_MIDI_SERIAL2_TX_BOARD_V1_1

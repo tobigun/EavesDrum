@@ -61,5 +61,5 @@ public:
    * Returns the TX pin to use for the selected serial port for MIDI output,
    * or PIN_UNUSED to use the default pin.
    */
-  static pin_size_t getMidiTxPin(arduino::HardwareSerial& serial);
+  static pin_size_t getMidiTxPin(HardwareSerial& serial);
 };
