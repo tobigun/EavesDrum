@@ -161,6 +161,7 @@ public:
 
   DrumSettings& getSettings() { return settings; }
   const DrumSettings& getSettings() const { return settings; }
+  void reinitializeSettings();
 
   const DrumMappings& getMappings() const { return mappings ? *mappings : fallbackMappings; }
   void setMappings(DrumMappings* mappings) { this->mappings = mappings; }
