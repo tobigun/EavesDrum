@@ -8,7 +8,7 @@
         "board": { "enum": ["1.1", "1.2"] },
         "gateTimeMs": { "type": "integer" },
         "midiOutputMode": { "enum": [
-          "UsbClient",
+          "UsbDevice",
           "UsbHost",
           "SerialDin",
           "BleClient",
