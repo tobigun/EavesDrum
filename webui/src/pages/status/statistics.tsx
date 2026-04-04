@@ -77,7 +77,7 @@ export function StatisticsTable() {
             <>
               <Box>Sensor Polling Interval:</Box><Box>{pollingInfo}</Box>
               <Box>CPU Frequency:</Box><Box>{statsInfo.statsJson.cpuFreq  / 1000000} MHz</Box>
-              <Box>Heap (Used / Total):</Box><Box>{memInfo}</Box>
+              <Box>Heap (Free / Total):</Box><Box>{memInfo}</Box>
             </>
         }
       </InfoBox>
