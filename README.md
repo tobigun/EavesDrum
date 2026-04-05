@@ -144,10 +144,10 @@ System overview:
     - This can be used to connect to a device that can act as a Bluetooth LE MIDI Server, e.g. EFNOTE's 3/5/7 drum modules.
   - Bluetooth LE Server (Pico2W only)
     - Activate the BLE Server mode and connect a smartphone or tablet to EavesDrum and trigger sounds in an app. This can also be used to connect a computer wireless. 
-    - Tested with Android (smartphone) and Windows (PC).
-      -  On Android most MIDI apps will require the "MIDI+BTLE" app to use BLE as they do not support it directly.
-      - Windows does not support BLE MIDI out-of-the-box. You will need a BLE connector app like [BLE-MIDI Bridge](https://github.com/Maxime-J/BLE-MIDI-Bridge) or [MIDIberry](https://apps.microsoft.com/detail/9n39720h2m05) together with a virtual loopback MIDI cable software like [loopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html).
-      - macOS or iOS has not been tested yet but might work
+    - Tested with: and Windows (PC).
+      - Android (smartphone): works, but most MIDI apps will require the "MIDI+BTLE" app to use BLE as they do not support it directly.
+      - Windows (PC): does not support BLE MIDI out-of-the-box. You will need a BLE connector app like [BLE-MIDI Bridge](https://github.com/Maxime-J/BLE-MIDI-Bridge) or [MIDIberry](https://apps.microsoft.com/detail/9n39720h2m05) together with a virtual loopback MIDI cable software like [loopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html).
+      - iOS (iPad): works with Garage Band out of the box
   - Guitar Hero Drum-Kit (SPI)
     - If you have an old Guitar Hero Drum-Kit (e.g. for the Wii), attach EavesDrum to the controllers internal SPI connector and play Guitar Hero on your retro console with your modern drum kit.
 - **MIDI Mappings:** <a id="midi-mappings"></a>
@@ -207,7 +207,7 @@ All you need is:
       - A PC or Mac is recommended.
         - Although there is no minimum requirement, a slow CPU might increase the [Latency](#latency).
         - USB and Bluetooth LE is supported
-      - An Apple iPad with Garage Band might also work (although untested) with either USB-C (or an Apple Camera Connection Kit for Lightning connectors) or with Bluetooth LE.
+      - An Apple iPad with Garage Band also works - either with USB-C (or an Apple Camera Connection Kit for Lightning connectors) or with Bluetooth LE.
       -  Android smartphones / tablets also work (via USB or Bluetooth LE) but lack good drumming apps.
     - A decent audio interface with low latency, preferably one with dedicated ASIO drivers. See [the section about latency](#latency) for more information.
     - Something to drum on, i.e. drum pads, cymbals and a Hi-Hat pedal. Or just a cheap piezo if you want to DIY your own drum.
