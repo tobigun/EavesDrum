@@ -32,6 +32,10 @@
 #include "pio_usb.h"
 #include "drum_io.h"
 #include "webui.h"
+#include "drum_kit.h"
+
+#define PIO_USB_DP_PIN 6 // default: use pins 6 (D+) and 7 (D-) on dedicated USB connector
+#define PIO_USB_DP_PIN_BOARD_V1_1 16 // use pins 16 (D+) and 17 (D-) on 50-pin expansion port. Pins 6+7 are blocked by mux address pins
 
 static uint8_t dev_idx = TUSB_INDEX_INVALID_8;
 
@@ -81,8 +85,8 @@ void MidiTransport_TinyUsbHost::begin() {
     return;
   }
 
-  pio_usb_configuration_t pio_cfg =   {
-    PIO_USB_DP_PIN_DEFAULT,
+  pio_usb_configuration_t pio_cfg = {
+    drumKit.getBoardVersion() == BoardVersion::V1_1 ? PIO_USB_DP_PIN_BOARD_V1_1 : PIO_USB_DP_PIN,
     (uint8_t) pioIndex, // TX PIO
     PIO_SM_USB_TX_DEFAULT,
     (uint8_t) dmaChannelTx,

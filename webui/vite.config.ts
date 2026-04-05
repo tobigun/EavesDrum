@@ -48,7 +48,6 @@ export default defineConfig(({ mode }) => {
       port: 8080,
       strictPort: true,
       proxy: {
-        '/config.jsonc': `http://${proxyHost}`,
         '/config.yaml': `http://${proxyHost}`,
         '/ws': {
           target: `ws://${proxyHost}/`,

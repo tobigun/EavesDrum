@@ -40,7 +40,6 @@ def create_version_header():
 def copy_config():
     print("Copy config/config.yaml to data directory...")
     shutil.copy('config/config.yaml', 'data/config.yaml')
-    shutil.copy('config/config.jsonc', 'data/config.jsonc')
 
 def before_littlefs(source, target, env):
     print("Building UI...")

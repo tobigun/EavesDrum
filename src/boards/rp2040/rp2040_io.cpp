@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "drum_io.h"
+#include "drum_kit.h"
 #include "log.h"
+#include "touch.h"
+#include "SerialTxUART.h"
 
 #include <Arduino.h>
 #include <hardware/adc.h>
@@ -15,9 +18,15 @@
 #define PIN_LED_0 LED_BUILTIN // built-in LED (green)
 #define PIN_LED_1 4 // red
 #define PIN_LED_2 5 // white/blue
+#if 0
+#define PIN_LED_3 9 // yellow
+#endif
 
 #define PIN_SWITCH_1 2
 #define PIN_SWITCH_2 3
+
+#define PIN_MIDI_SERIAL2_TX 8
+#define PIN_MIDI_SERIAL2_TX_BOARD_V1_1 20
 
 // ADC_BASE_PIN define does not work correctly here, use our own definition
 #define ADC_PICO_PICO2_BASE_PIN 26
@@ -33,6 +42,11 @@
 static dma_channel_config adcDmaCfg;
 static uint adcDmaChannel;
 static uint32_t resetScheduledAtMs = 0;
+
+//#define USE_TOUCH
+#ifdef USE_TOUCH
+TouchSensor touchSensor(16);
+#endif
 
 static void ledInit();
 static void buttonInit();
@@ -60,6 +74,10 @@ void DrumIO::setup(bool usePwmPowerSupply) {
   }
 
   adcInit();
+
+#ifdef USE_TOUCH
+  touchSensor.init();
+#endif
 }
 
 static void adcInit() {
@@ -158,6 +176,11 @@ static void ledInit() {
   pinMode(PIN_LED_2, OUTPUT);
   digitalWrite(PIN_LED_2, LOW);
 
+#ifdef PIN_LED_3
+  pinMode(PIN_LED_3, OUTPUT);
+  digitalWrite(PIN_LED_3, LOW);
+#endif
+
   ledTest();
 }
 
@@ -174,6 +197,12 @@ void DrumIO::led(LedId id, bool enable) {
     ledPin = PIN_LED_1;
   } else if (id == LedId::MidiConnected) {
     ledPin = PIN_LED_0;
+  } else if (id == LedId::WatchDog) {
+#ifdef PIN_LED_3
+    ledPin = PIN_LED_3;
+#else
+    return;
+#endif
   } else {
     return;
   }
@@ -221,6 +250,10 @@ void DrumIO::update() {
   watchdog_update();
 #endif
 
+#ifdef USE_TOUCH
+  touchSensor.sense();
+#endif
+
   if (resetScheduledAtMs != 0 && millis() >= resetScheduledAtMs) {
     reset();
   }
@@ -234,4 +267,22 @@ bool DrumIO::requestReset(uint32_t delayMs) {
     resetScheduledAtMs = millis() + delayMs;
   }
   return true;
+}
+
+uint32_t DrumIO::getCpuFrequency() {
+  return rp2040.f_cpu();
+}
+
+void DrumIO::getMemoryStats(uint32_t& total, uint32_t& free) {
+  total = rp2040.getTotalHeap();
+  free = rp2040.getFreeHeap();
+}
+
+pin_size_t DrumIO::getMidiTxPin(HardwareSerial& serial) {
+  if (&serial == &SerialTx2 || &serial == &Serial2) {
+    return drumKit.getBoardVersion() == BoardVersion::V1_1
+        ? PIN_MIDI_SERIAL2_TX_BOARD_V1_1
+        : PIN_MIDI_SERIAL2_TX;
+  }
+  return PIN_UNUSED;
 }

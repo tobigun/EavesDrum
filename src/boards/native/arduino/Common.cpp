@@ -6,8 +6,6 @@
 #include <sys/time.h>
 #include <thread>
 
-SerialDummy Serial;
-
 void interrupts() {}
 void noInterrupts() {}
 

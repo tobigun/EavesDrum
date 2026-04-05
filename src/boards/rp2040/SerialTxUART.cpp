@@ -1,0 +1,563 @@
+/*
+    Serial-over-UART for the Raspberry Pi Pico RP2040
+
+    Copyright (c) 2021 Earle F. Philhower, III <earlephilhower@yahoo.com>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+#include "SerialTxUART.h"
+#include "CoreMutex.h"
+#include <hardware/uart.h>
+#include <hardware/gpio.h>
+
+// SerialEvent functions are weak, so when the user doesn't define them,
+// the linker just sets their address to 0 (which is checked below).
+// The Serialx_available is just a wrapper around Serialx.available(),
+// but we can refer to it weakly so we don't pull in the entire
+// HardwareSerial instance if the user doesn't also refer to it.
+extern void serialEvent1() __attribute__((weak));
+extern void serialEvent2() __attribute__((weak));
+
+bool SerialTxUART::setRX(pin_size_t pin) {
+#if defined(PICO_RP2350) && !PICO_RP2350A // RP2350B
+    constexpr uint64_t valid[2] = { __bitset({1, 3, 13, 15, 17, 19, 29, 31, 33, 35, 45, 47}) /* UART0 */,
+                                    __bitset({5, 7, 9, 11, 21, 23, 25, 27, 37, 39, 41, 43})  /* UART1 */
+                                  };
+#elif defined(PICO_RP2350)
+    constexpr uint64_t valid[2] = { __bitset({1, 3, 13, 15, 17, 19, 29})     /* UART0 */,
+                                    __bitset({5, 7, 9, 11, 21, 23, 25, 27})  /* UART1 */
+                                  };
+#else
+    constexpr uint64_t valid[2] = { __bitset({1, 13, 17, 29}) /* UART0 */,
+                                    __bitset({5, 9, 21, 25})  /* UART1 */
+                                  };
+#endif
+
+    if ((!_running) && ((pin == UART_PIN_NOT_DEFINED) || ((1LL << pin) & valid[uart_get_index(_uart)]))) {
+        _rx = pin;
+        return true;
+    }
+
+    if (_rx == pin) {
+        return true;
+    }
+
+    if (_running) {
+        panic("FATAL: Attempting to set Serial%d.RX while running", uart_get_index(_uart) + 1);
+    } else {
+        panic("FATAL: Attempting to set Serial%d.RX to illegal pin %d", uart_get_index(_uart) + 1, pin);
+    }
+    return false;
+}
+
+bool SerialTxUART::setTX(pin_size_t pin) {
+#if defined(PICO_RP2350) && !PICO_RP2350A // RP2350B
+    constexpr uint64_t valid[2] = { __bitset({0, 2, 12, 14, 16, 18, 28, 30, 32, 34, 44, 46}) /* UART0 */,
+                                    __bitset({4, 6, 8, 10, 20, 22, 24, 26, 36, 38, 40, 42})  /* UART1 */
+                                  };
+#elif defined(PICO_RP2350)
+    constexpr uint64_t valid[2] = { __bitset({0, 2, 12, 14, 16, 18, 28})     /* UART0 */,
+                                    __bitset({4, 6, 8, 10, 20, 22, 24, 26})  /* UART1 */
+                                  };
+#else
+    constexpr uint64_t valid[2] = { __bitset({0, 12, 16, 28}) /* UART0 */,
+                                    __bitset({4, 8, 20, 24})  /* UART1 */
+                                  };
+#endif
+    if ((!_running) && ((1LL << pin) & valid[uart_get_index(_uart)])) {
+        _tx = pin;
+        return true;
+    }
+
+    if (_tx == pin) {
+        return true;
+    }
+
+    if (_running) {
+        panic("FATAL: Attempting to set Serial%d.TX while running", uart_get_index(_uart) + 1);
+    } else {
+        panic("FATAL: Attempting to set Serial%d.TX to illegal pin %d", uart_get_index(_uart) + 1, pin);
+    }
+    return false;
+}
+
+bool SerialTxUART::setRTS(pin_size_t pin) {
+#if defined(PICO_RP2350) && !PICO_RP2350A // RP2350B
+    constexpr uint64_t valid[2] = { __bitset({3, 15, 19, 31, 35, 47}) /* UART0 */,
+                                    __bitset({7, 11, 23, 27, 39, 43})  /* UART1 */
+                                  };
+#else
+    constexpr uint64_t valid[2] = { __bitset({3, 15, 19}) /* UART0 */,
+                                    __bitset({7, 11, 23, 27})  /* UART1 */
+                                  };
+#endif
+    if ((!_running) && ((pin == UART_PIN_NOT_DEFINED) || ((1LL << pin) & valid[uart_get_index(_uart)]))) {
+        _rts = pin;
+        return true;
+    }
+
+    if (_rts == pin) {
+        return true;
+    }
+
+    if (_running) {
+        panic("FATAL: Attempting to set Serial%d.RTS while running", uart_get_index(_uart) + 1);
+    } else {
+        panic("FATAL: Attempting to set Serial%d.RTS to illegal pin %d", uart_get_index(_uart) + 1, pin);
+    }
+    return false;
+}
+
+bool SerialTxUART::setCTS(pin_size_t pin) {
+#if defined(PICO_RP2350) && !PICO_RP2350A // RP2350B
+    constexpr uint64_t valid[2] = { __bitset({2, 14, 18, 30, 34, 46}) /* UART0 */,
+                                    __bitset({6, 10, 22, 26, 38, 42})  /* UART1 */
+                                  };
+#else
+    constexpr uint64_t valid[2] = { __bitset({2, 14, 18}) /* UART0 */,
+                                    __bitset({6, 10, 22, 26})  /* UART1 */
+                                  };
+#endif
+    if ((!_running) && ((pin == UART_PIN_NOT_DEFINED) || ((1LL << pin) & valid[uart_get_index(_uart)]))) {
+        _cts = pin;
+        return true;
+    }
+
+    if (_cts == pin) {
+        return true;
+    }
+
+    if (_running) {
+        panic("FATAL: Attempting to set Serial%d.CTS while running", uart_get_index(_uart) + 1);
+    } else {
+        panic("FATAL: Attempting to set Serial%d.CTS to illegal pin %d", uart_get_index(_uart) + 1, pin);
+    }
+    return false;
+}
+bool SerialTxUART::setPollingMode(bool mode) {
+    if (_running) {
+        return false;
+    }
+    _polling = mode;
+    return true;
+}
+
+bool SerialTxUART::setFIFOSize(size_t size) {
+    if (!size || _running) {
+        return false;
+    }
+    _fifoSize = size + 1; // Always 1 unused entry
+    return true;
+}
+
+SerialTxUART::SerialTxUART(uart_inst_t *uart, pin_size_t tx, pin_size_t rx, pin_size_t rts, pin_size_t cts) {
+    _uart = uart;
+    _tx = tx;
+    _rx = rx;
+    _rts = rts;
+    _cts = cts;
+    mutex_init(&_mutex);
+    mutex_init(&_fifoMutex);
+    _invertTX = false;
+    _invertRX = false;
+    _invertControl = false;
+}
+
+// Does the selected TX/RX need UART_AUX function (rp2350)
+static gpio_function_t __gpioFunction(int pin) {
+    switch (pin) {
+#if defined(PICO_RP2350)
+    case 2:
+    case 3:
+    case 6:
+    case 7:
+    case 10:
+    case 11:
+    case 14:
+    case 15:
+    case 18:
+    case 19:
+    case 22:
+    case 23:
+    case 26:
+    case 27:
+    case 30:
+    case 31:
+    case 34:
+    case 35:
+    case 38:
+    case 39:
+    case 42:
+    case 43:
+    case 46:
+    case 47:
+        return GPIO_FUNC_UART_AUX;
+#endif
+    default:
+        return GPIO_FUNC_UART;
+    }
+}
+
+void SerialTxUART::begin(unsigned long baud, uint16_t config) {
+    if (_running) {
+        end();
+    }
+    _overflow = false;
+    _queue = new LocklessQueue<uint8_t>(_fifoSize);
+    _baud = baud;
+
+    _fcnTx = gpio_get_function(_tx);
+    gpio_set_function(_tx, __gpioFunction(_tx));
+    gpio_set_outover(_tx, _invertTX ? 1 : 0);
+    if (_rx != UART_PIN_NOT_DEFINED) {
+        _fcnRx = gpio_get_function(_rx);
+        gpio_set_function(_rx, __gpioFunction(_rx));
+        gpio_set_inover(_rx, _invertRX ? 1 : 0);
+    }
+    if (_rts != UART_PIN_NOT_DEFINED) {
+        _fcnRts = gpio_get_function(_rts);
+        gpio_set_function(_rts, GPIO_FUNC_UART);
+        gpio_set_outover(_rts, _invertControl ? 1 : 0);
+    }
+    if (_cts != UART_PIN_NOT_DEFINED) {
+        _fcnCts = gpio_get_function(_cts);
+        gpio_set_function(_cts, GPIO_FUNC_UART);
+        gpio_set_inover(_cts, _invertControl ? 1 : 0);
+    }
+
+    _actualBaud = uart_init(_uart, baud);
+    int bits, stop;
+    uart_parity_t parity;
+    switch (config & SERIAL_PARITY_MASK) {
+    case SERIAL_PARITY_EVEN:
+        parity = UART_PARITY_EVEN;
+        break;
+    case SERIAL_PARITY_ODD:
+        parity = UART_PARITY_ODD;
+        break;
+    default:
+        parity = UART_PARITY_NONE;
+        break;
+    }
+    switch (config & SERIAL_STOP_BIT_MASK) {
+    case SERIAL_STOP_BIT_1:
+        stop = 1;
+        break;
+    default:
+        stop = 2;
+        break;
+    }
+    switch (config & SERIAL_DATA_MASK) {
+    case SERIAL_DATA_5:
+        bits = 5;
+        break;
+    case SERIAL_DATA_6:
+        bits = 6;
+        break;
+    case SERIAL_DATA_7:
+        bits = 7;
+        break;
+    default:
+        bits = 8;
+        break;
+    }
+    uart_set_format(_uart, bits, stop, parity);
+    uart_set_hw_flow(_uart, _cts != UART_PIN_NOT_DEFINED, _rts != UART_PIN_NOT_DEFINED);
+
+    if (!_polling) {
+        if (_uart == uart0) {
+            irq_set_exclusive_handler(UART0_IRQ, _uart0IRQ);
+            irq_set_enabled(UART0_IRQ, true);
+        } else {
+            irq_set_exclusive_handler(UART1_IRQ, _uart1IRQ);
+            irq_set_enabled(UART1_IRQ, true);
+        }
+        // Set the IRQ enables and FIFO level to minimum
+        uart_set_irq_enables(_uart, true, false);
+    } else {
+        // Polling mode has no IRQs used
+    }
+    _break = false;
+    _running = true;
+}
+
+void SerialTxUART::end() {
+    if (!_running) {
+        return;
+    }
+    _running = false;
+    if (!_polling) {
+        if (_uart == uart0) {
+            irq_set_enabled(UART0_IRQ, false);
+        } else {
+            irq_set_enabled(UART1_IRQ, false);
+        }
+    }
+
+    // Paranoia - ensure nobody else is using anything here at the same time
+    mutex_enter_blocking(&_mutex);
+    mutex_enter_blocking(&_fifoMutex);
+    uart_deinit(_uart);
+    delete _queue;
+    // Reset the mutexes once all is off/cleaned up
+    mutex_exit(&_fifoMutex);
+    mutex_exit(&_mutex);
+
+    // Restore pin functions
+    gpio_set_function(_tx, _fcnTx);
+    gpio_set_outover(_tx, 0);
+    if (_rx != UART_PIN_NOT_DEFINED) {
+        gpio_set_function(_rx, _fcnRx);
+        gpio_set_inover(_rx, 0);
+    }
+    if (_rts != UART_PIN_NOT_DEFINED) {
+        gpio_set_function(_rts, _fcnRts);
+        gpio_set_outover(_rts, 0);
+    }
+    if (_cts != UART_PIN_NOT_DEFINED) {
+        gpio_set_function(_cts, _fcnCts);
+        gpio_set_inover(_cts, 0);
+    }
+}
+
+void SerialTxUART::_pumpFIFO() {
+    // Use the _fifoMutex to guard against the other core potentially
+    // running the IRQ (since we can't disable their IRQ handler).
+    // We guard against this core by disabling the IRQ handler and
+    // re-enabling if it was previously enabled at the end.
+    auto irqno = (_uart == uart0) ? UART0_IRQ : UART1_IRQ;
+    bool enabled = irq_is_enabled(irqno);
+    irq_set_enabled(irqno, false);
+    mutex_enter_blocking(&_fifoMutex);
+    _handleIRQ(false);
+    mutex_exit(&_fifoMutex);
+    irq_set_enabled(irqno, enabled);
+}
+
+int SerialTxUART::peek() {
+    CoreMutex m(&_mutex);
+    if (!_running || !m) {
+        return -1;
+    }
+    if (_polling) {
+        _handleIRQ(false);
+    } else {
+        _pumpFIFO();
+    }
+
+    uint8_t ret;
+    if (_queue->peek(&ret)) {
+        return ret;
+    } else {
+        return -1;
+    }
+}
+
+int SerialTxUART::read() {
+    CoreMutex m(&_mutex);
+    if (!_running || !m) {
+        return -1;
+    }
+    if (_polling) {
+        _handleIRQ(false);
+    } else {
+        _pumpFIFO();
+    }
+
+    uint8_t ret;
+    if (_queue->read(&ret)) {
+        return ret;
+    } else {
+        return -1;
+    }
+}
+
+bool SerialTxUART::overflow() {
+    if (!_running) {
+        return false;
+    }
+
+    if (_polling) {
+        _handleIRQ(false);
+    } else {
+        _pumpFIFO();
+    }
+
+    mutex_enter_blocking(&_fifoMutex);
+    bool ovf = _overflow;
+    _overflow = false;
+    mutex_exit(&_fifoMutex);
+
+    return ovf;
+}
+
+int SerialTxUART::available() {
+    CoreMutex m(&_mutex);
+    if (!_running || !m) {
+        return 0;
+    }
+    if (_polling) {
+        _handleIRQ(false);
+    } else {
+        _pumpFIFO();
+    }
+    return _queue->available();
+}
+
+int SerialTxUART::availableForWrite() {
+    CoreMutex m(&_mutex);
+    if (!_running || !m) {
+        return 0;
+    }
+    if (_polling) {
+        _handleIRQ(false);
+    }
+    return (uart_is_writable(_uart)) ? 1 : 0;
+}
+
+void SerialTxUART::flush() {
+    CoreMutex m(&_mutex);
+    if (!_running || !m) {
+        return;
+    }
+    if (_polling) {
+        _handleIRQ(false);
+    }
+    uart_tx_wait_blocking(_uart);
+}
+
+size_t SerialTxUART::write(uint8_t c) {
+    CoreMutex m(&_mutex);
+    if (!_running || !m) {
+        return 0;
+    }
+    if (_polling) {
+        _handleIRQ(false);
+    }
+    uart_putc_raw(_uart, c);
+    return 1;
+}
+
+size_t SerialTxUART::write(const uint8_t *p, size_t len) {
+    CoreMutex m(&_mutex);
+    if (!_running || !m) {
+        return 0;
+    }
+    if (_polling) {
+        _handleIRQ(false);
+    }
+    size_t cnt = len;
+    while (cnt) {
+        uart_putc_raw(_uart, *p);
+        cnt--;
+        p++;
+    }
+    return len;
+}
+
+SerialTxUART::operator bool() {
+    return _running;
+}
+
+bool SerialTxUART::getBreakReceived() {
+    if (!_running) {
+        return false;
+    }
+
+    if (_polling) {
+        _handleIRQ(false);
+    } else {
+        _pumpFIFO();
+    }
+
+    mutex_enter_blocking(&_fifoMutex);
+    bool break_received = _break;
+    _break = false;
+    mutex_exit(&_fifoMutex);
+
+    return break_received;
+}
+
+void arduino::serialEvent1Run(void) {
+    if (serialEvent1 && Serial1.available()) {
+        serialEvent1();
+    }
+}
+
+void arduino::serialEvent2Run(void) {
+    if (serialEvent2 && Serial2.available()) {
+        serialEvent2();
+    }
+}
+
+// IRQ handler, called when FIFO > 1/8 full or when it had held unread data for >32 bit times
+void __not_in_flash_func(SerialTxUART::_handleIRQ)(bool inIRQ) {
+    if (inIRQ) {
+        uint32_t owner;
+        if (!mutex_try_enter(&_fifoMutex, &owner)) {
+            // Main app on the other core has the mutex so it is
+            // in the process of pulling data out of the HW FIFO
+            return;
+        }
+    }
+    // ICR is write-to-clear
+    uart_get_hw(_uart)->icr = UART_UARTICR_RTIC_BITS | UART_UARTICR_RXIC_BITS;
+    while (uart_is_readable(_uart)) {
+        uint32_t raw = uart_get_hw(_uart)->dr;
+        if (raw & 0x400) {
+            // break!
+            _break = true;
+            continue;
+        } else if (raw & 0x300) {
+            // Framing, Parity Error.  Ignore this bad char
+            continue;
+        }
+        uint8_t val = raw & 0xff;
+        if (!_queue->write(val)) {
+            _overflow = true;
+        }
+    }
+    if (inIRQ) {
+        mutex_exit(&_fifoMutex);
+    }
+}
+
+#ifndef __SERIAL1_DEVICE
+#define __SERIAL1_DEVICE uart0
+#endif
+#ifndef __SERIAL2_DEVICE
+#define __SERIAL2_DEVICE uart1
+#endif
+
+SerialTxUART SerialTx1(__SERIAL1_DEVICE, PIN_SERIAL1_TX);
+SerialTxUART SerialTx2(__SERIAL2_DEVICE, PIN_SERIAL2_TX);
+
+
+void __not_in_flash_func(SerialTxUART::_uart0IRQ)() {
+    if (__SERIAL1_DEVICE == uart0) {
+        SerialTx1._handleIRQ();
+    } else {
+        SerialTx2._handleIRQ();
+    }
+}
+
+void __not_in_flash_func(SerialTxUART::_uart1IRQ)() {
+    if (__SERIAL2_DEVICE == uart1) {
+        SerialTx2._handleIRQ();
+    } else {
+        SerialTx1._handleIRQ();
+    }
+}

@@ -29,6 +29,7 @@
 #define CONFIG_NAME_PROP "name"
 #define CONFIG_ROLE_PROP "role"
 #define CONFIG_CONNECTOR_PROP "connector"
+#define CONFIG_TOUCH_SENSOR_PROP "touchSensor"
 #define CONFIG_ENABLED_PROP "enabled"
 #define CONFIG_AUTOCALIBRATE_PROP "autoCalibrate"
 
@@ -148,6 +149,20 @@ void WebUI::handleSetPadConfig(JsonObjectConst configNode, AsyncWebSocketClient*
       sendConfigRequired = true;
     }
 
+    if (!nodeValue[CONFIG_TOUCH_SENSOR_PROP].isUnbound()) {
+      DrumConnector* touchSensor = nullptr;
+      if (!nodeValue[CONFIG_TOUCH_SENSOR_PROP].isNull()) {
+        String touchSensorId = nodeValue[CONFIG_TOUCH_SENSOR_PROP];
+        touchSensor = drumKit->getConnectorById(touchSensorId);
+        if (!touchSensor) {
+          eventLog.log(Level::Error, String("Disable as touchSensorId is invalid: ") + touchSensorId);
+        }
+      }
+      pad.setTouchSensor(touchSensor);
+      isConfigDirty = true;
+      sendConfigRequired = true;
+    }
+
     if (nodeValue[CONFIG_NAME_PROP].is<String>()) {
       String name = nodeValue[CONFIG_NAME_PROP];
       pad.setName(name);
@@ -195,6 +210,7 @@ void WebUI::handleSetSettingsRequest(AsyncWebSocketClient* client, JsonObjectCon
 }
 
 void WebUI::handleSetConfigRequest(AsyncWebSocketClient* client, JsonObjectConst configNode) {
+  // merge old and new config section-wise (i.e. only replace changed sections) as not all sections might be included in the new config 
   JsonDocument configDoc = DrumConfigMapper::getDrumKitConfigAsJson(*drumKit);
   for (JsonPairConst keyValuePair : configNode) {
     configDoc[keyValuePair.key()] = keyValuePair.value();
@@ -277,6 +293,14 @@ void WebUI::handleStatsRequest(AsyncWebSocketClient* client) {
   } else {
     statsNode["updateCountPer30s"] = nullptr;
   }
+
+  statsNode["cpuFreq"] = DrumIO::getCpuFrequency();
+
+  uint32_t totalHeap, freeHeap;
+  DrumIO::getMemoryStats(totalHeap, freeHeap);
+  JsonObject memNode = statsNode["mem"].to<JsonObject>();
+  memNode["freeHeap"] = freeHeap;
+  memNode["totalHeap"] = totalHeap;
 
   sendJsonToWebSocket(doc, client);
 }

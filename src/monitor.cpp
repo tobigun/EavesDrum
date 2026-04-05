@@ -142,7 +142,13 @@ bool DrumMonitor::addPadHistoryEntry(const DrumPad& pad) {
 
   // add a gap if no sensor value was available for some time
   if (timeUntilPreviousUs > 2 * HISTORY_MIN_WRITE_INTERVAL_US) {
-    history.addGapEntry(HISTORY_MIN_WRITE_INTERVAL_US);
+    if (history.getNumberValuesAfterLastGap() == 1) {
+      // single points are not shown in the line graph, so we duplicate the last value before the gap to have at least a two point line segment
+      history.addEntryRaw(HISTORY_MIN_WRITE_INTERVAL_US / 2, false, history.getLastEntry().values);
+      history.addGapEntry(HISTORY_MIN_WRITE_INTERVAL_US / 2);
+    } else {
+      history.addGapEntry(HISTORY_MIN_WRITE_INTERVAL_US);
+    }
     timeUntilPreviousUs -= HISTORY_MIN_WRITE_INTERVAL_US;
   }
 

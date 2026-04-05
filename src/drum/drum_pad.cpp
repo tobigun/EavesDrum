@@ -61,3 +61,9 @@ void DrumPad::sense(time_us_t senseTimeUs) {
     break;
   }
 }
+
+void DrumPad::reinitializeSettings() {
+  if (settings.chokeType != ChokeType::TouchSensor) {
+    touchSensor = nullptr;
+  }
+}

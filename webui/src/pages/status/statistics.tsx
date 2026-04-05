@@ -12,6 +12,11 @@ import { InfoBox } from '@/components/info-box';
 
 interface StatisticsJson {
     updateCountPer30s?: number;
+    mem: {
+      freeHeap: number;
+      totalHeap: number;
+    };
+    cpuFreq: number;
 }
 
 interface StatisticsInfo {
@@ -47,6 +52,8 @@ export function StatisticsTable() {
 
   let lastRetrieval = "<n/a>";
   let pollingInfo = "<n/a>";
+  let memInfo = "-";
+
   if (statsInfo) {
     lastRetrieval = statsInfo.lastRetrievalDate.toISOString();
     if (statsInfo.statsJson.updateCountPer30s) {
@@ -54,8 +61,11 @@ export function StatisticsTable() {
       const updateCount = statsInfo.statsJson.updateCountPer30s;
       const updatesPerSecond = Math.round(updateCount / measurementIntervalSec);
       const pollingIntervalUs = Math.round(measurementIntervalSec * 1000 * 1000 / updateCount);
-      pollingInfo = `${pollingIntervalUs}µs (${updatesPerSecond} polls/s)`;
+      pollingInfo = `${pollingIntervalUs} µs (${updatesPerSecond} polls/s)`;
     }
+
+    const statsMem = statsInfo.statsJson.mem;
+    memInfo = `${Math.round(statsMem.freeHeap / 1024)} / ${Math.round(statsMem.totalHeap / 1024)} KB`;
   }
 
   return (
@@ -66,6 +76,8 @@ export function StatisticsTable() {
           !statsInfo ? null :
             <>
               <Box>Sensor Polling Interval:</Box><Box>{pollingInfo}</Box>
+              <Box>CPU Frequency:</Box><Box>{statsInfo.statsJson.cpuFreq  / 1000000} MHz</Box>
+              <Box>Heap (Free / Total):</Box><Box>{memInfo}</Box>
             </>
         }
       </InfoBox>

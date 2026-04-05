@@ -10,6 +10,7 @@
 #include "event_log.h"
 #include "types.h"
 #include "sensing/sensing.h"
+#include "touch.h"
 
 #define STRINGIFY(s) #s
 #define STRINGIFY_VALUE(s) STRINGIFY(s)
@@ -76,10 +77,39 @@ public:
   PadType getPadType() const { return settings.padType; }
 
   DrumConnector* getConnector() const { return connector; }
-  void setConnector(DrumConnector* connector) { this->connector = connector; }
+  
+  void setConnector(DrumConnector* connector) {
+    this->connector = connector;
+    if (connector) {
+      connector->start();
+    }
+  }
 
   bool isConnectorActive() const {
     return connector && connector->getPinCount() > 0;
+  }
+
+  DrumConnector* getTouchSensor() const { return touchSensor; }
+
+  void setTouchSensor(DrumConnector* touchSensor) {
+    if (!touchSensor) {
+      this->touchSensor = nullptr;
+      return;
+    }
+
+    if (touchSensor->getPinCount() == 0) {
+      eventLog.log(Level::Error, String("Pad[") + name + "]: Touch sensor[" + touchSensor->getId() + "] has no pins");
+      return;
+    }
+
+    DrumPin& touchPin = touchSensor->getPin(0);
+    if (touchPin.mux != 0) {
+      eventLog.log(Level::Error, String("Pad[") + name + "]: Touch sensor[" + touchSensor->getId() + "][0] uses multiplexed pin");
+      return;
+    }
+
+    this->touchSensor = touchSensor;
+    touchSensorManager.addSensor(touchPin);
   }
 
   /**
@@ -131,6 +161,7 @@ public:
 
   DrumSettings& getSettings() { return settings; }
   const DrumSettings& getSettings() const { return settings; }
+  void reinitializeSettings();
 
   const DrumMappings& getMappings() const { return mappings ? *mappings : fallbackMappings; }
   void setMappings(DrumMappings* mappings) { this->mappings = mappings; }
@@ -205,6 +236,8 @@ private:
 
   DrumPad* pedalPad = nullptr;
   DrumConnector* connector = nullptr;
+
+  DrumConnector* touchSensor = nullptr;
 
   SensingState sensingState = SensingState::PeakDetect;
 

@@ -5,9 +5,10 @@
     "general": {
       "type": "object",
       "properties": {
+        "board": { "enum": ["1.1", "1.2"] },
         "gateTimeMs": { "type": "integer" },
         "midiOutputMode": { "enum": [
-          "UsbClient",
+          "UsbDevice",
           "UsbHost",
           "SerialDin",
           "BleClient",
@@ -88,6 +89,7 @@
           "enabled": { "type": "boolean" },
           "connector": { "type": "string" },
           "pedal": { "type": "string" },
+          "touchSensor": { "type": "string" },
           "settings": {
             "type": "object",
             "properties": {

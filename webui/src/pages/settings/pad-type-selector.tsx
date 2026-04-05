@@ -9,8 +9,10 @@ import CymbalIcon from '@mui/icons-material/Album';
 import DrumIcon from '@mui/icons-material/CircleOutlined';
 import ZoneIcon from '@mui/icons-material/AdsClick';
 import PedalIcon from '@mui/icons-material/ClosedCaption';
-import ChokeIcon from '@mui/icons-material/MusicOff';
-import NoChokeIcon from '@mui/icons-material/MusicNote';
+import ChokeRimIcon from '@mui/icons-material/TripOrigin';
+import ChokeCupIcon from '@mui/icons-material/RadioButtonChecked';
+import TouchIcon from '@mui/icons-material/TouchApp';
+import NoChokeIcon from '@mui/icons-material/NotInterested';
 import PiezoIcon from '@mui/icons-material/RadioButtonChecked';
 import SwitchIcon from '@mui/icons-material/ToggleOn';
 import { NestedList, NestedListItemInfo } from "./nested-list";
@@ -153,13 +155,23 @@ function getChokeTypeItems(padType: PadType, zoneCount: number): NestedListItemI
   if (padType != PadType.Cymbal || zoneCount < 2) {
     return []; // No choke for toms/snares and 1-zone cymbals
   }
+    
   return Object.values(ChokeType)
     .filter(chokeType => zoneCount >= 3 || chokeType !== ChokeType.Switch_Cup) // Cup choke only for 3-zone cymbals
     .map(chokeType => ({
       value: chokeType,
       name: formatChokeTypeNames(chokeType),
-      icon: chokeType === ChokeType.None ? <NoChokeIcon/> : <ChokeIcon />
+      icon: getChokeTypeIcon(chokeType)
     }));
+}
+
+function getChokeTypeIcon(chokeType: ChokeType): ReactElement {
+  switch (chokeType) {
+  case ChokeType.None: return <NoChokeIcon/>;
+  case ChokeType.Switch_Edge: return <ChokeRimIcon />;
+  case ChokeType.Switch_Cup: return <ChokeCupIcon />;
+  case ChokeType.TouchSensor: return <TouchIcon />;
+  }
 }
 
 function formatZoneCount(zoneCount: number): string {
@@ -195,5 +207,6 @@ function formatChokeTypeNames(value: ChokeType): string {
   case ChokeType.None: return 'No Choke';
   case ChokeType.Switch_Edge: return 'Choke: Edge';
   case ChokeType.Switch_Cup: return 'Choke: Cup';
+  case ChokeType.TouchSensor: return 'Choke: Touch';
   }
 }

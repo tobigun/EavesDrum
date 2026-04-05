@@ -63,6 +63,14 @@ bool PiezoSwitchSensing::isChoked(zone_size_t activeZoneCount) {
     return false;
   }
 
+  if (pad.settings.chokeType == ChokeType::TouchSensor) {
+    DrumConnector* touchSensor = pad.getTouchSensor();
+    if (touchSensor) {
+      return touchSensorManager.readSensor(touchSensor->getPin(0));
+    }
+    return false;
+  }
+
   zone_size_t chokeSwitchZoneIndex = (pad.settings.chokeType == ChokeType::Switch_Edge) ? 1 : 2;
   bool hasActiveChokeSwitch = activeZoneCount > chokeSwitchZoneIndex;
   if (!hasActiveChokeSwitch) {

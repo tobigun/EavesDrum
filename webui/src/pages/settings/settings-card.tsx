@@ -10,7 +10,7 @@ import { getHeaderBackground } from "@/common";
 import { Card, PanelIconToggleButton } from "@/components/card";
 import { GroupChip } from "@/components/group-chip";
 import { Switch } from "@/components/switch";
-import { ConnectorId, getPadIndexByName, PadType, updateInfo, updateConfig, useConfig } from "@config";
+import { ConnectorId, getPadIndexByName, PadType, updateInfo, updateConfig, useConfig, MuxPinConfig, Config, ChokeType } from "@config";
 import { connection, DrumCommand } from "@/connection/connection";
 import { recordButtonColor } from "./monitor/monitor-card";
 import { SettingsElements } from "./settings-pad";
@@ -70,6 +70,7 @@ function SettingsCard({ padIndex, padType }: {
       <PadTypeSelector padIndex={padIndex}/>
       <RoleInfo padRole={role} padIndex={padIndex} />
       <ConnectorInfo padIndex={padIndex} />
+      <TouchSensor padIndex={padIndex} />
       <SettingsElements padIndex={padIndex} padType={padType} />
     </Card>
   );
@@ -77,7 +78,7 @@ function SettingsCard({ padIndex, padType }: {
 
 function ConnectorInfo({ padIndex }: { padIndex: number }) {
   const connectorId = useConfig(config => config.pads[padIndex].connector);
-  const usedConnectors = useConfig(useShallow(config => new Set(config.pads.map(pad => pad.connector))));
+  const usedConnectors = useConfig(useShallow(config => getUsedConnectors(config)));
   useConfig(useShallow(config => connectorId ? config.connectors[connectorId].pins.length : 0)); // only used to trigger update
 
   const handleSelectChange = (event: SelectChangeEvent) => {
@@ -99,6 +100,40 @@ function ConnectorInfo({ padIndex }: { padIndex: number }) {
       }
     </Select>
   </SettingEntryContainer>;
+}
+
+function TouchSensor({ padIndex }: { padIndex: number }) {
+  const touchSensor = useConfig(config => config.pads[padIndex].touchSensor);
+  const usedConnectors = useConfig(useShallow(config => getUsedConnectors(config)));
+  const chokeType = useConfig(config => config.pads[padIndex].settings.chokeType);
+
+  const handleSelectChange = (event: SelectChangeEvent) => {
+    const newTouchSensor = event.target.value;
+    if (newTouchSensor !== touchSensor) {
+      const value = (newTouchSensor !== "-") ? newTouchSensor : (null as unknown as ConnectorId);
+      connection.sendSetPadConfigCommand(padIndex, {touchSensor: value});
+    }
+  };
+
+  return chokeType != ChokeType.TouchSensor ? null :
+    <SettingEntryContainer name='Touch Sensor'>
+      <Select value={touchSensor ?? "-"} size='small' onChange={handleSelectChange}>
+        <MenuItem value={"-"}>&mdash;</MenuItem>
+        {
+          Object.keys(useConfig.getState().connectors)
+            .filter(id => useConfig.getState().connectors[id].pins.length > 0)
+            .filter(id => (useConfig.getState().connectors[id].pins[0] as MuxPinConfig).mux == undefined)
+            .map(id =>
+              <MenuItem key={id} value={id} disabled={id != touchSensor && usedConnectors.has(id)}>{id}</MenuItem>)
+        }
+      </Select>
+    </SettingEntryContainer>;
+}
+
+function getUsedConnectors(config: Config) {
+  const connectors = new Set(config.pads.map(pad => pad.connector));
+  const touchSensors = new Set(config.pads.map(pad => pad.touchSensor));
+  return new Set([...connectors, ...touchSensors]);
 }
 
 function SettingEnabledSwitch({ padIndex }: {

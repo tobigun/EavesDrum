@@ -11,6 +11,7 @@
 #define PAD_AUTOCALIBRATE_PROP "autocalibrate"
 #define PAD_ENABLED_PROP "enabled"
 #define PAD_PEDAL_PROP "pedal"
+#define PAD_TOUCH_PROP "touchSensor"
 #define PAD_CONNECTOR_PROP "connector"
 
 ///////////////////////////// From JSON
@@ -65,6 +66,16 @@ void DrumConfigMapper::applyPadConfig(DrumPad& pad, DrumKit& drumKit, pad_size_t
       DrumPad* pedalPad = drumKit.getPadUnchecked(pedalIndex);
       pad.setPedalPad(pedalPad);
     }
+  }
+
+  if (padNode[PAD_TOUCH_PROP].is<String>()) {
+    String touchSensorId = padNode[PAD_TOUCH_PROP];
+    DrumConnector* touchSensor = drumKit.getConnectorById(touchSensorId);
+    if (!touchSensor) {
+      eventLog.log(Level::Error, String("Pad[") + pad.getName() + "]: Touch sensor[" + touchSensorId + "] is unknown");
+      failed = true;
+    }
+    pad.setTouchSensor(touchSensor);
   }
 
   if (!padNode[PAD_CONNECTOR_PROP].is<String>()) {
@@ -125,6 +136,10 @@ void DrumConfigMapper::convertPadConfigToJson(const DrumPad& pad, const DrumKit&
   DrumPad* pedalPad = pad.getPedalPad();
   if (pedalPad) {
     padConfigNode[PAD_PEDAL_PROP] = pedalPad->getName();
+  }
+
+  if (pad.getTouchSensor()) {
+    padConfigNode[PAD_TOUCH_PROP] = pad.getTouchSensor()->getId();
   }
 
   if (pad.getConnector()) {

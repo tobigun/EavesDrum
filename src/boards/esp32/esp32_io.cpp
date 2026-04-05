@@ -100,3 +100,16 @@ bool DrumIO::requestReset(uint32_t delayMs) {
   }
   return true;
 }
+
+uint32_t DrumIO::getCpuFrequency() {
+  return 0;
+}
+
+void DrumIO::getMemoryStats(uint32_t& total, uint32_t& free) {
+  total = 0;
+  free = 0;
+}
+
+pin_size_t DrumIO::getMidiTxPin(HardwareSerial& serial) {
+  return PIN_UNUSED;
+}

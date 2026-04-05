@@ -43,8 +43,6 @@ void setup() {
 #endif
 
   midiTransport.update();
-
-  // setupTouch();
 }
 
 void loop() {
@@ -56,8 +54,6 @@ void loop() {
   UsbDevice::update();
 
   DrumIO::update();
-
-  // touchSense();
 }
 
 static void logVersion() {

@@ -22,6 +22,7 @@ public:
   // returns the buffer position the value was written to
   bool addValueEntry(uint16_t timeUntilPreviousUs, const sensor_value_t* sensorValues);
   bool addGapEntry(uint16_t timeUntilPreviousUs);
+  bool addEntryRaw(uint16_t timeUntilPreviousUs, bool isGap, const uint8_t* values);
 
   /**
    * Returns true if the buffer is full, i.e. the next write would overwrite the start of the trigger event.
@@ -91,6 +92,17 @@ public:
     triggerEndPos = HISTORY_INDEX_NONE;
   }
 
+  uint16_t getNumberValuesAfterLastGap() const {
+    return numberValuesAfterLastGap;
+  }
+
+  HistoryEntry getLastEntry() const {
+    if (lastWritePos == HISTORY_INDEX_NONE) {
+      return HistoryEntry{};
+    }
+    return ringBuffer[lastWritePos];
+  }
+
 private:
   history_index_t lastWritePos = HISTORY_INDEX_NONE;
   history_index_t nextWritePos = 0;
@@ -99,10 +111,10 @@ private:
 
   HistoryEntry ringBuffer[MONITOR_HISTORY_COUNT];
 
-private:
-  bool addEntry(uint16_t timeUntilPreviousUs, bool isGap, const uint8_t* values);
+  uint16_t numberValuesAfterLastGap = 0;
 
-    // adjust indizes as they are now relative to offset 0
+private:
+  // adjust indizes as they are now relative to offset 0
   history_index_t getRelativePos(history_index_t index) const {
     const history_index_t writePosToEndCount = MONITOR_HISTORY_COUNT - nextWritePos;
     return (index + writePosToEndCount) % MONITOR_HISTORY_COUNT;

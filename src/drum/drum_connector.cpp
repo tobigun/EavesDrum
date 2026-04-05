@@ -5,18 +5,20 @@
 
 #include "event_log.h"
 
-static void initSensor(const DrumPin& pin) {
-  if (!pin.mux) {
-    if (!DrumIO::initAnalogInPin(pin.index)) {
-      eventLog.log(Level::Error, String("Mux: cannot initialize analog in pin: ") + pin);
+void DrumConnector::start() {
+  for (pin_size_t i = 0; i < sensorPinsCount; ++i) {
+    DrumPin& sensorPin = sensorPins[i];
+    if (!sensorPin.mux) {
+      if (!DrumIO::initAnalogInPin(sensorPin.index)) {
+        eventLog.log(Level::Error, String("Input: cannot initialize analog in pin: ") + sensorPin.index);
+      }
     }
   }
 }
 
 void DrumConnector::setPins(const DrumPin* pins, pin_size_t pinCount) {
   for (pin_size_t i = 0; i < pinCount; ++i) {
-    this->sensorPins[i] = pins[i];
-    initSensor(pins[i]);
+    sensorPins[i] = pins[i];
   }
   sensorPinsCount = pinCount;
 }

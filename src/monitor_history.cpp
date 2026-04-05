@@ -11,15 +11,15 @@ bool MonitorHistory::addValueEntry(uint16_t timeUntilPreviousUs, const sensor_va
     CONVERT_8BIT(sensorValues[0]),
     CONVERT_8BIT(sensorValues[1]),
     CONVERT_8BIT(sensorValues[2])};
-  return addEntry(timeUntilPreviousUs, false, entryValues);
+  return addEntryRaw(timeUntilPreviousUs, false, entryValues);
 }
 
 bool MonitorHistory::addGapEntry(uint16_t timeDiffUs) {
   const uint8_t gapValues[3] = {0, 0, 0};
-  return addEntry(timeDiffUs, true, gapValues);
+  return addEntryRaw(timeDiffUs, true, gapValues);
 }
 
-bool MonitorHistory::addEntry(uint16_t timeUntilPreviousUs, bool isGap, const uint8_t* entryValues) {
+bool MonitorHistory::addEntryRaw(uint16_t timeUntilPreviousUs, bool isGap, const uint8_t* entryValues) {
   if (isFull()) {
     return false;
   }
@@ -28,6 +28,12 @@ bool MonitorHistory::addEntry(uint16_t timeUntilPreviousUs, bool isGap, const ui
       .timeUntilPreviousUs = timeUntilPreviousUs,
       .isGap = isGap,
       .values = {entryValues[0], entryValues[1], entryValues[2]}};
+
+  if (isGap) {
+      numberValuesAfterLastGap = 0;
+  } else {
+      ++numberValuesAfterLastGap;
+  }
 
   lastWritePos = nextWritePos;
   nextWritePos = (nextWritePos + 1) % MONITOR_HISTORY_COUNT;

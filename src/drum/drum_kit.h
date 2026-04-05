@@ -14,6 +14,12 @@
 
 #define MAX_GATE_TIME_MS (30 * 1000) // 30 seconds
 
+enum class BoardVersion {
+  Custom,
+  V1_1,
+  V1_2
+};
+
 class DrumMonitor;
 
 class DrumKit {
@@ -156,6 +162,12 @@ public:
 
   // General
 
+  BoardVersion getBoardVersion() const { return boardVersion; }
+
+  void setBoardVersion(BoardVersion version) {
+    boardVersion = version;
+  }
+
   time_ms_t getGateTime() const { return gateTimeMs; }
 
   /**
@@ -203,6 +215,8 @@ private:
 private:
   MidiOutputMode midiOutputMode;
 
+  BoardVersion boardVersion = BoardVersion::Custom;
+
   /**
    * The gate time is the time (in ms) between sending a NoteOff to a NoteOn event.
    * 
@@ -237,3 +251,5 @@ public:
     uint32_t updateCountPer30s = 0;
   } statistics;
 };
+
+extern DrumKit drumKit;
