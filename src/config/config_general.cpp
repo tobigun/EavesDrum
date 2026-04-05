@@ -17,6 +17,9 @@
 #define GENERAL_BLE_PAIRING_NAME "name"
 #define GENERAL_BLE_PAIRING_ADDR "address"
 
+#define BOARD_V1_1 "v1.1"
+#define BOARD_V1_2 "v1.2"
+
 ///////////////////////////// From JSON
 
 void applyBoardConfig(DrumKit& drumKit, JsonObjectConst generalNode) {
@@ -26,14 +29,14 @@ void applyBoardConfig(DrumKit& drumKit, JsonObjectConst generalNode) {
   }
 
   String boardStr = generalNode[GENERAL_BOARD].as<String>();
-  if (boardStr != "1.1" && boardStr != "1.2") {
+  if (boardStr != BOARD_V1_1 && boardStr != BOARD_V1_2) {
     eventLog.log(Level::Warn, String("Unknown board version: ") + boardStr);
     return;
   }
 
-  if (boardStr == "1.1") {
+  if (boardStr == BOARD_V1_1) {
     drumKit.setBoardVersion(BoardVersion::V1_1);
-  } else if (boardStr == "1.2") {
+  } else if (boardStr == BOARD_V1_2) {
     drumKit.setBoardVersion(BoardVersion::V1_2);
   }
   eventLog.log(Level::Info, String("Board version: ") + boardStr);
@@ -71,9 +74,9 @@ void DrumConfigMapper::applyGeneralConfig(DrumKit& drumKit, JsonObjectConst gene
 
 void convertBoardConfigToJson(const DrumKit& drumKit, JsonObject generalNode) {
   if (drumKit.getBoardVersion() == BoardVersion::V1_1) {
-    generalNode[GENERAL_BOARD] = "1.1";
+    generalNode[GENERAL_BOARD] = BOARD_V1_1;
   } else if (drumKit.getBoardVersion() == BoardVersion::V1_2) {
-    generalNode[GENERAL_BOARD] = "1.2";
+    generalNode[GENERAL_BOARD] = BOARD_V1_2;
   }
 }
 
