@@ -64,7 +64,7 @@ export function PadTypeSelector({padIndex}: {
       return <NestedList header={HEADER_ZONES_TYPE} itemInfos={getZonesTypeItems(padType, zonesCount)} onValueChange={onZoneCountChanged}
         parentValueChain={[padType, zonesCount]} />;
     case MenuTopLevel.ChokeType:
-      return <NestedList header={HEADER_CHOKE_TYPE} itemInfos={getChokeTypeItems(padType, zonesCount)} onValueChange={onZoneCountChanged}
+      return <NestedList header={HEADER_CHOKE_TYPE} itemInfos={getChokeTypeItems(padType, zonesType)} onValueChange={onZoneCountChanged}
         parentValueChain={[padType, zonesCount, zonesType]} />;
     } 
   }
@@ -147,17 +147,36 @@ function getZonesTypeItems(padType: PadType, zoneCount: number): NestedListItemI
       value: zonesType,
       name: formatZonesTypeNames(zonesType),
       icon: formatZonesTypeIcons(zonesType),
-      subItems: { header: HEADER_CHOKE_TYPE, items: getChokeTypeItems(padType, zoneCount) }
+      subItems: { header: HEADER_CHOKE_TYPE, items: getChokeTypeItems(padType, zonesType) }
     }));
 }
 
-function getChokeTypeItems(padType: PadType, zoneCount: number): NestedListItemInfo[] {
-  if (padType != PadType.Cymbal || zoneCount < 2) {
-    return []; // No choke for toms/snares and 1-zone cymbals
+function getChokeTypeItems(padType: PadType, zonesType: ZonesType): NestedListItemInfo[] {
+  if (padType != PadType.Cymbal) {
+    return []; // No choke for toms/snares
   }
-    
+  
+  let hasEdgeSwitch;
+  let hasCupSwitch;
+  switch (zonesType) {
+  case ZonesType.Zones2_PiezoAndSwitch:
+    hasEdgeSwitch = true;
+    hasCupSwitch = false;
+    break;
+  case ZonesType.Zones3_PiezoAndSwitches_2TRS:
+  case ZonesType.Zones3_PiezoAndSwitches_1TRS:
+    hasEdgeSwitch = true;
+    hasCupSwitch = true;
+    break;
+  default:
+    hasEdgeSwitch = false;
+    hasCupSwitch = false;
+    break;
+  }
+
   return Object.values(ChokeType)
-    .filter(chokeType => zoneCount >= 3 || chokeType !== ChokeType.Switch_Cup) // Cup choke only for 3-zone cymbals
+    .filter(chokeType => chokeType !== ChokeType.Switch_Edge || hasEdgeSwitch)
+    .filter(chokeType => chokeType !== ChokeType.Switch_Cup || hasCupSwitch)
     .map(chokeType => ({
       value: chokeType,
       name: formatChokeTypeNames(chokeType),
