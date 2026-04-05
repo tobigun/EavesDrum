@@ -14,10 +14,7 @@
 
 > [!NOTE]
 > <b>Visit EavesDrum at the Europe Drum Show in Friedrichshafen on the 11th and 12th of April!</b>
-
-<p align="center">
-<a href="https://theeuropedrumshow.com/digitaldrummer-innovation-showcase/"><img alt="Europe Drum Show" src="https://private-user-images.githubusercontent.com/116718/572742335-49567826-39de-45e0-b62c-273667f930f0.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzUwNzU4MzQsIm5iZiI6MTc3NTA3NTUzNCwicGF0aCI6Ii8xMTY3MTgvNTcyNzQyMzM1LTQ5NTY3ODI2LTM5ZGUtNDVlMC1iNjJjLTI3MzY2N2Y5MzBmMC5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwNDAxJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDQwMVQyMDMyMTRaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1mYmNjN2FmMTQ4OWE4NDVjMjM2ZGM1MDdlMjcwMTQwY2VkZTI5NmMwY2ZmMDY3Yzk3YTA4MjIwMzNjZDQ5ZWMwJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.qndQFvQO29X3bmHK_o4q8trVd_aWEkoH4Vy9k1MoUfY" width="100%"/></a>
-</p>
+><a href="https://theeuropedrumshow.com/digitaldrummer-innovation-showcase/"><img alt="Europe Drum Show" src="https://raw.githubusercontent.com/tobigun/assets/refs/heads/main/EuropeDrumShow.png" width="100%"/></a>
 
 <!-- vscode-markdown-toc -->
 - [Welcome to EavesDrum!](#welcome-to-eavesdrum)
