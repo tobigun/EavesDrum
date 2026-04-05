@@ -7,7 +7,7 @@
 
 #include <LittleFS.h>
 
-#define CONFIG_SCHEMA_VERSION "1.0"
+#define CONFIG_SCHEMA_VERSION "1.1"
 #define CONFIG_SCHEMA_URL "https://raw.githubusercontent.com/tobigun/EavesDrum/refs/tags/" \
   "config-schema-v" CONFIG_SCHEMA_VERSION "/config/config.jsonc"
 
