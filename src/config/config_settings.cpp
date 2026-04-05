@@ -131,22 +131,13 @@ static const DrumSettingId settingItemsFallback[] = {
     SETTING_ITEMS_GENERIC};
 const int SETTING_ITEMS_FALLBACK_SIZE = sizeof(settingItemsFallback) / sizeof(DrumSettingId);
 
-static const DrumSettingId settingItemsPiezoOnly[] = {
+static const DrumSettingId settingItemsDrumOrCymbal[] = {
     SETTING_ITEMS_GENERIC,
     CURVETYPE,
     SCAN_TIME_MS,
     MASK_TIME_MS,
     ZONE_THRESHOLDS};
-const int SETTING_ITEMS_PIEZO_ONLY_SIZE = sizeof(settingItemsPiezoOnly) / sizeof(DrumSettingId);
-
-static const DrumSettingId settingItemsPiezoAndSwitches[] = {
-    SETTING_ITEMS_GENERIC,
-    CHOKE_TYPE,
-    CURVETYPE,
-    SCAN_TIME_MS,
-    MASK_TIME_MS,
-    ZONE_THRESHOLDS};
-const int SETTING_ITEMS_PIEZO_AND_SWITCHES_SIZE = sizeof(settingItemsPiezoAndSwitches) / sizeof(DrumSettingId);
+const int SETTING_ITEMS_DRUM_OR_CYMBAL_SIZE = sizeof(settingItemsDrumOrCymbal) / sizeof(DrumSettingId);
 
 static const DrumSettingId settingItemsPedalControl[] = {
     SETTING_ITEMS_GENERIC,
@@ -265,8 +256,8 @@ static int getSupportedSettings(const DrumPad& pad, DrumSettingId* supportedSett
   case ZonesType::Zones1_Piezo:
   case ZonesType::Zones2_Piezos:
   case ZonesType::Zones3_Piezos: {
-    size_t count = SETTING_ITEMS_PIEZO_ONLY_SIZE;
-    memcpy((void*)supportedSettingIds, settingItemsPiezoOnly, sizeof(settingItemsPiezoOnly));
+    size_t count = SETTING_ITEMS_DRUM_OR_CYMBAL_SIZE;
+    memcpy((void*)supportedSettingIds, settingItemsDrumOrCymbal, sizeof(settingItemsDrumOrCymbal));
     if (pad.getPadType() == PadType::Drum) {
       if (pad.getSettings().getZoneCount() == 2) {
         supportedSettingIds[count++] = ENABLE_CROSS_NOTE;
@@ -274,14 +265,19 @@ static int getSupportedSettings(const DrumPad& pad, DrumSettingId* supportedSett
       if (pad.getSettings().getZoneCount() > 1) {
         supportedSettingIds[count++] = HEAD_RIM_BIAS;
       }
+    } else if (pad.getPadType() == PadType::Cymbal) {
+      supportedSettingIds[count++] = CHOKE_TYPE;
     }
     return count;
   }
   case ZonesType::Zones2_PiezoAndSwitch:
   case ZonesType::Zones3_PiezoAndSwitches_2TRS:
-  case ZonesType::Zones3_PiezoAndSwitches_1TRS:
-    memcpy((void*)supportedSettingIds, settingItemsPiezoAndSwitches, sizeof(settingItemsPiezoAndSwitches));
-    return SETTING_ITEMS_PIEZO_AND_SWITCHES_SIZE;
+  case ZonesType::Zones3_PiezoAndSwitches_1TRS: {
+    size_t count = SETTING_ITEMS_DRUM_OR_CYMBAL_SIZE;
+    memcpy((void*)supportedSettingIds, settingItemsDrumOrCymbal, sizeof(settingItemsDrumOrCymbal));
+    supportedSettingIds[count++] = CHOKE_TYPE;
+    return count;
+  }
   default: // always return the basic options to change type and disable
     memcpy((void*)supportedSettingIds, settingItemsFallback, sizeof(settingItemsFallback));
     return SETTING_ITEMS_FALLBACK_SIZE;
