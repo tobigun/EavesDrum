@@ -88,7 +88,7 @@ The trigger module acts as a USB MIDI device - simply connect it to your noteboo
 
 ### EavesDrum Trigger Module
 
-<img src="doc/images/1.2/module.png" height="400px"/>
+<img src="doc/images/1.1/module.jpg" height="400px"/>
 
 DIY ultra-low-volume metal mesh cymbal setup:
 
@@ -333,7 +333,7 @@ If you want an assembled board it is best to organize a collective purchase orde
 
 In addition to the trigger module you will have to build your own adapter to connect the drum pads. Here is the pin out of the D-Sub 37 connector:
 
-<img alt="Connector" src="doc/images/connector.png" width="500px"/>
+<img alt="Connector" src="doc/images/1.1/connector.png" width="500px"/>
 
 The pin names consist of the multiplexer Id (in1_x: input x of Multiplexer MP1, in2_x: input x of Multiplexer MP2). Some of the pin's functions (sel0-4) can be selected by the jumpers / slide switches with the same name. Set them to the in2_x function. The GPx option is only used if you want to experiment with capacitive touch.
 
