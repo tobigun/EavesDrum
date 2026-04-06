@@ -27,9 +27,6 @@ static void startServer() {
 static void stopServer() {
   logInfo("BLE server stopping ...\n");
   ble_midi_server_deinit();
-  while (ble_midi_server_is_initialized()) {
-    delay(100);
-  }
   updateConnectionStatus();
   logInfo("BLE server stopped\n");
 }
