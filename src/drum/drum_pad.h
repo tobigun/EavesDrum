@@ -246,6 +246,7 @@ private:
 
 private:
   friend class ControllerSensing;
+  friend class Sensing;
   friend class PiezoSwitchSensing;
   friend class LatencySensing;
   friend class PiezoSensing;

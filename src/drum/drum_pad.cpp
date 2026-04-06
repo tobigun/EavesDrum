@@ -5,8 +5,7 @@
 
 #include "event_log.h"
 #include "sensing/controller.h"
-#include "sensing/piezo.h"
-#include "sensing/piezo_switch.h"
+#include "sensing/sensing.h"
 
 DrumMappings DrumPad::fallbackMappings("None");
 
