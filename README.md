@@ -331,13 +331,13 @@ If you want an assembled board it is best to organize a collective purchase orde
 
 #### Connector Harness
 
-In addition to the trigger module you will have to build your own adapter to connect the drum pads. Here is the pin out of the D-Sub 37 connector:
+In addition to the trigger module you will have to build your own adapter to connect the drum pads. Here is the pin out of the D-Sub HD 44 pin connector:
 
-<img alt="Connector" src="doc/images/connector.png" width="500px"/>
+<img alt="Connector" src="doc/images/1.2/connector.png" width="500px"/>
 
-The pin names consist of the multiplexer Id (in1_x: input x of Multiplexer MP1, in2_x: input x of Multiplexer MP2). Some of the pin's functions (sel0-4) can be selected by the jumpers / slide switches with the same name. Set them to the in2_x function. The GPx option is only used if you want to experiment with capacitive touch.
+The pin names consist of the multiplexer input IDs (in1_x: input x of Multiplexer MP1, in2_x: input x of Multiplexer MP2).
 
-You can either solder jacks directly to a D-Sub 37 (female) connector or you can build an adapter to one of the cable harnesses that come with drum modules.
+You can either solder jacks directly to a D-Sub connector or you can build an adapter to one of the cable harnesses that come with drum modules.
 
 <img alt="Cable harness" src="doc/images/cable-harness.jpg" width="500px"/>
 
@@ -356,9 +356,9 @@ This is the default configuration for the outputs:
 |9| in2_3, in2_4, in2_5 | Cymbal 3 (Bow, Edge, Cup) |
 |10| in2_6, in2_7, in2_8 | Hi-Hat (Bow, Edge, Cup) |
 |11| in2_9, in2_10 | Tom 4 (Main, Rim) |
-|12| in2_11 (sel0), in2_12 (sel1) | Tom 5 (Main, Rim) |
-|13| in2_13 (sel2), in2_14 (sel3), in2_15 (sel4) | Cymbal 4 (Bow, Edge, Cup) |
-|Pedal| adc2, hh_vcc (optical only) | Hi-Hat Pedal (resistive or optical)<br>- For resistive controllers: adjust the `ADC2 DC offset` potentiometer to the (+) direction (~4kOhm)<br>- For optical (TCRT5000) controllers: adjust the `ADC2 DC offset` potentiometer to the middle (~69kOhm)<br>This will adjust the sensitivity of the ADC2 channel. You can fine-tune this setting in the UI later. |
+|12| in2_11, in2_12 | Tom 5 (Main, Rim) |
+|13| in2_13, in2_14, in2_15 | Cymbal 4 (Bow, Edge, Cup) |
+|Pedal| adc2, +3.3V/5V (optical only) | Hi-Hat Pedal (resistive or optical)<br>- For resistive controllers: adjust the `ADC2 DC offset` potentiometer to the (+) direction (~4kOhm)<br>- For optical (TCRT5000) controllers: adjust the `ADC2 DC offset` potentiometer to the middle (~69kOhm)<br>This will adjust the sensitivity of the ADC2 channel. You can fine-tune this setting in the UI later. |
 
 <a id="pad-connectors"></a>
 
