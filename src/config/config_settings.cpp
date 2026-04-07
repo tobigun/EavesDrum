@@ -91,6 +91,7 @@ void DrumConfigMapper::applyPadSettings(DrumPad& pad, JsonObjectConst settingsNo
 
   SETTING_FROM_JSON(settings.scanTimeUs, settingsNode["scanTimeUs"]);
   SETTING_FROM_JSON(settings.maskTimeMs, settingsNode["maskTimeMs"]);
+  SETTING_FROM_JSON(settings.decayTimeMs, settingsNode["decayTimeMs"]);
   SETTING_FROM_JSON(settings.almostClosedThreshold, settingsNode["almostClosedThreshold"]);
   SETTING_FROM_JSON(settings.closedThreshold, settingsNode["closedThreshold"]);
   SETTING_FROM_JSON(settings.moveDetectTolerance, settingsNode["moveDetectTolerance"]);
@@ -115,6 +116,7 @@ enum DrumSettingId {
   CURVETYPE,
   SCAN_TIME_MS,
   MASK_TIME_MS,
+  DECAY_TIME_MS,
 
   ZONE_THRESHOLDS,
   THRESHOLD_MAX,
@@ -136,6 +138,7 @@ static const DrumSettingId settingItemsDrumOrCymbal[] = {
     CURVETYPE,
     SCAN_TIME_MS,
     MASK_TIME_MS,
+    DECAY_TIME_MS,
     ZONE_THRESHOLDS};
 const int SETTING_ITEMS_DRUM_OR_CYMBAL_SIZE = sizeof(settingItemsDrumOrCymbal) / sizeof(DrumSettingId);
 
@@ -240,6 +243,7 @@ static void convertPadSettingToJson(DrumSettingId settingId, JsonObject settings
 
   SETTING_TO_JSON(SCAN_TIME_MS, scanTimeUs)
   SETTING_TO_JSON(MASK_TIME_MS, maskTimeMs)
+  //SETTING_TO_JSON(DECAY_TIME_MS, decayTimeMs)
   SETTING_TO_JSON(ALMOST_CLOSED_THRESHOLD, almostClosedThreshold)
   SETTING_TO_JSON(CLOSED_THRESHOLD, closedThreshold)
   SETTING_TO_JSON_THRESHOLD(MOVE_DETECT_TOLERANCE, moveDetectTolerance, moveDetectTolerance)

@@ -63,6 +63,7 @@ struct DrumSettings {
   sensor_value_t zoneThresholdsMax[3] = {THRESHOLD_MAX_DEFAULT, THRESHOLD_MAX_DEFAULT, THRESHOLD_MAX_DEFAULT};
   uint16_t scanTimeUs = 3; // drum, cymbal
   uint8_t maskTimeMs = 30; // drum, cymbal
+  uint8_t decayTimeMs = 0; // drum, cymbal
 
   int8_t headRimBias = 0; // -100 .. 100
   bool crossNoteEnabled = false;

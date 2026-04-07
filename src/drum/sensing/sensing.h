@@ -9,7 +9,8 @@
 enum class SensingState {
   PeakDetect,
   Scan,
-  Mask
+  Mask,
+  Decay
 };
 
 class DrumPad;
