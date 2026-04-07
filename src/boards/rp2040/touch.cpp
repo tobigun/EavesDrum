@@ -156,7 +156,7 @@ static inline void checkStateSwitched(TouchSensorInfo& touchInfo, bool newState,
   if (micros() - touchInfo.switchStartUs > MIN_SWITCH_TIME_US) {
     touchInfo.isOn = newState;
     touchInfo.switchStartUs = 0;
-    //logInfo("Touch: %d (%d)\n", touchInfo.isOn, value);
+    //logInfo("Touch: %d (%d)", touchInfo.isOn, value);
   }
 }
 

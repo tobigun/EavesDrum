@@ -25,10 +25,10 @@ static void startServer() {
 }
 
 static void stopServer() {
-  logInfo("BLE server stopping ...\n");
+  logInfo("BLE server stopping ...");
   ble_midi_server_deinit();
   updateConnectionStatus();
-  logInfo("BLE server stopped\n");
+  logInfo("BLE server stopped");
 }
 
 static void updateConnectionStatus() {

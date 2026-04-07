@@ -48,7 +48,7 @@ static void stopClient() {
 static void reconnect() {
   bd_addr_t bdaddr;
   if (sscanf_bd_addr(pairingInfo.address.c_str(), bdaddr) != 1) {
-    logWarn("Invalid Bluetooth address: %s\n", pairingInfo.address.c_str());
+    logWarn("Invalid Bluetooth address: %s", pairingInfo.address.c_str());
     return;
   }
 
