@@ -638,10 +638,11 @@ You can test the latency of your system with the latency measurement feature, bu
 
 Below are the measurement results from the audio interfaces that I own. Maybe it will give you an idea what to expect:
 
-|Device|Sample Rate|Buffer Size|ASIO driver|Latency|Comment|
-|------|-----------|-----------|-----------|-------|-------|
+|Device            |Sample Rate|Buffer Size|ASIO driver|Latency|Comment|
+|------------------|-----------|-----------|-----------|-------|-------|
 |Behringer UMC204HD|**48kHz**|32 (0.7ms)|UMC ASIO|5.7ms||
 |Behringer UMC204HD|**96kHz**|32 (0.3ms)|UMC ASIO|5.2ms||
+|Focusrite Scarlett Solo 4th Gen|48kHz/96kHz/192kHz|16 (3.8-4.9ms)|Focusrite USB ASIO|5.0ms|No big difference between sample rates. One notebook preformed best with 192kHz, the other with 48kHz (dropouts with higher rate). Thunderbolt ASIO did not work|
 |NUX Mighty Plug (Pro)|48kHz|8 (0.2ms)|NUX Audio|6.9ms|A guitar effect plug, so maybe not what you want.|
 |Terratec Aureon 5.1 USB MK.2|48kHz|64 (1.3ms)|ASIO4All|5.9ms||
 |Conrad UA0078 (CMedia CM108 chip)|48kHz|64 (1.3ms)|ASIO4All|6.6ms||
@@ -662,12 +663,10 @@ Also check out the [Latency Test by Secret Sauce on Youtube](https://www.youtube
 
 |Device|Sample Rate|Buffer Size|Latency|
 |------|-----------|-----------|-------|
-|Focusrite Scarlett 2i2 4th Gen|48kHz / 96kHz|32|5.6ms(@48kHz) / 4.4ms(@96kHz)|
 |Arturia MiniFuse 2|48kHz / 96kHz / 192kHz|32|5.0ms(@48kHz) / 3.4ms(@96kHz) / 2.8ms(@192kHz)|
 
 **Conclusion**
-> - The only dedicated device (Behringer UMC204HD) performed best.
->   - Focusrite Scarlett Solo 3rd / 4th Gen might be a good alternative.
+> - Dedicated devices (Focusrite Scarlett Solo / Behringer UMC204HD) performed best.
 > - Drum Modules (at least EFNote 3 and Yamaha EAD10) might not be suited to be used as low latency audio output interfaces.
 > - The results can vary between Computers and sometimes a 9 year old Computer can give you better results than a new one (see EFNOTE 3).
 > - Although some ASIO4All performed quite well and I did not notice any crackling during the short test, I would not recommend them, as crackling is still likely with them. But it might be a start if you already own them.
