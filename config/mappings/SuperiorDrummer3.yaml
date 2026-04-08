@@ -1,0 +1,115 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tobigun/EavesDrum/refs/tags/config-schema-v1.1/config/config.jsonc
+mappings:
+  Snare:
+    noteMain: 38 # Center
+    noteRim: 40 # Rimshot
+    noteCross: 37 # Sidestick
+    # Zone Trigger (CC): 16
+    # Edge: 33
+    # Ruff: 39
+    # Muted: 66
+    # Swirl: 67
+    # Flam: 69
+    # Roll: 70
+    # Rim Only: 71
+  Tom1:
+    name: Rack Tom 1
+    noteMain: 48 # Center
+    noteRim: 82 # Rimshot
+    noteCross: 81 # Rim only
+  Tom2:
+    name: Rack Tom 2
+    noteMain: 47 # Center
+    noteRim: 80 # Rimshot
+    noteCross: 79 # Rim only
+  Tom3:
+    name: Rack Tom 3
+    noteMain: 45 # Center
+    noteRim: 78 # Rimshot
+    noteCross: 77 # Rim only
+  Tom4:
+    name: Floor Tom 1
+    noteMain: 43 # Center
+    noteRim: 75 # Rimshot
+    noteCross: 74 # Rim only
+  Tom5:
+    name: Floor Tom 2
+    noteMain: 41 # Center
+    noteRim: 73 # Rimshot
+    noteCross: 72 # Rim only
+  Kick:
+    noteMain: 36 # Hit
+  HiHat:
+    name: Hi-Hat
+    closedNotesEnabled: false
+    noteMain: 8 # Tip Trigger (CC)
+    noteCloseMain: 42 # Closed Tip
+    noteRim: 7 # Edge Trigger (CC)
+    noteCloseRim: 22 # Closed Edge
+    noteCup: 9 # Bell Trigger (CC)
+    noteCloseCup: 119 # Closed Bell
+    # Tight Tip: 63
+    # Open Edge 1: 12
+    # Open Edge 2: 13
+    # Open Edge 3: 14
+    # Open Edge 4: 15
+    # Open Edge 5: 16
+    # Tight Edge: 62
+    # Open Bell 1: 120
+    # Open Bell 2: 121
+    # Sequenced Hard: 64
+    # Sequenced Soft: 65
+  HiHatPedal:
+    name: Hi-Hat Pedal
+    noteMain: 21 # Pedal Closed
+    # Pedal Open: 23
+  Ride1:
+    name: Ride 1
+    noteMain: 84 # Bow
+    noteRim: 86 # Edge
+    noteCup: 85 # Bell
+  Ride2:
+    name: Ride 2
+    noteMain: 89 # Bow
+    noteRim: 91 # Edge
+    noteCup: 90 # Bell
+  Ride3:
+    name: Ride 3
+    noteMain: 51 # Bow
+    noteRim: 59 # Edge
+    noteCup: 53 # Bell
+  Ride4:
+    name: Ride 4
+    noteMain: 108 # Bow
+    noteRim: 110 # Edge
+    noteCup: 109 # Bell
+  Cymbal1:
+    name: Crash 1
+    noteMain: 27 # Crash
+    # Muted Hit: 83
+  Cymbal2:
+    name: Crash 2
+    noteMain: 28 # Crash
+    # Muted Hit: 50
+  Cymbal3:
+    name: Crash 3
+    noteMain: 29 # Crash
+    # Muted Hit: 55
+  Cymbal4:
+    name: Crash 4
+    noteMain: 30 # Crash
+    # Muted Hit: 106
+  Cymbal5:
+    name: Crash 5
+    noteMain: 31 # Crash
+    # Muted Hit: 107
+  Cymbal6:
+    name: Crash 6
+    noteMain: 32 # Crash
+    # Muted Hit: 118
+  Effect1:
+    name: "Cowbell"
+    noteMain: 56 # Cowbell
+    noteRim: 56 # Cowbell
+    noteCup: 56 # Cowbell
+  
