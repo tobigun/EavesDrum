@@ -12,10 +12,6 @@
   <a href="https://opensource.org/licenses/"><img alt="GPLv3 License" src="https://img.shields.io/badge/License-GPL%20v3-yellow.svg"/></a>
 </p>
 
-> [!NOTE]
-> <b>Visit EavesDrum at the Europe Drum Show in Friedrichshafen on the 11th and 12th of April!</b>
-><a href="https://theeuropedrumshow.com/digitaldrummer-innovation-showcase/"><img alt="Europe Drum Show" src="https://raw.githubusercontent.com/tobigun/assets/refs/heads/main/EuropeDrumShow.png" width="100%"/></a>
-
 <!-- vscode-markdown-toc -->
 - [Welcome to EavesDrum!](#welcome-to-eavesdrum)
   - [Downloads](#downloads)
