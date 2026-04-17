@@ -22,6 +22,12 @@ enum class ButtonId {
   Wifi = 0
 };
 
+enum class BoardVersion {
+  Custom,
+  V1_1,
+  V1_2
+};
+
 class DrumIO {
 public:
   DrumIO() = delete;
@@ -30,6 +36,8 @@ public:
   static void update();
 
   static void setup(bool usePwmPowerSupply);
+
+  static void initBoard(BoardVersion version);
 
   static bool initAnalogInPin(pin_size_t pin);
 

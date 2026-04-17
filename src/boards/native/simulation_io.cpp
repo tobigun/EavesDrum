@@ -22,6 +22,9 @@ void DrumIO::setup(bool usePwmPowerSupply) {
   }
 }
 
+void DrumIO::initBoard(BoardVersion version) {
+}
+
 bool DrumIO::initAnalogInPin(pin_size_t analogInPin) {
   return true;
 }

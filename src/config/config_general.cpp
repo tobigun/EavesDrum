@@ -3,6 +3,7 @@
 
 #include "config_mapper.h"
 #include "drum_kit.h"
+#include "drum_io.h"
 #include "midi_transport.h"
 
 #if HAS_BLUETOOTH
@@ -34,11 +35,15 @@ void applyBoardConfig(DrumKit& drumKit, JsonObjectConst generalNode) {
     return;
   }
 
+  BoardVersion boardVersion = BoardVersion::Custom;
   if (boardStr == BOARD_V1_1) {
-    drumKit.setBoardVersion(BoardVersion::V1_1);
+    boardVersion = BoardVersion::V1_1;
   } else if (boardStr == BOARD_V1_2) {
-    drumKit.setBoardVersion(BoardVersion::V1_2);
+    boardVersion = BoardVersion::V1_2;
   }
+  drumKit.setBoardVersion(boardVersion);
+  DrumIO::initBoard(boardVersion);
+
   eventLog.log(Level::Info, String("Board version: ") + boardStr);
 }
 

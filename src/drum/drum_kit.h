@@ -6,6 +6,7 @@
 #include "config/config_mapper.h"
 #include "drum_pad.h"
 #include "drum_mux.h"
+#include "drum_io.h"
 #include "monitor.h"
 #include "note_event_queue.h"
 #include "midi_transport.h"
@@ -13,12 +14,6 @@
 #include <queue>
 
 #define MAX_GATE_TIME_MS (30 * 1000) // 30 seconds
-
-enum class BoardVersion {
-  Custom,
-  V1_1,
-  V1_2
-};
 
 class DrumMonitor;
 

@@ -23,6 +23,9 @@ void DrumIO::setup(bool usePwmPowerSupply) {
   // analogSetAttenuation(ADC_0db);
 }
 
+void DrumIO::initBoard(BoardVersion version) {
+}
+
 bool DrumIO::initAnalogInPin(pin_size_t pin) {
   analogSetPinAttenuation(pin, ADC_11db);
   return true;
