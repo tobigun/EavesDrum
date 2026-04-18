@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/tobigun/EavesDrum/refs/tags/config-schema-v1.1/config/config.jsonc
 general:
-  board: v1.1
+  board: v1.2
   gateTimeMs: 0
 mux:
   - type: HC4067
@@ -8,10 +8,10 @@ mux:
       analogIn: 26
       enable: 10
       select:
-        - 6
-        - 7
-        - 8
-        - 9
+        - 11
+        - 12
+        - 13
+        - 14
   - type: HC4067
     pins:
       analogIn: 26
