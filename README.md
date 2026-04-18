@@ -23,6 +23,8 @@
   - [Use the Reference Design](#use-the-reference-design)
     - [PCB Ordering and Assembly](#pcb-ordering-and-assembly)
     - [Connector Harness](#connector-harness)
+      - [Connector Module](#connector-module)
+      - [Build your own adapter](#build-your-own-adapter)
       - [Wiring the Single Pad Connectors](#wiring-the-single-pad-connectors)
   - [Make Your Own Design](#make-your-own-design)
     - [How the Circuit Works](#how-the-circuit-works)
@@ -327,7 +329,20 @@ If you want an assembled board it is best to organize a collective purchase orde
 
 #### Connector Harness
 
-In addition to the trigger module you will have to build your own adapter to connect the drum pads. Here is the pin out of the D-Sub HD 44 pin connector:
+In addition to the trigger module you will have to build an adapter to connect the drum pads.
+
+##### Connector Module
+
+The easiest way to achieve this is to build the connector module:
+
+<img alt="Connector module" src="doc/images/1.2/connector.jpg" width="500px"/>
+
+You can find more information about the connector and the files to order the (assembled) PCB on the  
+[connector release page](https://github.com/tobigun/EavesDrum/releases/tag/PCB-connector-v1.0).
+
+##### Build your own adapter
+
+But you can also build your own adapter. Here is the pin out of the D-Sub HD 44 pin connector:
 
 <img alt="Connector" src="doc/images/1.2/connector.png" width="500px"/>
 
@@ -355,6 +370,9 @@ This is the default configuration for the outputs:
 |12| in2_11, in2_12 | Tom 5 (Main, Rim) |
 |13| in2_13, in2_14, in2_15 | Cymbal 4 (Bow, Edge, Cup) |
 |Pedal| adc2, +3.3V/5V (optical only) | Hi-Hat Pedal (resistive or optical)<br>- For resistive controllers: adjust the `ADC2 DC offset` potentiometer to the (+) direction (~4kOhm)<br>- For optical (TCRT5000) controllers: adjust the `ADC2 DC offset` potentiometer to the middle (~69kOhm)<br>This will adjust the sensitivity of the ADC2 channel. You can fine-tune this setting in the UI later. |
+
+> [!INFO]
+> The layout for the older D-Sub 37 pin connector of board revisions v1.1.x can be found [here](https://github.com/tobigun/EavesDrum/tree/PCB-module-v1.1.1#connector-harness)
 
 <a id="pad-connectors"></a>
 
