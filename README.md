@@ -337,6 +337,10 @@ The easiest way to achieve this is to build the connector module:
 
 <img alt="Connector module" src="doc/images/1.2/connector.jpg" width="500px"/>
 
+<a href="https://github.com/tobigun/EavesDrum/releases/download/PCB-connector-v1.0/schematic-connector-1.0.pdf">
+  <img alt="Schematics" src="schematics/connector/schematic-connector-1.0.png" width="500px"/>
+</a>
+
 You can find more information about the connector and the files to order the (assembled) PCB on the  
 [connector release page](https://github.com/tobigun/EavesDrum/releases/tag/PCB-connector-v1.0).
 
