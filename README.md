@@ -56,14 +56,6 @@
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
-> [!IMPORTANT]
-> A new hardware revision (1.2) is on its way. It offers a MIDI USB-Host port and a MIDI 5-pin DIN connector.
-> Though the current hardware revision (1.1) is still supported and also supports the new output modes,
-> you will have to build and add your own USB-Host/DIN connectors via the 50-pin expansion port to use them.
-> 
-> It will take some time (two weeks or a month) until the first prototypes arrive and I will be able to test the new design.
-> So feel free to try revision 1.2 but keep in mind that it is highly experimental at the moment.
-
 ## Welcome to EavesDrum!
 
 EavesDrum is an open-source e-drum trigger module project designed for drummers and makers.
@@ -84,7 +76,8 @@ The trigger module acts as a USB MIDI device - simply connect it to your noteboo
 
 ### EavesDrum Trigger Module
 
-<img src="doc/images/1.1/module.jpg" height="400px"/>
+<img src="doc/images/1.2/module.jpg" height="400px"/>
+<img src="doc/images/1.2/module-connector.jpg" height="400px"/>
 
 DIY ultra-low-volume metal mesh cymbal setup:
 
@@ -156,6 +149,7 @@ System overview:
     - Addictive Drums 2
     - BFD Player 1.2
     - EZdrummer 3 (which can probably also be used as a base for your own Superior Drummer 3 mapping)
+    - Superior Drummer 3
     - MT Power 2
     - Steven Slate Drums 5 (SSD5)
 - **Low Latency:**
@@ -243,8 +237,8 @@ All you need is:
 ### Use the Reference Design
 **Schematics of the trigger module with 32 inputs:**
 
-<a href="https://github.com/tobigun/EavesDrum/releases/download/PCB-module-v1.1.1/schematic-module-1.1.1.pdf">
-  <img alt="Schematics" src="schematics/module/schematic-module-1.1.1.png" width="500px"/>
+<a href="https://github.com/tobigun/EavesDrum/releases/download/PCB-module-v1.2/schematic-module-1.2.pdf">
+  <img alt="Schematics" src="schematics/module/schematic-module-1.2.png" width="500px"/>
 </a>
 
 You can find the schematics and pcb files in the `schematics/module` directory. They can be viewed and edited with [KiCad](https://www.kicad.org/).
@@ -253,36 +247,42 @@ You can find the schematics and pcb files in the `schematics/module` directory. 
 
 | Component | Designator | Quantity | Price / Unit | Price Total | Comment |
 | --------- | ---------- | -------- | ------------ | ----------- | ------- | 
-| Raspberry Pi Pico 2 | A1 | 1 | 5.50€ | 5.50€ | There is also a variant Pico 2H with an already soldered header<br>- A Pico 1 would also work but is not recommended due to the better performance of the Pico 2 and the little difference in price.<br>- Pico 2W is not yet supported but might be in the future for Wifi and BLE |
-| 20-pin Header (male)<br>20-pin Header (female) | A1 | 2 | 0.20€<br>0.30€ | 1.00€ | Optional. <br>- Used to socket your Pico to be able to replace it when it is damaged or exchange it by another variant like the Pico 2W.<br>- If you use the Pico variant that already has a header. Then you only need the female header. |
+| Raspberry Pi Pico 2(W)(H) | A1 | 1 | 5€ / W: 7.50€ | 5€ / W: 7.50€ | Use a Pico2W if you want WiFi and Bluetooth LE, otherwise a Pico2 is enough.<br>- There is also a "H" variant for ~1€ more with an already soldered header<br>- Pico1 is not recommended due its outdated performance. |
+| 20-pin Header (male)<br>20-pin Header (female) | J4, J5 | 2 | 0.20€<br>0.30€ | 1.00€ | Optional but recommended. <br>- Socket your Pico so that it can be replaced if it is damaged or if you want to exchange it by another variant.<br>- The male header is not needed if one of the Pico "H" variants is used. |
 | HC4067 | U1, U2 | 2 | 1.00€ | 2.00€ | Multiplexer. Each provides 16 inputs.<br>Available from many vendors with HC4067 in the name (e.g. CD74HC4067M). Make sure it is the SO-24 package. |
 | BAT54S | D1.0 - D1.15<br>D2.0 - D2.15 | 32 | 0.05€ | 1.60€ |Prefer the ones with a forward voltage (VF) of 800mV@100mA over those with 1V@100mA but probably any vendor and type will work.|
 | LED (red) | D3 | 1 | 0.08€ | 0.08€ | Use any color of your choice. THT or SMD 0805 / 0603 packages are supported. |
-| LED (blue) | D4 | 1 | 0.10€ | 0.10€ | Use any color of your choice. THT or SMD 0805 / 0603 packages are supported. |
+| LED (white/blue) | D4 | 1 | 0.10€ | 0.10€ | Use any color of your choice. THT or SMD 0805 / 0603 packages are supported. |
+| LED (yellow) | D5 | 1 | 0.10€ | 0.10€ | Use any color of your choice. THT or SMD 0805 / 0603 packages are supported. |
 | Push Switch | SW1, SW2, SW3 | 3 | 0.15€ | 0.45€ |6x6mm. Only the `RESET` button is used at the moment. |
 | Potentiometer 5k | R3, R6 | 2 | 0.35€ | 0.70€ | Supports Piher PT10 (10mm) / PT6 (6mm) or Bourns TC33 (SMD) |
 | Potentiometer 100k | R11 | 1 | 0.35€ | 0.35€ | Supports **only** Piher PT6 (6mm) or Bourns TC33 (SMD) |
+| Resistor 10 Ohms | R17 | 1 | 0.03€ | 0.03€ | SMD 0805 package, 125mW, 1%.<br>For MIDI 5-pin DIN connector |
+| Resistor 33 Ohms | R18 | 1 | 0.03€ | 0.03€ | SMD 0805 package, 125mW, 1%.<br>For MIDI 5-pin DIN connector |
 | Resistor 330 Ohms | R5, R8, R13 | 3 | 0.03€ | 0.09€ | SMD 0805 package, 125mW, 1% |
 | Resistor 1 kOhms | R1.0 - R1.15<br>R2.0 - R2.15 | 32 | 0.015€ | 0.48€ | SMD 0805 package, 125mW, 1% |
 | Resistor 2.7 kOhms | R4 | 1 | 0.03€ | 0.03€ | SMD 0805 package, 125mW, 1% |
-| Resistor 4.7 kOhms | R9, R10 | 2 | 0.03€ | 0.06€ | SMD 0805 package, 125mW, 1% |
+| Resistor 4.7 kOhms | R9, R14 | 2 | 0.03€ | 0.06€ | SMD 0805 package, 125mW, 1%.<br>Use different values to adjust brightness of LEDs D3 (R9) and D5 (R14) to your liking. |
+| Resistor 10 kOhms | R10 | 1 | 0.03€ | 0.03€ | SMD 0805 package, 125mW, 1%<br>Use different value to adjust brightness of LED D4 to your liking. |
+| Resistor 15 kOhms | R15, R16 | 1 | 0.03€ | 0.06€ | SMD 0805 package, 125mW, 1%.<br>For USB-Host connector |
 | Capacitor 10 µF | C1, C2 | 2 | 0.04€ | 0.08€ | SMD 0805 package, >=25V, X5R (or X7R)
-| D-Sub 37-pin Connector, right-angled, male | J1 | 1 | 1.00€ | 1.00€ | Alternatively, you can use any connector of your choice via the 2x25 pin IDC header (J2). |
-| Header 2x25 pins (male) | J2 | 1 | 0.33€ | 0.33€ | Optional. Only required if you do not want to use the D-Sub 37 connector.
-| 3-Pin Header (male)<br>+ 2-pin Jumpers | JP1 - JP6 | 6 | 0.09€<br>+ 0.02€ | 0.66€ | Instead of 6x 3-pin headers, use a cheaper 40-pin header and brake it into 3-pin pieces. You can also use slide switches instead if you want to change the settings more often.
-| 3-Pin Header (female) | J3 | 1 | 0.15€ | 0.15€ | Only required for UART serial debug output.
-| PCB | - | 1 | ~10€ (Germany) | ~10€ | See the section [PCB Ordering and Assembly](#pcb-ordering-and-assembly) for more info|
-| **Total** |||| 24.66€ || 
+| D-Sub HD 44-pin Connector, right-angled, female | J0 | 1 | 2.50€ | 2.50€ | Alternatively, you can use any connector of your choice via the 2x25 pin IDC header (J2). |
+| USB-A socket, right-angled | J1 | 1 | 0.15€ | 0.15€ | Socket for USB-Host. |
+| Header 2x25 pins (male) | J2 | 1 | 0.33€ | 0.33€ | Expansion port (Optional).
+| 3-Pin Header (female) | J3 | 1 | 0.15€ | 0.15€ | UART serial debug output.
+| DIN 5-pin female 180° | J7 | 1 | 0.85€ | 0.85€ | Connector for MIDI Serial DIN Output. |
+| PCB | - | 1 | ~5€ (Germany) | ~5€ | See the section [PCB Ordering and Assembly](#pcb-ordering-and-assembly) for more info|
+| **Total** |||| ~22€ || 
 
 If you are located in Germany, check prices at Reichelt (that's where the prices from above are from), Pollin, Conrad. Globally Mouser and Farnell might be your friend.
 
 #### PCB Ordering and Assembly
-All you need to order your Trigger Module PCB v1.1 for assembly are the following files:
+All you need to order your Trigger Module PCB for assembly are the following files:
 - GERBER File
 - BOM File (Bill of Material)
 - CPL File (Component Placement List)
 
-These files are available on the [PCB Module 1.1.1 Release Page](https://github.com/tobigun/EavesDrum/releases/tag/PCB-module-v1.1.1).
+These files are available on the [PCB Module 1.2 Release Page](https://github.com/tobigun/EavesDrum/releases/tag/PCB-module-v1.2).
 
 **To order the PCB:**
 - Open the website of a PCB manufacturer.
@@ -310,8 +310,8 @@ It is possible to assemble the PCB on your own by hand-soldering without special
 You can also let JLCPCB or PCBWay assemble the PCB as you already order the PCB there.
 
 *Example:*
-- JLCPCB: 5 assembled PCBs including parts cost about 90€ (excl. shipping/tax), so approx. 20€ per PCB.
-  - Unfortunately the minimum amount of assembled PCBs per order is 2 (in this case ~60€ excl. shipping/tax, so 30€ per board).
+- JLCPCB: 5 assembled PCBs including parts cost about 106€ (excl. shipping/tax), so approx. 21€ per PCB.
+  - Note that the minimum amount of assembled PCBs per order is 2
 
 If you want an assembled board it is best to organize a collective purchase order to split the cost. I created a [forum discussion where you can organize an order](https://github.com/tobigun/EavesDrum/discussions/1).
 

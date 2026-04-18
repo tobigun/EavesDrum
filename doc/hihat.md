@@ -31,7 +31,7 @@ The core of the PCB is a cheap TCRT5000 Infrared Reflectance Sensor.
     - Make sure the disc is not too reflective (i.e. do not use a CD or a mirror).
 
 ### Schematics
-<img src="schematics/hihat/schematic-hihat-1.0.2.png" width="700px" />
+<img src="../schematics/hihat/schematic-hihat-1.0.2.png" width="700px" />
 
 All files that you need to order your Hi-Hat Sensor PCB (GERBER file, ...) are [here](https://github.com/tobigun/EavesDrum/releases/tag/PCB-hihat-v1.0.2).
 
