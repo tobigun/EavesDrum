@@ -86,7 +86,7 @@ export function MidiOutputModeSelect() {
   }, []);
 
   const midiOutputModeLabels: Record<MidiOutputMode, string> = {
-    [MidiOutputMode.UsbDevice]: "USB Client",
+    [MidiOutputMode.UsbDevice]: "USB Device",
     [MidiOutputMode.UsbHost]: "USB Host",
     [MidiOutputMode.SerialDin]: "Serial 5-Pin DIN",
     [MidiOutputMode.BleClient]: "BLE Client",
