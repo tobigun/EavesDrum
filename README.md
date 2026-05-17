@@ -138,8 +138,7 @@ System overview:
   - Bluetooth LE Client (Pico2W only)
     - This can be used to connect to a device that can act as a Bluetooth LE MIDI Server, e.g. EFNOTE's 3/5/7 drum modules.
   - Bluetooth LE Server (Pico2W only)
-    - Activate the BLE Server mode and connect a smartphone or tablet to EavesDrum and trigger sounds in an app. This can also be used to connect a computer wireless. 
-    - Tested with: and Windows (PC).
+    - Activate the BLE Server mode and connect a smartphone or tablet to EavesDrum and trigger sounds in an app. This can also be used to connect a computer wireless.
       - Android (smartphone): works, but most MIDI apps will require the "MIDI+BTLE" app to use BLE as they do not support it directly.
       - Windows (PC): does not support BLE MIDI out-of-the-box. You will need a BLE connector app like [BLE-MIDI Bridge](https://github.com/Maxime-J/BLE-MIDI-Bridge) or [MIDIberry](https://apps.microsoft.com/detail/9n39720h2m05) together with a virtual loopback MIDI cable software like [loopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html).
       - iOS (iPad): works with Garage Band out of the box
