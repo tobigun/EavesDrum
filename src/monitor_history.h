@@ -4,6 +4,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include "packed.h"
 
 #define HISTORY_INDEX_NONE -1
 #define MONITOR_HISTORY_COUNT 200 // 50
@@ -15,7 +16,7 @@ struct HistoryEntry {
   uint16_t timeUntilPreviousUs;
   history_bool_t isGap = false;
   uint8_t values[3] = {0, 0, 0}; // 0..255
-} __attribute__((packed));
+} ATTR_PACKED;
 
 class MonitorHistory {
 public:

@@ -5,6 +5,7 @@
 
 #include "drum.h"
 #include "monitor_history.h"
+#include "packed.h"
 
 #include <Arduino.h>
 
@@ -38,12 +39,12 @@ struct MonitorHitInfo {
   enum_uint8_t padType;
   enum_uint8_t zonesType;
   enum_uint8_t chokeType;
-} __attribute__((packed));
+} ATTR_PACKED;
 
 struct MonitorMessage {
   MonitorHitInfo hitInfo;
   HistoryEntry history[MONITOR_HISTORY_COUNT];
-} __attribute__((packed));
+} ATTR_PACKED;
 
 class DrumMonitor {
 public:
