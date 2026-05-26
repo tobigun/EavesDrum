@@ -48,6 +48,7 @@ void logDebug(const char* format, ...);
 void logInfo(const char* format, ...);
 void logWarn(const char* format, ...);
 void logError(const char* format, ...);
+void logRaw(const char* format, ...);
 
 #ifdef __cplusplus
 }

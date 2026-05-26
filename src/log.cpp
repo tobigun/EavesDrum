@@ -44,30 +44,34 @@ void logString(Level level, String message, LogMode mode) {
 }
 
 #ifdef ENABLE_SERIAL_DEBUG
-#define LOG_PRINTF(level) \
+#define LOG_PRINTF(level, mode) \
   if (level < minLogLevel) return; \
   va_list args; \
   va_start(args, format); \
   char formatBuffer[256]; \
   vsnprintf(formatBuffer, sizeof(formatBuffer), format, args); \
-  logCharBuffer(level, formatBuffer, LogMode::Default); \
+  logCharBuffer(level, formatBuffer, mode); \
   va_end(args);
 #else
-#define LOG_PRINTF(level) do {} while(0)
+#define LOG_PRINTF(level, mode) do {} while(0)
 #endif
 
 void logDebug(const char* format, ...) {
-  LOG_PRINTF(Level::Debug);
+  LOG_PRINTF(Level::Debug, LogMode::Default);
 }
 
 void logInfo(const char* format, ...) {
-  LOG_PRINTF(Level::Info);
+  LOG_PRINTF(Level::Info, LogMode::Default);
 }
 
 void logWarn(const char* format, ...) {
-  LOG_PRINTF(Level::Warn);
+  LOG_PRINTF(Level::Warn, LogMode::Default);
 }
 
 void logError(const char* format, ...) {
-  LOG_PRINTF(Level::Error);
+  LOG_PRINTF(Level::Error, LogMode::Default);
+}
+
+void logRaw(const char* format, ...) {
+  LOG_PRINTF(Level::Info, LogMode::NoPrefixOrNewline);
 }
