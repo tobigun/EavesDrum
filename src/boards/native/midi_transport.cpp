@@ -20,6 +20,6 @@ MidiTransportInstances midiTransportInstances = {
   .bleClient = &midiTransportBleClientSimulation,
   .bleServer = &nativeMidiTransport,
 #endif
-  .guitarHeroDrum = &nativeMidiTransport
+  .guitarHeroDrumSPI = &nativeMidiTransport
 };
 MidiTransportMultiplexer midiTransport(midiTransportInstances);

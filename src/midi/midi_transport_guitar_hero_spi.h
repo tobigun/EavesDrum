@@ -7,9 +7,9 @@
 
 #if __has_include(<SPISlave.h>)
 #include <SPISlave.h>
-#define ENABLE_MIDI_GUITAR_HERO_TRANSPORT
+#define ENABLE_MIDI_GUITAR_HERO_SPI_TRANSPORT
 
-class MidiTransport_GuitarHero : public MidiTransport {
+class MidiTransport_GuitarHero_SPI : public MidiTransport {
 public:
   void start() override;
 

@@ -91,7 +91,7 @@ export function MidiOutputModeSelect() {
     [MidiOutputMode.SerialDin]: "Serial 5-Pin DIN",
     [MidiOutputMode.BleClient]: "BLE Client",
     [MidiOutputMode.BleServer]: "BLE Server",
-    [MidiOutputMode.GuitarHeroDrum]: "Guitar Hero Drum (SPI)"
+    [MidiOutputMode.GuitarHeroDrumSPI]: "Guitar Hero Drum (SPI)"
   };
 
   const handleMidiModeChanged = (value: MidiOutputMode) => {

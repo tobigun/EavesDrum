@@ -1,10 +1,14 @@
-#include "midi_transport_guitar_hero.h"
+// Copyright (c) 2026 Tobias Gunkel
+// SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifdef ENABLE_MIDI_GUITAR_HERO_TRANSPORT
+#include "midi_transport_guitar_hero_spi.h"
+
+#ifdef ENABLE_MIDI_GUITAR_HERO_SPI_TRANSPORT
 
 #include <SPI.h>
 #include <SPISlave.h>
 #include "drum_io.h"
+#include "packed.h"
 
 // Protocol information:
 // https://blog.laplante.io/2012/08/16/hack-a-guitar-hero-drumset-to-use-it-with-any-computer-over-usb-part2/
@@ -38,7 +42,7 @@ struct MidiMessage {
   uint8_t cmd;
   uint8_t note;
   uint8_t velocity;
-} __attribute__((packed));
+} ATTR_PACKED;
 
 MidiMessage midiNoteBuffer[NUM_PADS];
 uint8_t midiNoteBufferCount = 0;
@@ -100,7 +104,7 @@ void reinitializeSPI() {
   DRUM_SPI.setData(&preamble, 1);
 }
 
-void MidiTransport_GuitarHero::start() {
+void MidiTransport_GuitarHero_SPI::start() {
   DRUM_SPI.setRX(PIN_RX);
   DRUM_SPI.setCS(PIN_CS);
   DRUM_SPI.setSCK(PIN_SCK);
@@ -117,14 +121,14 @@ void MidiTransport_GuitarHero::start() {
   DrumIO::led(LedId::MidiConnected, true);
 } 
 
-void MidiTransport_GuitarHero::stop() {
+void MidiTransport_GuitarHero_SPI::stop() {
   detachInterrupt(digitalPinToInterrupt(PIN_CS));
   DRUM_SPI.end();
 
   DrumIO::led(LedId::MidiConnected, false);
 }
 
-void MidiTransport_GuitarHero::sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) {
+void MidiTransport_GuitarHero_SPI::sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) {
   int8_t hitSlotIndex = noteToPadIndex(inNoteNumber);
   if (hitSlotIndex >= 0) {
     pendingPadHits[hitSlotIndex] = inVelocity;

@@ -13,7 +13,7 @@
           "SerialDin",
           "BleClient",
           "BleServer",
-          "GuitarHeroDrum"
+          "GuitarHeroDrumSPI"
         ] },
         "blePairing": {
           "type": "object",

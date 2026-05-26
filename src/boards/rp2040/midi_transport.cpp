@@ -8,8 +8,8 @@
 #include "SerialTxUART.h"
 #include "midi_transport_serial.h"
 
-#include "midi_transport_guitar_hero.h"
-#include <SPISlave.h> // required for MidiTransport_GuitarHero
+#include "midi_transport_guitar_hero_spi.h"
+#include <SPISlave.h> // required for MidiTransport_GuitarHero_SPI
 
 MidiTransport_UsbDevice midiTransportUsbDevice;
 MidiTransport_TinyUsbHost midiTransportTinyUsbHost;
@@ -21,7 +21,7 @@ MidiTransport_BleServer midiTransportBleServer;
 
 MidiTransport_Serial midiTransportDin(SerialTx2);
 
-MidiTransport_GuitarHero midiTransportGuitarHero;
+MidiTransport_GuitarHero_SPI midiTransportGuitarHeroSPI;
 
 MidiTransportInstances midiTransportInstances = {
   .usbDevice = &midiTransportUsbDevice,
@@ -31,6 +31,6 @@ MidiTransportInstances midiTransportInstances = {
   .bleClient = &midiTransportBleClient,
   .bleServer = &midiTransportBleServer,
 #endif
-  .guitarHeroDrum = &midiTransportGuitarHero,
+  .guitarHeroDrumSPI = &midiTransportGuitarHeroSPI,
 };
 MidiTransportMultiplexer midiTransport(midiTransportInstances);
