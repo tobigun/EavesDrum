@@ -43,6 +43,9 @@ export const licenses = {
       name: "rppicomidi / ring_buffer_lib",
       license: "MIT License (Copyright: rppicomidi)",  
     }, {
+      name: "LUFA hidparser (from abcminiuser with changes by Santroller)",
+      license: "MIT License (Copyright: Dean Camera)",  
+    }, {
       name: "cesanta / mongoose (PC simulation only)",
       license: "GPLv2 License (Copyright: Sergey Lyubka / Cesanta Software Limited)",    
     }

@@ -197,8 +197,8 @@ extern "C" {
 
 #define CFG_TUH_HUB                 1 // number of supported hubs
 #define CFG_TUH_MIDI                1
+#define CFG_TUH_HID                 1
 #define CFG_TUH_CDC                 0
-#define CFG_TUH_HID                 0
 #define CFG_TUH_MSC                 0
 #define CFG_TUH_VENDOR              0
 
