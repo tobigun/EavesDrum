@@ -29,83 +29,26 @@
 
 #include <tusb.h>
 #include "log.h"
-#include "pio_usb.h"
 #include "drum_io.h"
 #include "webui.h"
 #include "drum_kit.h"
+#include "usb_host.h"
 
-#define PIO_USB_DP_PIN 6 // default: use pins 6 (D+) and 7 (D-) on dedicated USB connector
-#define PIO_USB_DP_PIN_BOARD_V1_1 16 // use pins 16 (D+) and 17 (D-) on 50-pin expansion port. Pins 6+7 are blocked by mux address pins
-
-static uint8_t dev_idx = TUSB_INDEX_INVALID_8;
+static uint8_t devIndex = TUSB_INDEX_INVALID_8;
 
 static bool connectedDeviceNameDirty = false;
 static String connectedDeviceName;
 
-void updateConnectedDeviceInfo();
-
-int getFreeDmaChannelForPioUsb() {
-  // pio usb wants a fixed dma channel. Lower channels are unlikely free so query for an unused channel
-  int dmaChannel = dma_claim_unused_channel(true);
-  if (dmaChannel < 0) {
-    return -1;
-  }
-  dma_channel_unclaim(dmaChannel);
-  return dmaChannel;
-}
-
-// search a free PIO that has free state machines for all three programs.
-int getFreePio() {
-  for (int pioIndex = NUM_PIOS - 1; pioIndex > 0; --pioIndex) {
-      PIO pio = pio_get_instance(pioIndex);
-      if (pio_sm_is_claimed(pio, 0) || pio_sm_is_claimed(pio, 1) || pio_sm_is_claimed(pio, 2) || pio_sm_is_claimed(pio, 3)) {
-        continue;
-      }
-      return pioIndex;
-  }
-  return -1;
-}
+static void updateConnectedDeviceInfo();
 
 void MidiTransport_TinyUsbHost::begin() {
   DrumIO::led(LedId::MidiConnected, false);
 
-  if (tuh_inited()) {
-    return;
-  }
-
-  int dmaChannelTx = getFreeDmaChannelForPioUsb();
-  if (dmaChannelTx < 0) {
-    eventLog.log(Level::Error, "No free DMA channel available for PIO USB Host");
-    return;
-  }
-
-  int pioIndex = getFreePio();
-  if (pioIndex < 0) {
-    eventLog.log(Level::Error, "No free PIO available for PIO USB Host");
-    return;
-  }
-
-  pio_usb_configuration_t pio_cfg = {
-    drumKit.getBoardVersion() == BoardVersion::V1_1 ? PIO_USB_DP_PIN_BOARD_V1_1 : PIO_USB_DP_PIN,
-    (uint8_t) pioIndex, // TX PIO
-    PIO_SM_USB_TX_DEFAULT,
-    (uint8_t) dmaChannelTx,
-    (uint8_t) pioIndex, // RX PIO (use one PIO for RX and TX)
-    PIO_SM_USB_RX_DEFAULT,
-    PIO_SM_USB_EOP_DEFAULT,
-    NULL,
-    PIO_USB_DEBUG_PIN_NONE,
-    PIO_USB_DEBUG_PIN_NONE,
-    false,
-    PIO_USB_PINOUT_DPDM
-  };
-
-  tuh_configure(1, TUH_CFGID_RPI_PIO_USB_CONFIGURATION, &pio_cfg);  
-  tuh_init(BOARD_TUH_RHPORT);
+  UsbHost::begin();
 }
 
 void MidiTransport_TinyUsbHost::update() {
-  tuh_task_ext(0, false);
+  UsbHost::update();
   if (connectedDeviceNameDirty) {
     updateConnectedDeviceInfo();
     connectedDeviceNameDirty = false;
@@ -124,7 +67,7 @@ String MidiTransport_TinyUsbHost::getConnectedDeviceName() {
 }
 
 uint8_t MidiTransport_TinyUsbHost::getDeviceIndex() {
-  return dev_idx;
+  return devIndex;
 }
 
 
@@ -147,9 +90,9 @@ void tuh_midi_mount_cb(uint8_t idx, const tuh_midi_mount_cb_t* mount_cb_data) {
   logInfo("USB-Host: MIDI Device Index = %u, MIDI device address = %u, %u IN cables, OUT %u cables", idx,
       mount_cb_data->daddr, mount_cb_data->rx_cable_count, mount_cb_data->tx_cable_count);
 
-  if (dev_idx == TUSB_INDEX_INVALID_8) {
+  if (devIndex == TUSB_INDEX_INVALID_8) {
     // then no MIDI device is currently connected
-    dev_idx = idx;
+    devIndex = idx;
     connectedDeviceNameDirty = true;
   } else {
     logError("A different USB MIDI Device is already connected.\r\nOnly one device at a time is supported in this program\r\nDevice is disabled");
@@ -159,8 +102,8 @@ void tuh_midi_mount_cb(uint8_t idx, const tuh_midi_mount_cb_t* mount_cb_data) {
 
 // Invoked when device with MIDI interface is un-mounted
 void tuh_midi_umount_cb(uint8_t idx) {
-  if (idx == dev_idx) {
-    dev_idx = TUSB_INDEX_INVALID_8;
+  if (idx == devIndex) {
+    devIndex = TUSB_INDEX_INVALID_8;
     connectedDeviceName = "";
     connectedDeviceNameDirty = true;
     logInfo("USB-Host: MIDI Device Index = %u is unmounted", idx);
@@ -171,7 +114,7 @@ void tuh_midi_umount_cb(uint8_t idx) {
 }
 
 void tuh_midi_rx_cb(uint8_t idx, uint32_t num_bytes) {
-  if (dev_idx == idx) {
+  if (devIndex == idx) {
     if (num_bytes != 0) {
       uint8_t cable_num;
       uint8_t buffer[48];
@@ -192,52 +135,33 @@ void tuh_midi_tx_cb(uint8_t idx, uint32_t num_bytes) {
   (void)num_bytes;
 }
 
-static String descriptorToString(uint16_t* buffer) {
-  String value;
-  uint8_t len = ((*buffer) & 0xFF) / 2;
-  for (uint8_t idx = 1; idx < len; idx++) {
-    value += String((char)buffer[idx]);
+static void printConnectedUsbDeviceName(const String& vendorName, const String& productName) {
+  logString(Level::Info, "USB-Host MIDI device found: ", LogMode::NoNewline);
+  if (vendorName.length() > 0) {
+    logString(Level::Info, "Vendor=", LogMode::NoPrefixOrNewline);
+    logString(Level::Info, vendorName, LogMode::NoPrefixOrNewline);
   }
-  return value;
+  if (productName.length() > 0) {
+    logString(Level::Info, " Product=", LogMode::NoPrefixOrNewline);
+    logString(Level::Info, productName, LogMode::NoPrefixOrNewline);
+  }
+  logString(Level::Info, "\n", LogMode::NoPrefixOrNewline);
 }
 
-void updateConnectedDeviceInfo() {
-  if (dev_idx == TUSB_INDEX_INVALID_8) {
+static void updateConnectedDeviceInfo() {
+  if (devIndex == TUSB_INDEX_INVALID_8) {
     connectedDeviceName = "";
     webUI.sendUsbHostStatus(connectedDeviceName);
     return;
   }
 
-  uint16_t buffer[128];
   tuh_itf_info_t info;
-  if (!tuh_midi_itf_get_info(dev_idx, &info))
+  if (!tuh_midi_itf_get_info(devIndex, &info))
     logError("tuh_midi_itf_get_info failed");
 
-  String vendorName;
-  String productName;
-  String serialName;
-
-  if (tuh_descriptor_get_string_langid_sync(info.daddr, buffer, sizeof(buffer)) == XFER_RESULT_SUCCESS) {
-    logString(Level::Info, "USB-Host device found: ", LogMode::NoNewline);
-
-    uint16_t langid = buffer[1];
-    if (tuh_descriptor_get_manufacturer_string_sync(info.daddr, langid, buffer, sizeof(buffer)) == XFER_RESULT_SUCCESS) {
-      vendorName = descriptorToString(buffer);
-      logString(Level::Info, "Vendor=", LogMode::NoPrefixOrNewline);
-      logString(Level::Info, vendorName, LogMode::NoPrefixOrNewline);
-    }
-    if (tuh_descriptor_get_product_string_sync(info.daddr, langid, buffer, sizeof(buffer)) == XFER_RESULT_SUCCESS) {
-      productName = descriptorToString(buffer);
-      logString(Level::Info, " Product=", LogMode::NoPrefixOrNewline);
-      logString(Level::Info, productName, LogMode::NoPrefixOrNewline);
-    }
-    if (tuh_descriptor_get_serial_string_sync(info.daddr, langid, buffer, sizeof(buffer)) == XFER_RESULT_SUCCESS) {
-      serialName = descriptorToString(buffer);
-      logString(Level::Info, " Serial=", LogMode::NoPrefixOrNewline);
-      logString(Level::Info, serialName, LogMode::NoPrefixOrNewline);
-    }
-    logString(Level::Info, "\n", LogMode::NoPrefixOrNewline);
-  }
+  String vendorName = UsbHost::getVendorName(info);
+  String productName = UsbHost::getProductName(info);
+  printConnectedUsbDeviceName(vendorName, productName);
 
   if (productName.length() > 0 && vendorName.length() > 0) {
     connectedDeviceName = vendorName + " " + productName;
@@ -246,7 +170,7 @@ void updateConnectedDeviceInfo() {
   } else if (vendorName.length() > 0) {
     connectedDeviceName = vendorName;
   } else {
-    connectedDeviceName = serialName;
+    connectedDeviceName = "";
   }
 
   webUI.sendUsbHostStatus(connectedDeviceName);

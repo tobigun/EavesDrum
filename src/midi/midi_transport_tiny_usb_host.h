@@ -3,11 +3,9 @@
 
 #pragma once
 
-#if __has_include(<tusb.h>)
-#include <tusb.h>
-#if CFG_TUH_ENABLED > 0 && CFG_TUH_MIDI > 0
+#include "usb_host.h"
+#if defined(ENABLE_TINY_USB_HOST) && CFG_TUH_MIDI > 0
 #define ENABLE_MIDI_TINY_USB_HOST_TRANSPORT
-#endif
 #endif
 
 #ifdef ENABLE_MIDI_TINY_USB_HOST_TRANSPORT
