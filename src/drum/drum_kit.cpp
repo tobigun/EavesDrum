@@ -74,7 +74,7 @@ void DrumKit::stabilizeMultiplexerOffsetVoltage(time_us_t senseTimeUs) {
   // Note: do not make this too short as the monitor messages take about 600-700us and we do not want them
   // to cause a flush as we might miss a hit then.
   // On the opposite side, a blockage of 5ms already caused false hit triggers. So values between 1-4ms should be fine.
-  const time_us_t flushTimeUs = 2 * 1000; // 2ms seems to be a good compromise
+  const time_us_t flushTimeUs = 4 * 1000; // 4ms seems to be a good compromise
   bool needsFlush = senseTimeUs - lastMuxReadTimeUs > flushTimeUs;
   if (!needsFlush) {
     lastMuxReadTimeUs = senseTimeUs;
