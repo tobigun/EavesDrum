@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/tobigun/EavesDrum/refs/tags/config-schema-v1.1/config/config.jsonc
+# Guitar Hero Drum (Wii) and Rock Band Drum USB (Wii)
+#
+# Note names according to General MIDI PERCUSSION Key Map
+# https://musescore.org/sites/musescore.org/files/General%20MIDI%20Standard%20Percussion%20Set%20Key%20Map.pdf
+mappings:
+  Snare:
+    name: Red Pad (Snare) 
+    noteMain: 38 # Acoustic Snare
+    noteRim: 38 # Acoustic Snare
+    noteCross: 38 # Acoustic Snare
+  Tom1:
+    name: Yellow Pad (Tom 1 - High)
+    noteMain: 50 # High Tom
+    noteRim: 50 # High Tom
+  Tom2:
+    name: Blue Pad (Tom 2 - Low)
+    noteMain: 47 # Low-Mid Tom
+    noteRim: 47 # Low-Mid Tom
+  Tom3:
+    name: Green Pad (Tom 3 - Floor)
+    noteMain: 41 # Low Floor Tom
+    noteRim: 41 # Low Floor Tom
+  Tom4:
+    name: Green Pad (Tom 4 - Floor)
+    noteMain: 41 # Low Floor Tom
+    noteRim: 41 # Low Floor Tom
+  HiHat:
+    name: Yellow Cymbal (Hi-Hat)
+    noteMain: 46 # Open Hi-Hat
+    closedNotesEnabled: false
+    noteCloseMain: 46 # Open Hi-Hat
+    noteRim: 46 # Open Hi-Hat
+    noteCloseRim: 46 # Open Hi-Hat
+    noteCup: 46 # Open Hi-Hat
+    noteCloseCup: 46 # Open Hi-Hat
+  HiHatPedal:
+    name: Hi-Hat Pedal
+    noteMain: 44 # Pedal Hi-Hat
+  Cymbal1:
+    name: Yellow Cymbal (Cymbal1)
+    noteMain: 46 # Open Hi-Hat
+    noteRim: 46 # Open Hi-Hat
+    noteCup: 46 # Open Hi-Hat
+  Cymbal2: 
+    name: GH Orange / RB Green Cymbal (Cymbal2)
+    noteMain: 49 # Crash Cymbal
+    noteRim: 49 # Crash Cymbal
+    noteCup: 49 # Crash Cymbal
+  Cymbal3:
+    name: GH Orange / RB Green Cymbal (Cymbal3)
+    noteMain: 49 # Crash Cymbal
+    noteRim: 49 # Crash Cymbal
+    noteCup: 49 # Crash Cymbal
+  Ride1:
+    name: Blue Cymbal (Ride)
+    noteMain: 51 # Ride Cymbal 1
+    noteRim: 51 # Ride Cymbal 1
+    noteCup: 51 # Ride Cymbal 1
+  Kick:
+    name: Kick Pedal
+    noteMain: 36 # Bass Drum 1

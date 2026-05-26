@@ -21,10 +21,10 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- *
  */
 
-#include "tusb.h"
+#include <tusb.h>
+#include "usb_device.h"
 
 /* A combination of interfaces must have a unique product id, since PC will save device driver after the first plug.
  * Same VID/PID with different interface e.g MSC (first), then CDC (later) will possibly cause system error on PC.
@@ -33,6 +33,7 @@
  *   [MSB]       NET | VENDOR | MIDI | HID | MSC | CDC          [LSB]
  */
 #define _PID_MAP(itf, n) ((CFG_TUD_##itf) << (n))
+#undef USB_PID
 #define USB_PID (0x4000 | _PID_MAP(CDC, 0) | _PID_MAP(MSC, 1) | _PID_MAP(HID, 2) | _PID_MAP(MIDI, 3) | _PID_MAP(VENDOR, 4) | _PID_MAP(ECM_RNDIS, 5) | _PID_MAP(NCM, 5))
 
 // String Descriptor Index
@@ -51,13 +52,18 @@ enum {
 #if CFG_TUD_MIDI
   STRID_INTERFACE_MIDI,
 #endif
+#if CFG_TUD_HID
+  STRID_INTERFACE_HID,
+#endif
   STRID_MAC
 };
+
+static const uint8_t* hidDescriptor = nullptr;
 
 //--------------------------------------------------------------------+
 // Device Descriptors
 //--------------------------------------------------------------------+
-tusb_desc_device_t const desc_device = {
+static tusb_desc_device_t desc_device = {
   .bLength = sizeof(tusb_desc_device_t),
   .bDescriptorType = TUSB_DESC_DEVICE,
   .bcdUSB = 0x0200,
@@ -80,6 +86,23 @@ tusb_desc_device_t const desc_device = {
   .bNumConfigurations = 1 // multiple configurations
 };
 
+uint16_t UsbDevice::getVendorId() {
+  return desc_device.idVendor;
+}
+
+void UsbDevice::setVendorId(uint16_t vendorId) {
+  desc_device.idVendor = vendorId;
+}
+
+uint16_t UsbDevice::getProductId() {
+  return desc_device.idProduct;
+}
+
+void UsbDevice::setProductId(uint16_t productId) {
+  desc_device.idProduct = productId;
+}
+
+
 // Invoked when received GET DEVICE DESCRIPTOR
 // Application return pointer to descriptor
 uint8_t const* tud_descriptor_device_cb(void)
@@ -101,12 +124,17 @@ uint8_t const* tud_descriptor_device_cb(void)
 #define USBD_NET_EPOUT 0x02
 #define USBD_NET_EPIN 0x82
 
-#if CFG_TUD_MSC
-#define USBD_MSC_EPOUT 0x03
-#define USBD_MSC_EPIN 0x83
-#define USBD_MSC_EPSIZE 64
+#if CFG_TUD_HID
+#define USBD_HID_EPOUT 0x03
+#define USBD_HID_EPIN 0x83
+#define USBD_HID_EPSIZE 64
 #endif
 
+#if CFG_TUD_MSC
+#define USBD_MSC_EPOUT 0x06
+#define USBD_MSC_EPIN 0x86
+#define USBD_MSC_EPSIZE 64
+#endif
 
 #if CFG_TUD_CDC
 #define USBD_CDC_EP_CMD (0x84)
@@ -117,8 +145,10 @@ uint8_t const* tud_descriptor_device_cb(void)
 #endif
 
 enum {
-  ITF_NUM_NET = 0,
+#if CFG_TUD_ECM_RNDIS || CFG_TUD_NCM
+  ITF_NUM_NET,
   ITF_NUM_NET_DATA,
+#endif
 #if CFG_TUD_CDC
   ITF_NUM_SERIAL,
   ITF_NUM_SERIAL_DATA,
@@ -130,7 +160,7 @@ enum {
   ITF_NUM_MIDI, // Audio-Control (AC)
   ITF_NUM_MIDI_STREAM, // Midi Stream
 #endif
-  ITF_NUM_TOTAL
+  ITF_STATIC_NUM_TOTAL
 };
 
 #if CFG_TUD_MSC
@@ -154,17 +184,19 @@ enum {
 #define CONFIG_COMMON_LEN (TUD_CONFIG_DESC_LEN + SERIAL_DESC_LEN + MSC_DESC_LEN + MIDI_DESC_LEN)
 
 #if CFG_TUD_ECM_RNDIS
-#define CONFIG_TOTAL_LEN (CONFIG_COMMON_LEN + TUD_RNDIS_DESC_LEN)
+#define CONFIG_STATIC_TOTAL_LEN (CONFIG_COMMON_LEN + TUD_RNDIS_DESC_LEN)
+#elif CFG_TUD_NCM
+#define CONFIG_STATIC_TOTAL_LEN (CONFIG_COMMON_LEN + TUD_CDC_NCM_DESC_LEN)
 #else
-#define CONFIG_TOTAL_LEN (CONFIG_COMMON_LEN + TUD_CDC_NCM_DESC_LEN)
+#define CONFIG_STATIC_TOTAL_LEN (CONFIG_COMMON_LEN)
 #endif
 
-static uint8_t const configuration[] = {
+static uint8_t configuration[CONFIG_STATIC_TOTAL_LEN + TUD_HID_INOUT_DESC_LEN] = {
   // Config number (index+1), interface count, string index, total length, attribute, power in mA
-  TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, 0, 100),
+  TUD_CONFIG_DESCRIPTOR(1, ITF_STATIC_NUM_TOTAL, 0, CONFIG_STATIC_TOTAL_LEN, 0, 100),
 #if CFG_TUD_ECM_RNDIS
   TUD_RNDIS_DESCRIPTOR(ITF_NUM_NET, STRID_INTERFACE_NET, USBD_NET_EPNOTIF, 8, USBD_NET_EPOUT, USBD_NET_EPIN, CFG_TUD_NET_ENDPOINT_SIZE),
-#else
+#elif CFG_TUD_NCM
   TUD_CDC_NCM_DESCRIPTOR(ITF_NUM_NET, STRID_INTERFACE_NET, STRID_MAC, USBD_NET_EPNOTIF, 64, USBD_NET_EPOUT, USBD_NET_EPIN, CFG_TUD_NET_ENDPOINT_SIZE, CFG_TUD_NET_MTU),
 #endif
 #if CFG_TUD_CDC
@@ -174,9 +206,27 @@ static uint8_t const configuration[] = {
   TUD_MSC_DESCRIPTOR(ITF_NUM_MSC, STRID_INTERFACE_MSC, USBD_MSC_EPOUT, USBD_MSC_EPIN, USBD_MSC_EPSIZE),
 #endif
 #if CFG_TUD_MIDI
-  TUD_MIDI_DESCRIPTOR(ITF_NUM_MIDI, STRID_INTERFACE_MIDI, USBD_MIDI_EPOUT, USBD_MIDI_EPIN, USBD_MIDI_EPSIZE)
+  TUD_MIDI_DESCRIPTOR(ITF_NUM_MIDI, STRID_INTERFACE_MIDI, USBD_MIDI_EPOUT, USBD_MIDI_EPIN, USBD_MIDI_EPSIZE),
+#endif
+ // HID must be the last entry (can be enabled at runtime)
+#if CFG_TUD_HID
+  TUD_HID_INOUT_DESCRIPTOR(0 /*ITF_NUM_HID*/, STRID_INTERFACE_HID, HID_ITF_PROTOCOL_NONE, 0 /*HID_REPORT_DESC_SIZE*/, USBD_HID_EPOUT, USBD_HID_EPIN, USBD_HID_EPSIZE, 1),
 #endif
 };
+
+static void setHidConfigDescriptor(bool hidEnabled, uint16_t hidDescriptorSize = 0, uint8_t hidPollInterval = 10) {
+#if CFG_TUD_HID
+  uint8_t configDescBuf[] = {
+    TUD_CONFIG_DESCRIPTOR(1, (uint8_t)(ITF_STATIC_NUM_TOTAL + (hidEnabled ? 1 : 0)), 0, CONFIG_STATIC_TOTAL_LEN + (hidEnabled ? TUD_HID_INOUT_DESC_LEN : 0), 0, 100),
+  };
+  memcpy(&configuration[0], configDescBuf, TUD_CONFIG_DESC_LEN);
+
+  uint8_t hidDescBuf[] = {
+    TUD_HID_INOUT_DESCRIPTOR(ITF_STATIC_NUM_TOTAL, STRID_INTERFACE_HID, HID_ITF_PROTOCOL_NONE, hidDescriptorSize, USBD_HID_EPOUT, USBD_HID_EPIN, USBD_HID_EPSIZE, hidPollInterval)
+  };
+  memcpy(&configuration[CONFIG_STATIC_TOTAL_LEN], hidDescBuf, TUD_HID_INOUT_DESC_LEN);
+#endif
+}
 
 // Invoked when received GET CONFIGURATION DESCRIPTOR
 // Application return pointer to descriptor
@@ -208,11 +258,13 @@ static char const* string_desc_arr[] = {
 #if CFG_TUD_MIDI
   [STRID_INTERFACE_MIDI] = PROJECT_NAME " MIDI",
 #endif
-
+#if CFG_TUD_HID
+  [STRID_INTERFACE_HID] = "", // placeholder
+#endif
   // STRID_MAC index is handled separately
 };
 
-static uint16_t _desc_str[32];
+static uint16_t _desc_str[64];
 
 // Invoked when received GET STRING DESCRIPTOR request
 // Application return pointer to descriptor, whose contents must exist long enough for transfer to complete
@@ -220,18 +272,19 @@ uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid)
 {
   (void)langid;
 
-  unsigned int chr_count = 0;
+  uint8_t chr_count = 0;
 
   if (STRID_LANGID == index) {
     memcpy(&_desc_str[1], string_desc_arr[STRID_LANGID], 2);
-    chr_count = 1;
+    chr_count = 1; // one "UTF-16" character
   } else if (STRID_MAC == index) {
     // Convert MAC address into UTF-16
-
-    for (unsigned i = 0; i < sizeof(tud_network_mac_address); i++) {
+#if CFG_TUD_NCM
+    for (uint8_t i = 0; i < sizeof(tud_network_mac_address); i++) {
       _desc_str[1 + chr_count++] = "0123456789ABCDEF"[(tud_network_mac_address[i] >> 4) & 0xf];
       _desc_str[1 + chr_count++] = "0123456789ABCDEF"[(tud_network_mac_address[i] >> 0) & 0xf];
     }
+#endif
   } else {
     // Note: the 0xEE index string is a Microsoft OS 1.0 Descriptors.
     // https://docs.microsoft.com/en-us/windows-hardware/drivers/usbcon/microsoft-defined-usb-descriptors
@@ -247,7 +300,7 @@ uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid)
       chr_count = TU_ARRAY_SIZE(_desc_str) - 1;
 
     // Convert ASCII string into UTF-16
-    for (unsigned int i = 0; i < chr_count; i++) {
+    for (uint8_t i = 0; i < chr_count; i++) {
       _desc_str[1 + i] = str[i];
     }
   }
@@ -256,4 +309,58 @@ uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid)
   _desc_str[0] = (uint16_t)((TUSB_DESC_STRING << 8) | (2 * chr_count + 2));
 
   return _desc_str;
+}
+
+uint8_t const* tud_hid_descriptor_report_cb(uint8_t instance) {
+  return hidDescriptor;
+}
+
+// Invoked when received GET_REPORT control request
+// Application must fill buffer report's content and return its length.
+// Return zero will cause the stack to STALL request
+uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_t report_type, uint8_t* buffer, uint16_t reqlen) {
+  (void)instance;
+  (void)report_id;
+  (void)report_type;
+  (void)buffer;
+  (void)reqlen;
+
+#if 0
+  if (instance != 0 || report_id != 0 || report_type != HID_REPORT_TYPE_FEATURE) {
+    logDebug("GET_REPORT %d, report_id: %d, type: %d, len: %d\n", instance, report_id, report_type, reqlen);
+    return 0;
+  }
+#endif
+
+  return 0;
+}
+
+// Invoked when received SET_REPORT control request or
+// received data on OUT endpoint ( Report ID = 0, Type = 0 )
+void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize) {
+  (void)itf;
+  (void)report_id;
+  (void)report_type;
+
+#if 0
+  if (itf != 0 || report_id != 0 || report_type != HID_REPORT_TYPE_OUTPUT || bufsize != 8) {
+    logDebug("Unknown SET_REPORT %d, report_id: %d, type: %d, len: %d\n", itf, report_id, report_type, bufsize);
+    return;
+  }
+#endif
+
+  // echo back anything we received from host
+  tud_hid_report(0, buffer, bufsize);
+}
+
+void UsbDevice::enableHid(const char* name, const uint8_t* _hidDescriptor, uint16_t hidDescriptorSize, uint8_t hidPollInterval) {
+  hidDescriptor = _hidDescriptor;
+  string_desc_arr[STRID_INTERFACE_HID] = name;
+  setHidConfigDescriptor(true, hidDescriptorSize, hidPollInterval);
+}
+
+void UsbDevice::disableHid() {
+  hidDescriptor = nullptr;
+  string_desc_arr[STRID_INTERFACE_HID] = "";
+  setHidConfigDescriptor(false);
 }

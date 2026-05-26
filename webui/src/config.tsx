@@ -85,7 +85,8 @@ export enum MidiOutputMode {
   BleClient = "BleClient",
   BleServer = "BleServer",
   GuitarHeroDrumWii = "GuitarHeroDrumWii",
-  GuitarHeroDrumSPI = "GuitarHeroDrumSPI"
+  GuitarHeroDrumSPI = "GuitarHeroDrumSPI",
+  RockbandDrum = "RockbandDrum"
 }
 
 export interface Mux {

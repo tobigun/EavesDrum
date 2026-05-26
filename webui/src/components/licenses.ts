@@ -51,6 +51,12 @@ export const licenses = {
     }, {
       name: "cesanta / mongoose (PC simulation only)",
       license: "GPLv2 License (Copyright: Sergey Lyubka / Cesanta Software Limited)",    
+    }, {
+      name: "Info from PlasticBand Instrument Peripheral Documentation by TheNathannator (Nathan), Sanjay Govind, et al.",
+      license: "Creative Commons Attribution-ShareAlike 4.0 International License",  
+    }, {
+      name: "Info from Rock Band MIDI-to-USB Drum Controller for Nintendo Wii from Ken Kurzweil",
+      license: "MIT License (Copyright: Rock Band MIDI-to-USB Drum Controller Contributors)",  
     }
   ],
   ui: [

@@ -801,6 +801,14 @@ The following libraries are used in this project:
 - cesanta / mongoose (PC simulation only)
   - GPLv2 License (Copyright: Sergey Lyubka / Cesanta Software Limited)    
 
+Uses information from these projects:
+- PlasticBand Instrument Peripheral Documentation by TheNathannator (Nathan), Sanjay Govind, et al.
+  - Github: https://github.com/TheNathannator/PlasticBand
+  - Creative Commons Attribution-ShareAlike 4.0 International License
+- Rock Band MIDI-to-USB Drum Controller for Nintendo Wii from Ken Kurzweil
+  - Github: https://github.com/kurzweil/MidiRock
+  - MIT License (Copyright: Rock Band MIDI-to-USB Drum Controller Contributors)  
+
 ## Author
 Tobias Gunkel
 - GitHub: [tobigun](https://github.com/tobigun)

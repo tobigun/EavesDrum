@@ -31,6 +31,7 @@ void setup() {
 
   midiTransport.start();
 
+  // Note: must be started _after_ midiTransport as USB descriptors might change
   UsbDevice::begin();
 
   networkConnection.begin();

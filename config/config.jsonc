@@ -14,7 +14,8 @@
           "BleClient",
           "BleServer",
           "GuitarHeroDrumWii",
-          "GuitarHeroDrumSPI"
+          "GuitarHeroDrumSPI",
+          "RockbandDrum"
         ] },
         "blePairing": {
           "type": "object",

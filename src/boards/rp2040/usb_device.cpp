@@ -56,8 +56,17 @@ void UsbDevice::begin()
 #endif
 }
 
+void UsbDevice::end()
+{
+  tusb_deinit(BOARD_TUD_RHPORT);
+}
+
 void UsbDevice::update() {
 #ifndef USB_TASK_TRIGGERED_BY_TIMER
   tud_task_ext(0, false);
 #endif
+}
+
+bool UsbDevice::isInited() {
+  return tud_inited();
 }

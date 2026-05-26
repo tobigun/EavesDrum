@@ -13,6 +13,8 @@
 #include "midi_transport_guitar_hero_spi.h"
 #include <SPISlave.h> // required for MidiTransport_GuitarHero_SPI
 
+#include "midi_transport_rockband.h"
+
 MidiTransport_UsbDevice midiTransportUsbDevice;
 MidiTransport_TinyUsbHost midiTransportTinyUsbHost;
 
@@ -25,6 +27,7 @@ MidiTransport_GuitarHero_Wii midiTransportGuitarHeroWii;
 MidiTransport_Serial midiTransportDin(SerialTx2);
 
 MidiTransport_GuitarHero_SPI midiTransportGuitarHeroSPI;
+MidiTransport_Rockband midiTransportRocksband;
 
 MidiTransportInstances midiTransportInstances = {
   .usbDevice = &midiTransportUsbDevice,
@@ -36,5 +39,6 @@ MidiTransportInstances midiTransportInstances = {
   .guitarHeroDrumWii =&midiTransportGuitarHeroWii,
 #endif
   .guitarHeroDrumSPI = &midiTransportGuitarHeroSPI,
+  .rockbandDrum = &midiTransportRocksband,
 };
 MidiTransportMultiplexer midiTransport(midiTransportInstances);
