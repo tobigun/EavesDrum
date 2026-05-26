@@ -643,6 +643,12 @@ static bool input_update_wiimote(){
             memcpy(&wiimote.usr, &input_report.wiimote, sizeof(struct wiimote_buttons_only));
             memcpy(&wiimote.usr.classic, &input_report.classic, sizeof(struct wiimote_classic));
             break;
+        case GuitarHeroDrum:{
+            memcpy(&wiimote.usr, &input_report.wiimote, sizeof(struct wiimote_buttons_only));
+            memcpy(&wiimote.usr.classic, &input_report.classic, sizeof(struct wiimote_classic));
+            memcpy(&wiimote.usr.midi, &input_report.midi, sizeof(struct wiimote_midi));
+            break;
+        }
         default:
             break;
     }

@@ -15,6 +15,7 @@ enum wiimote_connected_extension_type
   Nunchuk = 0x0,
   Classic = 0x1,
   BalanceBoard = 0x2,
+  GuitarHeroDrum = 0x3,
   NoExtension = 0xff
 };
 
@@ -43,23 +44,23 @@ struct wiimote_nunchuk
 
 struct wiimote_classic
 {
-  bool a;
-  bool b;
-  bool x;
-  bool y;
+  bool a; // GH drum: green
+  bool b; // GH drum: red
+  bool x; // GH drum: blue
+  bool y; // GH drum: yellow
   bool minus;
   bool plus;
   bool rtrigger;
   bool ltrigger;
   bool home;
-  bool rz;
-  bool lz;
+  bool rz; // GH drum: kick
+  bool lz; // GH drum: orange
   bool up;
   bool down;
   bool left;
   bool right;
-  uint8_t ls_x;
-  uint8_t ls_y;
+  uint8_t ls_x; // GH drum: stick x
+  uint8_t ls_y; // GH drum: stick y
   uint8_t rs_x;
   uint8_t rs_y;
   uint8_t lt;
@@ -75,6 +76,13 @@ struct wiimote_motionplus
   bool yaw_slow;
   bool roll_slow;
   bool pitch_slow;
+};
+
+struct wiimote_midi
+{
+  uint8_t note;
+  uint8_t velocity;
+  uint8_t channel; // 0: midi ch 1 (also used for no hit), 9: midi ch 10
 };
 
 #define WIIMOTE_BUTTONS \
@@ -113,6 +121,7 @@ struct wiimote_state_usr
   struct wiimote_nunchuk nunchuk;
   struct wiimote_classic classic;
   struct wiimote_motionplus motionplus;
+  struct wiimote_midi midi;
 };
 
 void reset_ir_object(struct wiimote_ir_object * object);
@@ -190,6 +199,7 @@ typedef struct{
   struct wiimote_buttons wiimote;
   struct wiimote_nunchuk nunchuk;
   struct wiimote_classic classic;
+  struct wiimote_midi midi;
 
   uint8_t switch_mode; // unused
   enum wiimote_connected_extension_type extension;

@@ -808,6 +808,11 @@ void init_extension(struct wiimote_state * state)
         state->sys.register_a4[0xfe] = 0x04; // extension report type: motionplus
         state->sys.register_a4[0xff] = 0x02;
         break;
+      case GuitarHeroDrum:
+        state->sys.register_a4[0xfa] = 0x01; // 0x01: drum, 0x00: guitar
+        state->sys.register_a4[0xfe] = 0x01; // extension report type: classic
+        state->sys.register_a4[0xff] = 0x03; // 
+        break;
     }
 
     state->sys.extension_report_type = state->sys.register_a4[0xfe];

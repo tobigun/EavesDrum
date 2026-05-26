@@ -308,6 +308,22 @@ void report_append_extension(struct wiimote_state * state, uint8_t * buf, uint8_
 
       rpt->unused = 1;
 
+      if (state->usr.connected_extension_type == GuitarHeroDrum) {
+        struct report_ext_ghdrum * ghdrum_rpt = (struct report_ext_ghdrum *)buf;
+        uint8_t velocity = 127 - state->usr.midi.velocity;
+        ghdrum_rpt->velocity_bit0 = velocity & 0x01;
+        ghdrum_rpt->velocity_bit1 = (velocity >> 1) & 0x01;
+        ghdrum_rpt->velocity_bit2 = (velocity >> 2) & 0x01;
+        ghdrum_rpt->velocity_bit3 = (velocity >> 3) & 0x01;
+        ghdrum_rpt->velocity_bit4_6 = (velocity >> 4) & 0x07;
+        ghdrum_rpt->note = 127 - state->usr.midi.note;
+        ghdrum_rpt->channel = 15 - state->usr.midi.channel;
+
+        ghdrum_rpt->unused1 = ghdrum_rpt->unused2 = 0;
+        ghdrum_rpt->unused3 = ghdrum_rpt->unused4 = 1;
+        ghdrum_rpt->unused5 = ghdrum_rpt->unused6 = 0b11;
+      }
+
       break;
     }
     case 0x04: //motionplus

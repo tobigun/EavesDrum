@@ -197,6 +197,38 @@ struct report_ext_classic
   int lz:1;
 } __attribute__((packed));
 
+struct report_ext_ghdrum
+{
+  int sx:6;
+  int unused1:2;
+
+  int sy:6;
+  int unused2:2;
+
+  int velocity_bit3:1;
+  int note:7;
+
+  int velocity_bit2:1;
+  int channel:4;
+  int velocity_bit4_6:3;
+
+  int velocity_bit0:1;
+  int unused3:1;
+  int plus:1;
+  int unused4:1;
+  int minus:1;
+  int unused5:2;
+  int velocity_bit1:1;
+
+  int unused6:2;
+  int kick:1;
+  int blue:1;
+  int green:1;
+  int yellow:1;
+  int red:1;
+  int orange:1;
+} __attribute__((packed));
+
 struct report_ext_classic_pt
 {
   //different format if in passthrough mode with motionplus
