@@ -1,11 +1,11 @@
 #include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "inet.h"
 #include "wiimote.h"
 #include "wm_reports.h"
 #include "eeprom.bin.h"
+#include "debug.h"
 
 static uint8_t *eeprom_bin;
 int tries = 0;
@@ -21,55 +21,77 @@ static uint8_t nunchuk_calibration[16] =
   0x81, 0x80, 0x7F, 0x22, 0xB5, 0xB3, 0xB3, 0x03, 0x00, 0x00, 0x7C, 0x00, 0x00, 0x83, 0x14, 0x69
 };
 
-int process_report(struct wiimote_state *state, const uint8_t * buf, int len)
+int process_report(struct wiimote_state *state, uint16_t reportId, const uint8_t * buf, int len)
 {
-  struct report_data * data = (struct report_data *)buf;
+  //every output report contains rumble info (not just report type 0x10)
+  state->sys.rumble = buf[0] & 0x01;
+  bool needs_ack = (buf[0] & 0x02) != 0;
 
-  //every output report contains rumble info
-  state->sys.rumble = data->buf[0] & 0x01;
+  //log_printf("Rumble: %d\n", state->sys.rumble);
+  //log_printf("Got data: ");
+  //printf_hexdump2(buf, len);
 
-  switch (data->type)
+  switch (reportId)
   {
+    case 0x10: //rumble (already handled) 
+      if (needs_ack) report_queue_push_ack(state, reportId, 0x00);
+      break;
     case 0x11: //player LEDs
     {
-      struct report_leds * rpt = (struct report_leds *)data->buf;
+      struct report_leds * rpt = (struct report_leds *)buf;
+
+      //log_printf("Player LED: %d %d %d %d\n", rpt->led_1, rpt->led_2, rpt->led_3, rpt->led_4);
 
       state->sys.led_1 = rpt->led_1;
       state->sys.led_2 = rpt->led_2;
       state->sys.led_3 = rpt->led_3;
       state->sys.led_4 = rpt->led_4;
 
-      report_queue_push_ack(state, data->type, 0x00);
+      if (needs_ack) report_queue_push_ack(state, reportId, 0x00);
       break;
     }
     case 0x12: //data reporting mode
     {
-      struct report_mode * rpt = (struct report_mode *)data->buf;
+      struct report_mode * rpt = (struct report_mode *)buf;
 
       state->sys.reporting_continuous = rpt->continuous;
       state->sys.reporting_mode = rpt->mode;
+      //log_printf("Reporting mode: %d 0x%02X\n", state->sys.reporting_continuous, state->sys.reporting_mode);
 
-      report_queue_push_ack(state, data->type, 0x00);
+      if (needs_ack) report_queue_push_ack(state, reportId, 0x00);
       break;
     }
     case 0x13:
     case 0x1a: //ir camera enable
     {
-      struct report_ir_enable * rpt = (struct report_ir_enable *)data->buf;
+      struct report_ir_enable * rpt = (struct report_ir_enable *)buf;
+
+      //log_printf("IR camera enabled: %d\n", rpt->enabled);
 
       state->sys.ircam_enabled = rpt->enabled;
 
-      report_queue_push_ack(state, data->type, 0x00);
+      if (needs_ack) report_queue_push_ack(state, reportId, 0x00);
       break;
     }
     case 0x14:
     case 0x19: //speaker enable
     {
-      struct report_speaker_enable * rpt = (struct report_speaker_enable *)data->buf;
+      struct report_speaker_enable * rpt = (struct report_speaker_enable *)buf;
 
-      state->sys.speaker_enabled = !rpt->muted;
+      //log_printf("Speaker muted: %d\n", rpt->muted);
 
-      report_queue_push_ack(state, data->type, 0x00);
+      if (rpt->muted) {
+        state->sys.speaker_enabled = false;
+        if (needs_ack) report_queue_push_ack(state, reportId, 0x00);
+      } else {
+        if (state->sys.has_speaker) {
+          state->sys.speaker_enabled = true;
+          if (needs_ack) report_queue_push_ack(state, reportId, 0x00);
+        } else {
+          report_queue_push_ack(state, reportId, 0x07);
+        }
+      }
+
       break;
     }
     case 0x15: //status information request
@@ -78,7 +100,9 @@ int process_report(struct wiimote_state *state, const uint8_t * buf, int len)
       break;
     case 0x16: //write memory
     {
-      struct report_mem_write * rpt = (struct report_mem_write *)data->buf;
+      struct report_mem_write * rpt = (struct report_mem_write *)buf;
+
+      //log_printf("Mem write: %d %d 0x%lx=0x%02x\n", rpt->source0, rpt->source1, rpt->offset, rpt->data[0]);
 
       if (rpt->source0 || rpt->source1)
       {
@@ -92,7 +116,9 @@ int process_report(struct wiimote_state *state, const uint8_t * buf, int len)
     }
     case 0x17: //read memory
     {
-      struct report_mem_read * rpt = (struct report_mem_read *)data->buf;
+      struct report_mem_read * rpt = (struct report_mem_read *)buf;
+
+      //log_printf("Mem read: %d %d 0x%lx\n", rpt->source0, rpt->source1, rpt->offset);
 
       if (rpt->source0 || rpt->source1)
       {
@@ -105,12 +131,17 @@ int process_report(struct wiimote_state *state, const uint8_t * buf, int len)
 
       break;
     }
+    case 0x18: //speaker data
+      // ignore data but send an ack if required
+      if (needs_ack) report_queue_push_ack(state, reportId, 0x00);
+      break;
+
   }
 
   return 0;
 }
 
-int generate_report(struct wiimote_state * state, uint8_t * buf)
+int generate_report(struct wiimote_state * state, uint8_t * buf, bool input_report_changed)
 {
   int len;
 
@@ -137,7 +168,7 @@ int generate_report(struct wiimote_state * state, uint8_t * buf)
     }
   }
 
-  if (!state->sys.reporting_continuous && !state->sys.report_changed && state->sys.queue == NULL)
+  if (!state->sys.reporting_continuous && !input_report_changed && state->sys.queue == NULL)
     return 0;
 
   if (state->sys.queue == NULL)
@@ -256,21 +287,11 @@ void read_eeprom(struct wiimote_state * state, uint32_t offset, uint16_t size)
   //equivalent to ceil(size / 0x10)
   int total_packets = (size + 0x10 - 1) / 0x10;
 
-  //allocate all the needed reports
   for (i = 0; i < total_packets; i++)
   {
-    report_queue_push(state);
-  }
-
-  //copy packet data
-  struct queued_report * queue_item = state->sys.queue;
-
-  for (i = 0; i < total_packets; i++)
-  {
-    rpt = &queue_item->rpt;
+    struct report * rpt = report_queue_push(state);
     int packet_size = (i == total_packets - 1) ? (size - i * 0x10) : 0x10;
     report_format_mem_resp(state, rpt, packet_size, 0x0, offset + i*0x10, &buffer[i*0x10], false);
-    queue_item = queue_item->next;
   }
 
   free(buffer);
@@ -301,7 +322,7 @@ void write_eeprom(struct wiimote_state * state, uint32_t offset, uint8_t size, c
 
 void read_register(struct wiimote_state *state, uint32_t offset, uint16_t size)
 {
-  uint8_t * buffer;
+  uint8_t * buffer = NULL;
   struct report * rpt;
   int i;
   bool encrypt = false;
@@ -319,7 +340,7 @@ void read_register(struct wiimote_state *state, uint32_t offset, uint16_t size)
         if (((offset & 0xff) == 0xf6) || ((offset & 0xff) == 0xf7))
         {
           tries += 1;
-          printf("%d \n", tries);
+          log_printf("%d \n", tries);
           if (tries == 5)
           {
             state->sys.register_a6[0xf7] = 0x0e;
@@ -340,7 +361,7 @@ void read_register(struct wiimote_state *state, uint32_t offset, uint16_t size)
 
       break;
     case 0xa6: //motionplus
-      if (state->sys.wmp_state == 1)
+      if (!state->sys.wmp_connected || state->sys.wmp_state == 1)
       {
          rpt = report_queue_push(state);
          report_format_mem_resp(state, rpt, 0x10, 0x7, offset, NULL, false);
@@ -358,20 +379,11 @@ void read_register(struct wiimote_state *state, uint32_t offset, uint16_t size)
   //equivalent to ceil(size / 0x10)
   int total_packets = (size + 0x10 - 1) / 0x10;
 
-  //allocate all the needed reports
   for (i = 0; i < total_packets; i++)
   {
-    report_queue_push(state);
-  }
-
-  struct queued_report * queue_item = state->sys.queue;
-
-  for (i = 0; i < total_packets; i++)
-  {
-    rpt = &queue_item->rpt;
+    struct report * rpt = report_queue_push(state);
     int packet_size = (i == total_packets - 1) ? (size - i * 0x10) : 0x10;
     report_format_mem_resp(state, rpt, packet_size, 0x0, offset + i*0x10, &buffer[i*0x10], encrypt);
-    queue_item = queue_item->next;
   }
 }
 
@@ -517,7 +529,7 @@ void write_register(struct wiimote_state *state, uint32_t offset, uint8_t size, 
       {
         state->sys.wmp_state = 1;
         state->sys.extension_report_type = (buf[0] & 0x7);
-        printf("activate wmp\n");
+        log_printf("activate wmp\n");
 
         init_extension(state);
 
@@ -770,6 +782,7 @@ void init_extension(struct wiimote_state * state)
       return;
     }
 
+    // see http://wiibrew.org/wiki/Wiimote/Extension_Controllers
     memset(&state->sys.register_a4[0xf0], 0x0, 0x10);
 
     state->sys.register_a4[0xf0] = 0x55;
@@ -780,19 +793,19 @@ void init_extension(struct wiimote_state * state)
     {
       default:
       case Nunchuk:
-        state->sys.register_a4[0xfe] = 0x00;
+        state->sys.register_a4[0xfe] = 0x00; // extension report type: nunchuk
         state->sys.register_a4[0xff] = 0x00;
         memcpy(&state->sys.register_a4[0x20], nunchuk_calibration, 0x10);
         memcpy(&state->sys.register_a4[0x30], nunchuk_calibration, 0x10);
         break;
       case Classic:
-        state->sys.register_a4[0xfe] = 0x01;
+        state->sys.register_a4[0xfe] = 0x01; // extension report type: classic
         state->sys.register_a4[0xff] = 0x01;
         memcpy(&state->sys.register_a4[0x20], classic_calibration, 0x10);
         memcpy(&state->sys.register_a4[0x30], classic_calibration, 0x10);
         break;
       case BalanceBoard:
-        state->sys.register_a4[0xfe] = 0x04;
+        state->sys.register_a4[0xfe] = 0x04; // extension report type: motionplus
         state->sys.register_a4[0xff] = 0x02;
         break;
     }
@@ -852,6 +865,7 @@ void wiimote_reset(struct wiimote_state *state)
   memset(&state->sys, 0, sizeof(struct wiimote_state_sys));
 
   state->sys.reporting_mode = 0x30;
+  state->sys.low_battery = false;
   state->sys.battery_level = 0xff;
 
   state->sys.connected_extension_type = NoExtension;

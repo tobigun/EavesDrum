@@ -2,9 +2,7 @@
 #define VECTOR_MATH_H
 
 #include <math.h>
-
-//for debug/printing functions
-#include <stdio.h>
+#include "debug.h"
 
 typedef struct
 {
@@ -237,27 +235,27 @@ void mat3_from_mat4(mat3 * out, const mat4 * mat)
 
 void vec3_print(const vec3 * vec)
 {
-  printf("%f %f %f\n", vec->x, vec->y, vec->z);
+  log_printf("%f %f %f\n", vec->x, vec->y, vec->z);
 }
 
 void vec4_print(const vec4 * vec)
 {
-  printf("%f %f %f %f\n", vec->x, vec->y, vec->z, vec->w);
+  log_printf("%f %f %f %f\n", vec->x, vec->y, vec->z, vec->w);
 }
 
 void mat3_print(const mat3 * mat)
 {
-  printf("%f %f %f\n", mat->v0.x, mat->v1.x, mat->v2.x);
-  printf("%f %f %f\n", mat->v0.y, mat->v1.y, mat->v2.y);
-  printf("%f %f %f\n", mat->v0.z, mat->v1.z, mat->v2.z);
+  log_printf("%f %f %f\n", mat->v0.x, mat->v1.x, mat->v2.x);
+  log_printf("%f %f %f\n", mat->v0.y, mat->v1.y, mat->v2.y);
+  log_printf("%f %f %f\n", mat->v0.z, mat->v1.z, mat->v2.z);
 }
 
 void mat4_print(const mat4 * mat)
 {
-  printf("%f %f %f %f\n", mat->v0.x, mat->v1.x, mat->v2.x, mat->v3.x);
-  printf("%f %f %f %f\n", mat->v0.y, mat->v1.y, mat->v2.y, mat->v3.y);
-  printf("%f %f %f %f\n", mat->v0.z, mat->v1.z, mat->v2.z, mat->v3.z);
-  printf("%f %f %f %f\n", mat->v0.w, mat->v1.w, mat->v2.w, mat->v3.w);
+  log_printf("%f %f %f %f\n", mat->v0.x, mat->v1.x, mat->v2.x, mat->v3.x);
+  log_printf("%f %f %f %f\n", mat->v0.y, mat->v1.y, mat->v2.y, mat->v3.y);
+  log_printf("%f %f %f %f\n", mat->v0.z, mat->v1.z, mat->v2.z, mat->v3.z);
+  log_printf("%f %f %f %f\n", mat->v0.w, mat->v1.w, mat->v2.w, mat->v3.w);
 }
 
 #endif

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <inttypes.h>
 
 uint16_t htons(uint16_t host16);
