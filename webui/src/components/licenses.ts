@@ -43,6 +43,9 @@ export const licenses = {
       name: "rppicomidi / ring_buffer_lib",
       license: "MIT License (Copyright: rppicomidi)",  
     }, {
+      name: "wiimote-lib (Loc15/PicoGamepadConverter, Original: rnconrad/WiimoteEmulator)",
+      license: "GPLv3 License (Original: unknown)",  
+    }, {
       name: "LUFA hidparser (from abcminiuser with changes by Santroller)",
       license: "MIT License (Copyright: Dean Camera)",  
     }, {

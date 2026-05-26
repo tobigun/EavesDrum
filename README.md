@@ -794,6 +794,8 @@ The following libraries are used in this project:
   - MIT License (Copyright: rppicomidi)  
 - rppicomidi / ring_buffer_lib
   - MIT License (Copyright: rppicomidi)  
+- wiimote-lib (Loc15/PicoGamepadConverter, Original: rnconrad/WiimoteEmulator)
+  - GPLv3 License (Original: unknown)  
 - LUFA hidparser (from abcminiuser with changes by Santroller)
   - MIT License (Copyright: Dean Camera)  
 - cesanta / mongoose (PC simulation only)

@@ -84,6 +84,7 @@ export enum MidiOutputMode {
   SerialDin = "SerialDin",
   BleClient = "BleClient",
   BleServer = "BleServer",
+  GuitarHeroDrumWii = "GuitarHeroDrumWii",
   GuitarHeroDrumSPI = "GuitarHeroDrumSPI"
 }
 

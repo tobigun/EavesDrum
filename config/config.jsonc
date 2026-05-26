@@ -13,6 +13,7 @@
           "SerialDin",
           "BleClient",
           "BleServer",
+          "GuitarHeroDrumWii",
           "GuitarHeroDrumSPI"
         ] },
         "blePairing": {
@@ -20,6 +21,14 @@
           "properties": {
             "address": { "type": "string", "pattern": "^([0-9A-F]{2}:){5}[0-9A-F]{2}$" },
             "name": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "wiiPairing": {
+          "type": "object",
+          "properties": {
+            "address": { "type": "string", "pattern": "^([0-9A-F]{2}:){5}[0-9A-F]{2}$" },
+            "key": { "type": "string" }
           },
           "additionalProperties": false
         }

@@ -14,7 +14,8 @@ enum class MidiOutputMode {
   SerialDin,
   BleClient,
   BleServer,
-  GuitarHeroDrumSPI
+  GuitarHeroDrumSPI,
+  GuitarHeroDrumWii
 };
 
 inline String midiOutputModeToString(MidiOutputMode value) {
@@ -25,6 +26,7 @@ inline String midiOutputModeToString(MidiOutputMode value) {
   MAP_ENUM_TO_STRING(BleClient);
   MAP_ENUM_TO_STRING(BleServer);
   MAP_ENUM_TO_STRING(GuitarHeroDrumSPI);
+  MAP_ENUM_TO_STRING(GuitarHeroDrumWii);
   return ENUM_TO_STRING(UsbDevice);
 }
 
@@ -36,6 +38,7 @@ inline MidiOutputMode parseMidiOutputMode(String value) {
   MAP_STRING_TO_ENUM(BleClient);
   MAP_STRING_TO_ENUM(BleServer);
   MAP_STRING_TO_ENUM(GuitarHeroDrumSPI);
+  MAP_STRING_TO_ENUM(GuitarHeroDrumWii);
   return UsbDevice;
 }
 
@@ -66,6 +69,7 @@ struct MidiTransportInstances {
   MidiTransport* serialDin = nullptr;
   MidiTransport* bleClient = nullptr;
   MidiTransport* bleServer = nullptr;
+  MidiTransport* guitarHeroDrumWii = nullptr;
   MidiTransport* guitarHeroDrumSPI = nullptr;
 };
 
@@ -103,6 +107,9 @@ public:
     }
     if (instances.guitarHeroDrumSPI) {
       supportedModes.push_back(MidiOutputMode::GuitarHeroDrumSPI);
+    }
+    if (instances.guitarHeroDrumWii) {
+      supportedModes.push_back(MidiOutputMode::GuitarHeroDrumWii);
     }
     return supportedModes;
   }
@@ -156,6 +163,8 @@ private:
       return instances.bleServer;
     case MidiOutputMode::GuitarHeroDrumSPI:
       return instances.guitarHeroDrumSPI;
+    case MidiOutputMode::GuitarHeroDrumWii:
+      return instances.guitarHeroDrumWii;
     default:
       return instances.usbDevice;
     }

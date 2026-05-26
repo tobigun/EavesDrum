@@ -19,6 +19,7 @@ MidiTransportInstances midiTransportInstances = {
 #ifdef HAS_BLUETOOTH
   .bleClient = &midiTransportBleClientSimulation,
   .bleServer = &nativeMidiTransport,
+  .guitarHeroDrumWii = &nativeMidiTransport,
 #endif
   .guitarHeroDrumSPI = &nativeMidiTransport
 };

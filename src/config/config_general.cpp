@@ -8,6 +8,7 @@
 
 #if HAS_BLUETOOTH
 #include "ble_client.h"
+#include "wii_client.h"
 #endif
 
 #define GENERAL_BOARD "board"
@@ -17,6 +18,10 @@
 #define GENERAL_BLE_PAIRING "blePairing"
 #define GENERAL_BLE_PAIRING_NAME "name"
 #define GENERAL_BLE_PAIRING_ADDR "address"
+
+#define GENERAL_WII_PAIRING "wiiPairing"
+#define GENERAL_WII_PAIRING_ADDR "address"
+#define GENERAL_WII_PAIRING_LINK_KEY "key"
 
 #define BOARD_V1_1 "v1.1"
 #define BOARD_V1_2 "v1.2"
@@ -66,11 +71,20 @@ void DrumConfigMapper::applyGeneralConfig(DrumKit& drumKit, JsonObjectConst gene
   }
 
 #if HAS_BLUETOOTH
-  JsonObjectConst paringNode = generalNode[GENERAL_BLE_PAIRING];
-  if (paringNode) {
-    String address = paringNode[GENERAL_BLE_PAIRING_ADDR].as<String>();
-    String name = paringNode[GENERAL_BLE_PAIRING_NAME].as<String>();
+  JsonObjectConst blePairingNode = generalNode[GENERAL_BLE_PAIRING];
+  if (blePairingNode) {
+    String address = blePairingNode[GENERAL_BLE_PAIRING_ADDR].as<String>();
+    String name = blePairingNode[GENERAL_BLE_PAIRING_NAME].as<String>();
     bleClient.setPairingInfo(name, address);
+  }
+#endif
+
+#ifdef ENABLE_MIDI_GUITAR_HERO_WII_TRANSPORT
+  JsonObjectConst wiiPairingNode = generalNode[GENERAL_WII_PAIRING];
+  if (wiiPairingNode) {
+    String address = wiiPairingNode[GENERAL_WII_PAIRING_ADDR].as<String>();
+    String linkKey = wiiPairingNode[GENERAL_WII_PAIRING_LINK_KEY].as<String>();
+    wiiClient.setPairingInfo(address, linkKey);
   }
 #endif
 }
@@ -99,6 +113,14 @@ void DrumConfigMapper::convertGeneralConfigToJson(const DrumKit& drumKit, JsonDo
     JsonObject bleNode = generalNode[GENERAL_BLE_PAIRING].to<JsonObject>();
     bleNode[GENERAL_BLE_PAIRING_ADDR] = bleClient.getPairingInfo().address;
     bleNode[GENERAL_BLE_PAIRING_NAME] = bleClient.getPairingInfo().name;
+  }
+#endif
+
+#ifdef ENABLE_MIDI_GUITAR_HERO_WII_TRANSPORT
+  if (!wiiClient.getPairingInfo().address.isEmpty()) {
+    JsonObject wiiNode = generalNode[GENERAL_WII_PAIRING].to<JsonObject>();
+    wiiNode[GENERAL_WII_PAIRING_ADDR] = wiiClient.getPairingInfo().address;
+    wiiNode[GENERAL_WII_PAIRING_LINK_KEY] = wiiClient.getPairingInfo().linkKey;
   }
 #endif
 }

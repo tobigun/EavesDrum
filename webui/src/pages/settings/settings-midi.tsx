@@ -91,6 +91,7 @@ export function MidiOutputModeSelect() {
     [MidiOutputMode.SerialDin]: "Serial 5-Pin DIN",
     [MidiOutputMode.BleClient]: "BLE Client",
     [MidiOutputMode.BleServer]: "BLE Server",
+    [MidiOutputMode.GuitarHeroDrumWii]: "Guitar Hero Drum (Wii)",
     [MidiOutputMode.GuitarHeroDrumSPI]: "Guitar Hero Drum (SPI)"
   };
 
@@ -198,7 +199,7 @@ export function MidiOutputModeSelect() {
         </MidiSettingsBox>
       )}
 
-      {midiOutputMode === MidiOutputMode.UsbHost && (
+      {(midiOutputMode === MidiOutputMode.UsbHost || midiOutputMode === MidiOutputMode.GuitarHeroDrumWii) && (
         <MidiSettingsBox label="USB Host Settings">
           <TextField
             label="Connected Device"
