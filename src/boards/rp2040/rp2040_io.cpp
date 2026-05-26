@@ -214,10 +214,16 @@ void DrumIO::led(LedId id, bool enable) {
 }
 
 bool DrumIO::isButtonPressed(ButtonId id) {
-  if (id == ButtonId::Wifi) {
+  switch (id)
+  {
+  case ButtonId::Wifi:
+  case ButtonId::Button1:
     return digitalRead(PIN_SWITCH_1) == LOW;
+  case ButtonId::Button2:
+    return digitalRead(PIN_SWITCH_2) == LOW;
+  default:
+    return false;
   }
-  return false;
 }
 
 static void blinkLed() {

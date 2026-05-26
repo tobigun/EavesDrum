@@ -19,7 +19,9 @@ enum class LedId {
 };
 
 enum class ButtonId {
-  Wifi = 0
+  Wifi = 0,
+  Button1 = 1,
+  Button2 = 2
 };
 
 enum class BoardVersion {
