@@ -49,6 +49,7 @@
   - [How to Simulate a Drum-Kit on a PC](#how-to-simulate-a-drum-kit-on-a-pc)
 - [About This Project](#about-this-project)
 - [Other Related Projects](#other-related-projects)
+- [Libraries](#libraries)
 - [Author](#author)
 - [License](#license)
 
@@ -762,6 +763,39 @@ So if you have the money, give a little love to the drum vendors and buy some or
   - Unfortunately the last commit is 5 years old and it did not work with my cymbals
 - [Edrumulus](https://github.com/corrados/edrumulus) by Volker Fischer (corrados)
   - Another Open Source trigger module for ESP32 and Teensy with Positional sensing and Cross talk cancellation
+
+## Libraries
+
+The following libraries are used in this project:
+
+- Arduino-Pico framwork by earlephilhower 
+  - LGPL-2.1 license (Copyright: Earle F. Philhower, III)
+- Pico-SDK
+  - BSD 3-Clause license (Copyright: Raspberry Pi (Trading) Ltd)
+- fortyseveneffects / MIDI Library
+  - MIT license (Copyright: Francois Best)
+- tobozo / YAMLDuino
+  - MIT License: https://github.com/tobozo/YAMLDuino?tab=License-1-ov-file#readme
+- bblanchon / ArduinoJson
+  - MIT License (Copyright: Benoit BLANCHON)
+- hathach / tinyusb
+  - MIT License (Copyright: hathach (tinyusb.org))
+- lwip-tcpip / lwip
+  - BSD-3-Clause license (Copyright: Swedish Institute of Computer Science)
+- littlefs-project / LittleFS
+  - BSD-3-Clause license (Copyright: The littlefs authors / Arm Limited. All rights reserved)
+- ESP32Async / ESPAsyncWebServer
+  - LGPL-3.0 license (Copyright: ESP32Async)
+- ayushsharma82 / RPAsyncTCP
+  - LGPL-3.0 license (Copyright: Ayush Sharma, Khoi Hoang, Hristo Gochkov)
+- sekigon-gonnoc / Pico-PIO-USB
+  - MIT License (Copyright: sekigon-gonnoc)  
+- rppicomidi / pico-w-ble-midi-lib
+  - MIT License (Copyright: rppicomidi)  
+- rppicomidi / ring_buffer_lib
+  - MIT License (Copyright: rppicomidi)  
+- cesanta / mongoose (PC simulation only)
+  - GPLv2 License (Copyright: Sergey Lyubka / Cesanta Software Limited)    
 
 ## Author
 Tobias Gunkel
