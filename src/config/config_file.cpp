@@ -58,7 +58,6 @@ JsonDocument DrumConfigMapper::loadDrumKitConfig() {
 
 bool DrumConfigMapper::writeDrumKitConfig(JsonDocument doc) {
   bool writeSuccess = false;
-  noInterrupts();
 
   fs::File configFile = ConfigFS.open(CONFIG_FILE_PATH, "w");
   if (!configFile) {
@@ -72,6 +71,5 @@ bool DrumConfigMapper::writeDrumKitConfig(JsonDocument doc) {
     writeSuccess = true;
   }
 
-  interrupts();
   return writeSuccess;
 }
