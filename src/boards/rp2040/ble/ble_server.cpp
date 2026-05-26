@@ -67,3 +67,7 @@ void MidiTransport_BleServer::update() {
     updateConnectionStatus();
   }
 }
+
+size_t MidiTransport_BleServer::write(uint8_t b) {
+  return ble_midi_server_stream_write(1, &b);
+}
