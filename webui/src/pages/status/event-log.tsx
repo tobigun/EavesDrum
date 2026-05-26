@@ -15,6 +15,7 @@ import { connection, DrumCommand } from '@/connection/connection';
 import { StyledTableRow } from '@/components/table-row';
 
 enum LogLevel {
+  DEBUG,
   INFO,
   WARN,
   ERROR
