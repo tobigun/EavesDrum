@@ -30,8 +30,6 @@ public:
     return tuh_midi_stream_write(getDeviceIndex(), 0, &b, 1);
   }
 
-  String getConnectedDeviceName();
-
 private:
   bool isConnected() {
     return getDeviceIndex() != TUSB_INDEX_INVALID_8;

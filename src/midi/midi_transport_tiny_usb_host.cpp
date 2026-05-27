@@ -30,19 +30,21 @@
 #include <tusb.h>
 #include "log.h"
 #include "drum_io.h"
-#include "webui.h"
 #include "drum_kit.h"
 #include "usb_host.h"
 
 static uint8_t devIndex = TUSB_INDEX_INVALID_8;
 
 static bool connectedDeviceNameDirty = false;
-static String connectedDeviceName;
+
+static bool enabled = false;
 
 static void updateConnectedDeviceInfo();
 
 void MidiTransport_TinyUsbHost::begin() {
   DrumIO::led(LedId::MidiConnected, false);
+
+  enabled = true;
 
   UsbHost::begin();
 }
@@ -60,10 +62,10 @@ void MidiTransport_TinyUsbHost::stop() {
   // As we can also not release the resources from here (especially not the alarm pool as we do not have access to the pointer),
   // we won't call tuh_deinit here. This avoids crashes when switching USB Host on and off.
   //tuh_deinit(BOARD_TUH_RHPORT);
-}
-
-String MidiTransport_TinyUsbHost::getConnectedDeviceName() {
-  return connectedDeviceName;
+  enabled = false;
+  devIndex = TUSB_INDEX_INVALID_8;
+  connectedDeviceNameDirty = true;
+  UsbHost::updateConnectedDeviceName(nullptr);
 }
 
 uint8_t MidiTransport_TinyUsbHost::getDeviceIndex() {
@@ -87,33 +89,43 @@ extern "C"
 
 // Invoked when device with MIDI interface is mounted
 void tuh_midi_mount_cb(uint8_t idx, const tuh_midi_mount_cb_t* mount_cb_data) {
+  if (!enabled) {
+    return;
+  }
+
   logInfo("USB-Host: MIDI Device Index = %u, MIDI device address = %u, %u IN cables, OUT %u cables", idx,
       mount_cb_data->daddr, mount_cb_data->rx_cable_count, mount_cb_data->tx_cable_count);
-
-  if (devIndex == TUSB_INDEX_INVALID_8) {
-    // then no MIDI device is currently connected
+  
+  if (devIndex == TUSB_INDEX_INVALID_8) { // no MIDI device is currently connected
     devIndex = idx;
     connectedDeviceNameDirty = true;
+    DrumIO::led(LedId::MidiConnected, true);
   } else {
     logError("A different USB MIDI Device is already connected.\r\nOnly one device at a time is supported in this program\r\nDevice is disabled");
   }
-  DrumIO::led(LedId::MidiConnected, true);
 }
 
 // Invoked when device with MIDI interface is un-mounted
 void tuh_midi_umount_cb(uint8_t idx) {
+  if (!enabled) {
+    return;
+  }
+
   if (idx == devIndex) {
     devIndex = TUSB_INDEX_INVALID_8;
-    connectedDeviceName = "";
     connectedDeviceNameDirty = true;
     logInfo("USB-Host: MIDI Device Index = %u is unmounted", idx);
+    DrumIO::led(LedId::MidiConnected, false);
   } else {
     logInfo("USB-Host: Unused MIDI Device Index  %u is unmounted", idx);
   }
-  DrumIO::led(LedId::MidiConnected, false);
 }
 
 void tuh_midi_rx_cb(uint8_t idx, uint32_t num_bytes) {
+  if (!enabled) {
+    return;
+  }
+  
   if (devIndex == idx) {
     if (num_bytes != 0) {
       uint8_t cable_num;
@@ -135,23 +147,9 @@ void tuh_midi_tx_cb(uint8_t idx, uint32_t num_bytes) {
   (void)num_bytes;
 }
 
-static void printConnectedUsbDeviceName(const String& vendorName, const String& productName) {
-  logString(Level::Info, "USB-Host MIDI device found: ", LogMode::NoNewline);
-  if (vendorName.length() > 0) {
-    logString(Level::Info, "Vendor=", LogMode::NoPrefixOrNewline);
-    logString(Level::Info, vendorName, LogMode::NoPrefixOrNewline);
-  }
-  if (productName.length() > 0) {
-    logString(Level::Info, " Product=", LogMode::NoPrefixOrNewline);
-    logString(Level::Info, productName, LogMode::NoPrefixOrNewline);
-  }
-  logString(Level::Info, "\n", LogMode::NoPrefixOrNewline);
-}
-
 static void updateConnectedDeviceInfo() {
   if (devIndex == TUSB_INDEX_INVALID_8) {
-    connectedDeviceName = "";
-    webUI.sendUsbHostStatus(connectedDeviceName);
+    UsbHost::updateConnectedDeviceName(nullptr);
     return;
   }
 
@@ -159,21 +157,7 @@ static void updateConnectedDeviceInfo() {
   if (!tuh_midi_itf_get_info(devIndex, &info))
     logError("tuh_midi_itf_get_info failed");
 
-  String vendorName = UsbHost::getVendorName(info);
-  String productName = UsbHost::getProductName(info);
-  printConnectedUsbDeviceName(vendorName, productName);
-
-  if (productName.length() > 0 && vendorName.length() > 0) {
-    connectedDeviceName = vendorName + " " + productName;
-  } else if (productName.length() > 0) {
-    connectedDeviceName = productName;
-  } else if (vendorName.length() > 0) {
-    connectedDeviceName = vendorName;
-  } else {
-    connectedDeviceName = "";
-  }
-
-  webUI.sendUsbHostStatus(connectedDeviceName);
+  UsbHost::updateConnectedDeviceName(&info);
 }
 
 #endif

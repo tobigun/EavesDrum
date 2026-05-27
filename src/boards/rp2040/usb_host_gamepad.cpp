@@ -20,7 +20,6 @@ HID_ReportInfo_t* hidReportInfo;
 static ReportCallback reportCallback = nullptr;
 
 static bool connectedDeviceNameDirty = false;
-static String connectedDeviceName;
 
 static void unmountDevice();
 
@@ -34,12 +33,12 @@ void UsbHostGamepad::stop() {
   reportCallback = nullptr;
   enabled = false;
   unmountDevice();
+  UsbHost::updateConnectedDeviceName(nullptr);
 }
 
 static void updateConnectedDeviceInfo() {
   if (devIndex == TUSB_INDEX_INVALID_8) {
-    connectedDeviceName = "";
-    webUI.sendUsbHostStatus(connectedDeviceName);
+    UsbHost::updateConnectedDeviceName(nullptr);
     return;
   }
 
@@ -48,19 +47,7 @@ static void updateConnectedDeviceInfo() {
     logError("tuh_hid_itf_get_info failed");
   }
 
-  // Note: Interact MorayPad uses an invalid vendor string-ID that makes TinyUSB crash. Use product name only.
-  String productName = UsbHost::getProductName(info);
-  logString(Level::Info, "USB-Host HID device found: ", LogMode::NoNewline);
-  logString(Level::Info, productName, LogMode::NoPrefixOrNewline);
-  logString(Level::Info, "\n", LogMode::NoPrefixOrNewline);
-
-  if (productName.length() > 0) {
-    connectedDeviceName = productName;
-  } else {
-    connectedDeviceName = "";
-  }
-
-  webUI.sendUsbHostStatus(connectedDeviceName);
+  UsbHost::updateConnectedDeviceName(&info, UsbHostDeviceClass::Hid);
 }
 
 void UsbHostGamepad::update() {
@@ -85,7 +72,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const* report_desc,
     return;
   }
 
-  logInfo("USB-Host: HID Device Index = %u, HID device address = %u", idx, dev_addr);  
+  logDebug("USB-Host: HID Device Index = %u, HID device address = %u", idx, dev_addr);  
 
   if (devIndex != TUSB_INDEX_INVALID_8) { // no HID device is currently connected
     logError("A different USB HID Device is already connected.\r\nOnly one device at a time is supported in this program\r\nDevice is disabled");
@@ -137,7 +124,6 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const* report_desc,
 static void unmountDevice() {
     devIndex = TUSB_INDEX_INVALID_8;
     devAddress = 0;
-    connectedDeviceName = "";
     connectedDeviceNameDirty = true;
     if (hidReportInfo) {
       USB_FreeReportInfo(hidReportInfo);
@@ -167,9 +153,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t idx, uint8_t const* re
   if (!enabled) {
     return;
   }
-
-  //uint32_t touch = *((uint32_t*) &report[36]);
-  //logInfo("Touch: x=%lu y=%lu", touch & 0xFFF, (touch >> 12) & 0xFFF);
 
   if (hidReportInfo) {
     USB_Host_Data_t data;

@@ -8,12 +8,15 @@
 #include "drum_kit.h"
 #include "log.h"
 #include "pio_usb.h"
+#include "webui.h"
 
 #include <Arduino.h>
 #include <tusb.h>
 
 #define PIO_USB_DP_PIN 6 // default: use pins 6 (D+) and 7 (D-) on dedicated USB connector
 #define PIO_USB_DP_PIN_BOARD_V1_1 16 // use pins 16 (D+) and 17 (D-) on 50-pin expansion port. Pins 6+7 are blocked by mux address pins
+
+String UsbHost::connectedDeviceName;
 
 int getFreeDmaChannelForPioUsb() {
   // pio usb wants a fixed dma channel. Lower channels are unlikely free so query for an unused channel
@@ -116,6 +119,52 @@ String UsbHost::getSerial(const tuh_itf_info_t& info) {
     }
   }
   return "";
+}
+
+static void printConnectedUsbDeviceName(const String& vendorName, const String& productName, UsbHostDeviceClass devClass) {
+  logString(Level::Info, String("USB-Host ")
+    + ((devClass == UsbHostDeviceClass::Midi) ? "MIDI" : "HID")
+    + " device found:", LogMode::NoNewline);
+  if (vendorName.length() > 0) {
+    logString(Level::Info, " Vendor=\"", LogMode::NoPrefixOrNewline);
+    logString(Level::Info, vendorName, LogMode::NoPrefixOrNewline);
+    logString(Level::Info, "\"", LogMode::NoPrefixOrNewline);
+  }
+  if (productName.length() > 0) {
+    logString(Level::Info, " Product=\"", LogMode::NoPrefixOrNewline);
+    logString(Level::Info, productName, LogMode::NoPrefixOrNewline);
+    logString(Level::Info, "\"", LogMode::NoPrefixOrNewline);
+  }
+  logString(Level::Info, "\n", LogMode::NoPrefixOrNewline);
+}
+
+void UsbHost::updateConnectedDeviceName(const tuh_itf_info_t* info, UsbHostDeviceClass devClass) {
+  if (!info) {
+    connectedDeviceName = "";
+    webUI.sendUsbHostStatus(connectedDeviceName);
+    return;
+  }
+
+  // Note: Interact MorayPad gamepad uses an invalid vendor string-ID that makes TinyUSB crash
+  // -> use product name only for HID devices.
+  String vendorName = (devClass == UsbHostDeviceClass::Midi) ? UsbHost::getVendorName(*info) : "";
+  String productName = UsbHost::getProductName(*info);
+  vendorName.trim();
+  productName.trim();
+
+  printConnectedUsbDeviceName(vendorName, productName, devClass);
+
+  if (productName.length() > 0 && vendorName.length() > 0) {
+    connectedDeviceName = vendorName + " " + productName;
+  } else if (productName.length() > 0) {
+    connectedDeviceName = productName;
+  } else if (vendorName.length() > 0) {
+    connectedDeviceName = vendorName;
+  } else {
+    connectedDeviceName = "";
+  }
+
+  webUI.sendUsbHostStatus(connectedDeviceName);
 }
 
 #endif

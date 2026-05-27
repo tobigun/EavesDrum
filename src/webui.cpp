@@ -7,10 +7,10 @@
 #include "drum_kit.h"
 #include "event_log.h"
 #include "log.h"
-#include "midi/midi_transport_tiny_usb_host.h"
 #include "midi_transport.h"
 #include "monitor.h"
 #include "version.h"
+#include "usb_host.h"
 #if HAS_BLUETOOTH
 #include "ble_client.h"
 #endif
@@ -399,8 +399,8 @@ void WebUI::sendBleStatus(BleClientStatus status, bool isScanning, AsyncWebSocke
 }
 
 void WebUI::handleGetUsbHostStatusRequest(AsyncWebSocketClient* client) {
-#ifdef ENABLE_MIDI_TINY_USB_HOST_TRANSPORT
-  sendUsbHostStatus(midiTransportTinyUsbHost.getConnectedDeviceName(), client);
+#ifdef ENABLE_TINY_USB_HOST
+  sendUsbHostStatus(UsbHost::getConnectedDeviceName(), client);
 #endif
 }
 
