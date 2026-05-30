@@ -1,7 +1,8 @@
 source "https://rubygems.org"
 
+gem "sass-embedded", "1.69.5"
 gem "jekyll"
-gem "minima", github: "jekyll/minima", ref: "b3385fe64e9d79e75260668cad1852a3913b1829"
+gem "minima", github: "jekyll/minima", ref: "4de322363fca5927e6f4012cb94f6dad69ab5e6c"
 gem "kramdown-parser-gfm"
 gem "wdm"
 gem "webrick"
