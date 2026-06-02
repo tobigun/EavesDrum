@@ -15,26 +15,16 @@
 #include "wii_client.h"
 #include "config/config_mapper.h"
 #include "drum_kit.h"
+#include "guitar_hero_util.h"
 
 #define SAVE_DELAY_MS 5000 // 5s
 
-#define HIT_HOLD_TIME_MS 4 // original: ~50ms
+#define HIT_HOLD_TIME_MS 20 // original: ~50ms
 #define MIDI_CHANNEL 10
-
-#define NUM_PADS 6
 
 WiiClient wiiClient;
 
 static WiiClientPairingInfo pairingInfo;
-
-enum GHDrumPadId {
-  GH_Red,
-  GH_Yellow,
-  GH_Blue,
-  GH_Orange,
-  GH_Green,
-  GH_Kick
-};
 
 enum class PadHitState {
   Unpressed,
@@ -138,10 +128,28 @@ static void onGamepadReportReceived(const USB_Host_Data_t& data) {
     }
   }
 
-  classic.y = buttons.two = data.genericButton1;
-  classic.b = buttons.b = data.genericButton2;
-  classic.a = buttons.a = data.genericButton3;
-  classic.x = buttons.one = data.genericButton4;
+  uint8_t note = 0;
+  buttons.a = false;
+  if (data.genericButton1) {
+    note = GH_YELLOW_NOTE_DEFAULT;
+  } else if (data.genericButton2) {
+    note = GH_RED_NOTE_DEFAULT;
+  } else if (data.genericButton3) {
+    buttons.a = data.genericButton3;
+    note = GH_GREEN_NOTE_DEFAULT;
+  } else if (data.genericButton4) {
+    note = GH_BLUE_NOTE_DEFAULT;
+  }
+
+  static bool wasPressed = false;
+  if (note && !wasPressed) {
+    wasPressed = true;
+    uint8_t padId = noteToPadId(note);
+    triggerPadHit(padId, 100, note);
+  } else if (!note && wasPressed) {
+    wasPressed = false;
+  }
+
   classic.minus = buttons.minus = data.genericButton5;
   classic.plus = buttons.plus = data.genericButton6;
   classic.home = buttons.home = data.genericButton13; // 13 is "PS" on PS controller
@@ -165,10 +173,10 @@ static void setClassicButton(uint8_t padId, bool pressed) {
   wiimote_classic& classic = wii_report.classic;
   switch (padId) {
   case GH_Red: classic.b = pressed; break;
-  case GH_Yellow: classic.y = pressed; break;
   case GH_Blue: classic.x = pressed; break;
-  case GH_Orange: classic.lz = pressed; break;
   case GH_Green: classic.a = pressed; break;
+  case GH_Yellow: classic.y = pressed; break;
+  case GH_Orange: classic.lz = pressed; break;
   case GH_Kick: classic.rz = pressed; break;
   }
 }
@@ -258,57 +266,13 @@ void MidiTransport_GuitarHero_Wii::update() {
 #endif
 }
 
-// General Midi Percussion note names:
-// https://musescore.org/sites/musescore.org/files/General%20MIDI%20Standard%20Percussion%20Set%20Key%20Map.pdf
-static int8_t noteToPadId(uint8_t noteNumber) {
-  switch (noteNumber) {
-  case 38: // GH / RB: D1 (Acoustic Snare)
-  case 31: // RB: G0 (n.a.)
-  case 34: // RB: A#0 (n.a.)
-  case 37: // RB: C#1 (Side Stick)
-  case 39: // RB: D#1 (Hand Clap)
-  case 40: // RB: E1 (Electric Snare)
-    return GH_Red;
-  case 48: // GH: C2 (Hi-Mid Tom)
-  case 47: // RB: B1 (Low-Mid Tom)
-  case 51: // RB Cymbal(B): D#2 (Ride Cymbal 1)
-  case 53: // RB Cymbal(B): F2 (Ride Bell)
-  case 56: // RB Cymbal(B): G#2 (Cowbell)
-  case 59: // RB Cymbal(B): B2 (Ride Cymbal 2)
-    return GH_Blue;
-  case 45: // GH: A1 (Low Tom)
-  case 41: // RB: F1 (Low Floor Tom)
-  case 43: // RB: G1 (High Floor Tom)
-    return GH_Green;
-  case 46: // GH / RB: A#1 (Open Hi-Hat)
-  case 50: // RB: D2 (High Tom)
-  case 22: // RB Cymbal(Y): A#-1 (n.a.)
-  case 26: // RB Cymbal(Y): D0 (n.a.)
-  case 42: // RB Cymbal(Y): F#1 (Closed Hi-Hat)
-  case 54: // RB Cymbal(Y): F#2 (Tambourine)
-  case 44: // RB HiHat Pedal: G#1 (Pedal Hi-Hat)
-    return GH_Yellow;
-  case 49: // GH / RB Cymbal(G): C#2 (Crash Cymbal 1)
-  case 52: // RB Cymbal(G): E2 (Chinese Cymbal)
-  case 55: // RB Cymbal(G): G2 (Splash Cymbal)
-  case 57: // RB Cymbal(G): A2 (Crash Cymbal 2)
-    return GH_Orange;
-  case 36: // GH / RB: C1 (Bass Drum 1)
-  case 33: // RB: A0 (n.a.)
-  case 35: // RB: B0 (Acoustic Bass Drum)
-    return GH_Kick;
-  default:
-    return -1;
-  }
-}
-
 void MidiTransport_GuitarHero_Wii::sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) {
   int8_t padId = noteToPadId(inNoteNumber);
   if (padId < 0) {
     return;
   }
 
-  triggerPadHit(padId, inVelocity, inNoteNumber);
+  triggerPadHit(padId, inVelocity, padIndexToNote(padId));
 }
 
 void MidiTransport_GuitarHero_Wii::sendControlChange(uint8_t inControlNumber, uint8_t inControlValue, midi_channel_t inChannel) {

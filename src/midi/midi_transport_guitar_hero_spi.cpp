@@ -9,6 +9,7 @@
 #include <SPISlave.h>
 #include "drum_io.h"
 #include "packed.h"
+#include "guitar_hero_util.h"
 
 // Protocol information:
 // https://blog.laplante.io/2012/08/16/hack-a-guitar-hero-drumset-to-use-it-with-any-computer-over-usb-part2/
@@ -19,18 +20,8 @@
 #define PIN_SCK 18
 #define PIN_TX 19
 
-#define NUM_PADS 6
-
 #define DRUM_SPI SPISlave
 
-// General Midi Percussion note names:
-// https://musescore.org/sites/musescore.org/files/General%20MIDI%20Standard%20Percussion%20Set%20Key%20Map.pdf
-#define NOTE_PAD_GREEN 45 // Low Tom
-#define NOTE_PAD_RED 38 // Acoustic Snare
-#define NOTE_PAD_YELLOW 46 // Open Hi-Hat
-#define NOTE_PAD_BLUE 48 // Hi-Mid Tom
-#define NOTE_PAD_ORANGE 49 // Crash Cymbal
-#define NOTE_PAD_KICK 36 // Bass Drum 1
 #define NOTE_CONTROLLER 100 // Note used to indicate CC Info (unused)
 
 #define NOTE_ON 0x90
@@ -49,27 +40,6 @@ uint8_t midiNoteBufferCount = 0;
 
 static uint8_t pendingPadHits[NUM_PADS];
 
-static const uint8_t padIndexToNote[NUM_PADS] = {
-  NOTE_PAD_GREEN,
-  NOTE_PAD_RED,
-  NOTE_PAD_YELLOW,
-  NOTE_PAD_BLUE,
-  NOTE_PAD_ORANGE,
-  NOTE_PAD_KICK,
-};
-
-static int8_t noteToPadIndex(uint8_t note) {
-  switch (note) {
-    case NOTE_PAD_GREEN: return 0;
-    case NOTE_PAD_RED: return 1;
-    case NOTE_PAD_YELLOW: return 2;
-    case NOTE_PAD_BLUE: return 3;
-    case NOTE_PAD_ORANGE: return 4;
-    case NOTE_PAD_KICK: return 5;
-    default: return -1;
-  }
-}
-
 static void handleDataReceived(uint8_t* data, size_t len) {
   uint8_t cmd = data[0];
   if (cmd == 0xAA) {
@@ -81,7 +51,7 @@ static void handleDataReceived(uint8_t* data, size_t len) {
 
         MidiMessage& message = midiNoteBuffer[midiNoteBufferCount];
         message.cmd = NOTE_ON | MIDI_CHANNEL;
-        message.note = padIndexToNote[padIndex];
+        message.note = padIndexToNote(padIndex);
         message.velocity = velocity;
         
         midiNoteBufferCount++;
@@ -129,9 +99,9 @@ void MidiTransport_GuitarHero_SPI::stop() {
 }
 
 void MidiTransport_GuitarHero_SPI::sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) {
-  int8_t hitSlotIndex = noteToPadIndex(inNoteNumber);
-  if (hitSlotIndex >= 0) {
-    pendingPadHits[hitSlotIndex] = inVelocity;
+  int8_t padId = noteToPadId(inNoteNumber);
+  if (padId >= 0) {
+    pendingPadHits[padId] = inVelocity;
   }
 }
 
