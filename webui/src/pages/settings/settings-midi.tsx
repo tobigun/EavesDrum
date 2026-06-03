@@ -93,7 +93,8 @@ export function MidiOutputModeSelect() {
     [MidiOutputMode.BleServer]: "BLE Server",
     [MidiOutputMode.GuitarHeroDrumWii]: "Guitar Hero Drum (Wii)",
     [MidiOutputMode.GuitarHeroDrumSPI]: "Guitar Hero Drum (SPI)",
-    [MidiOutputMode.RockbandDrum]: "Rockband Drum (Wii USB)"
+    [MidiOutputMode.RockbandDrum]: "Rockband Drum (Wii USB)",
+    [MidiOutputMode.GamepadUsb]: "Gamepad (USB)"
   };
 
   const handleMidiModeChanged = (value: MidiOutputMode) => {
@@ -200,7 +201,11 @@ export function MidiOutputModeSelect() {
         </MidiSettingsBox>
       )}
 
-      {(midiOutputMode === MidiOutputMode.UsbHost || midiOutputMode === MidiOutputMode.GuitarHeroDrumWii || midiOutputMode === MidiOutputMode.RockbandDrum) && (
+      {(midiOutputMode === MidiOutputMode.UsbHost
+        || midiOutputMode === MidiOutputMode.GuitarHeroDrumWii
+        || midiOutputMode === MidiOutputMode.RockbandDrum
+        || midiOutputMode === MidiOutputMode.GamepadUsb)
+      && (
         <MidiSettingsBox label="USB Host Settings">
           <TextField
             label="Connected Device"

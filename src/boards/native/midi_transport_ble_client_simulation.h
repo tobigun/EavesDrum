@@ -15,7 +15,7 @@
 
 class MidiTransport_BleSimulation : public MidiTransport_BleSimulation_Base {
 public:
-  void start() override;
+  void start(MidiOutputMode mode) override;
 
   void stop() override;
 

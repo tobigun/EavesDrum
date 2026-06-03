@@ -74,7 +74,7 @@ void reinitializeSPI() {
   DRUM_SPI.setData(&preamble, 1);
 }
 
-void MidiTransport_GuitarHero_SPI::start() {
+void MidiTransport_GuitarHero_SPI::start(MidiOutputMode mode) {
   DRUM_SPI.setRX(PIN_RX);
   DRUM_SPI.setCS(PIN_CS);
   DRUM_SPI.setSCK(PIN_SCK);

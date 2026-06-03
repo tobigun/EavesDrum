@@ -47,7 +47,7 @@ static void printMidiError(PmError err) {
   fflush(stdout);
 }
 
-void MidiTransport_PortMidi::start() {
+void MidiTransport_PortMidi::start(MidiOutputMode mode) {
   PmDeviceID deviceId = findDeviceId();
 
   Pt_Start(1, 0, 0);

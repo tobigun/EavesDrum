@@ -17,6 +17,7 @@ enum class MidiOutputMode {
   GuitarHeroDrumSPI,
   GuitarHeroDrumWii,
   RockbandDrum,
+  GamepadUsb
 };
 
 inline String midiOutputModeToString(MidiOutputMode value) {
@@ -29,6 +30,7 @@ inline String midiOutputModeToString(MidiOutputMode value) {
   MAP_ENUM_TO_STRING(GuitarHeroDrumSPI);
   MAP_ENUM_TO_STRING(GuitarHeroDrumWii);
   MAP_ENUM_TO_STRING(RockbandDrum);
+  MAP_ENUM_TO_STRING(GamepadUsb);
   return ENUM_TO_STRING(UsbDevice);
 }
 
@@ -42,6 +44,7 @@ inline MidiOutputMode parseMidiOutputMode(String value) {
   MAP_STRING_TO_ENUM(GuitarHeroDrumSPI);
   MAP_STRING_TO_ENUM(GuitarHeroDrumWii);
   MAP_STRING_TO_ENUM(RockbandDrum);
+  MAP_STRING_TO_ENUM(GamepadUsb);
   return UsbDevice;
 }
 
@@ -49,7 +52,7 @@ typedef uint8_t midi_channel_t;
 
 class MidiTransport {
 public:
-  virtual void start() = 0;
+  virtual void start(MidiOutputMode mode) = 0;
 
   virtual void stop() {}
 
@@ -75,20 +78,27 @@ struct MidiTransportInstances {
   MidiTransport* guitarHeroDrumWii = nullptr;
   MidiTransport* guitarHeroDrumSPI = nullptr;
   MidiTransport* rockbandDrum = nullptr;
+  MidiTransport* gamepad = nullptr;
 };
 
 class MidiTransportMultiplexer : public MidiTransport {
 public:
   MidiTransportMultiplexer(MidiTransportInstances& instances)
     : instances(instances),
+      selectedMode(MidiOutputMode::UsbDevice),
       selectedTransport(instances.usbDevice) {}
 
   void setOutputMode(MidiOutputMode mode) {
-    MidiTransport* newMidiTransport = getTransportInstance(mode);
-    if (initialized && newMidiTransport != selectedTransport) {
-      selectedTransport->stop();      
-      newMidiTransport->start();
+    if (mode == selectedMode) {
+      return;
     }
+
+    MidiTransport* newMidiTransport = getTransportInstance(mode);
+    if (initialized) {
+      selectedTransport->stop();      
+      newMidiTransport->start(mode);
+    }
+    selectedMode = mode;
     selectedTransport = newMidiTransport;
   }
   
@@ -118,12 +128,23 @@ public:
     if (instances.rockbandDrum) {
       supportedModes.push_back(MidiOutputMode::RockbandDrum);
     }
+    if (instances.gamepad) {
+      supportedModes.push_back(MidiOutputMode::GamepadUsb);
+    }
     return supportedModes;
   }
 
-  void start() override {
+  void start() {
     initialized = true;
-    selectedTransport->start();
+    selectedTransport->start(selectedMode);
+  }
+
+  void start(MidiOutputMode mode) override {
+    bool wasInitialized = initialized;
+    setOutputMode(mode);
+    if (!wasInitialized) {
+      start();
+    }
   }
 
   void stop() override {
@@ -174,6 +195,8 @@ private:
       return instances.guitarHeroDrumWii;
     case MidiOutputMode::RockbandDrum:
       return instances.rockbandDrum;
+    case MidiOutputMode::GamepadUsb:
+      return instances.gamepad;
     default:
       return instances.usbDevice;
     }
@@ -181,6 +204,7 @@ private:
 
 private:
   MidiTransportInstances& instances;
+  MidiOutputMode selectedMode;
   MidiTransport* selectedTransport;
   bool initialized = false;
 };

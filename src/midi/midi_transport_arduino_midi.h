@@ -30,7 +30,7 @@ public: // Transport implementation for MidiInterface
   unsigned available() { return 0; } // read not used by EavesDrum
 
 public: // MidiTransport implementation
-  void start() override final {
+  void start(MidiOutputMode mode) override final {
     // Initialize MIDI, and listen to all MIDI channels
     // This will also call the begin() method
     midiInterface.begin(MIDI_CHANNEL_OMNI);

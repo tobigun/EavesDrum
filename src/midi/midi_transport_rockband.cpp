@@ -31,7 +31,8 @@ static const uint16_t usbProductId = 0x3110; // RB2 Drums, RB1 Drums (0x0005), M
 static uint16_t origVendorId;
 static uint16_t origProductId;
 
-static const char* HID_NAME = "Harmonix Drum Controller for Nintendo Wii";
+static const char* HID_NAME_WII = "Harmonix Drum Controller for Nintendo Wii";
+static const char* HID_NAME_GENERIC = "EavesDrum Controller";
 
 static const uint8_t HID_DESCRIPTOR[] = {
     HID_USAGE_PAGE(HID_USAGE_PAGE_DESKTOP), /* Generic Desktop */
@@ -125,11 +126,13 @@ struct ATTR_PACKED RBButtons_t {
 
       bool kick : 1; // l1 / Kick1 Orange
       bool hiHatPedal : 1; // r1 / Kick2 Black
-      bool : 2; // l2, r2
+      bool genericBlueCymbal: 1; // l2 (unused by Rockband)
+      bool genericGreenCymbal: 1; // r2 (unused by Rockband)
 
       bool select : 1; // minus
       bool start : 1; // plus
-      bool isPadHit : 1; // l3
+      #define genericYellowCymbal isPadHit
+      bool isPadHit : 1; // l3 (generic Yellow Cymbal)
       bool isCymbalHit : 1; // r3
 
       bool home : 1; // ps
@@ -170,6 +173,8 @@ struct HitInfo {
 
 #define NUM_PADS 9
 static HitInfo hitInfos[NUM_PADS];
+
+static bool isGenericGamepadMode = true;
 
 enum class PadHitState {
   Unpressed,
@@ -300,16 +305,25 @@ void restartUsbDevice() {
   }
 }
 
-void MidiTransport_Rockband::start() {
+void MidiTransport_Rockband::start(MidiOutputMode mode) {
   logInfo("Starting Rockband");
   DrumIO::led(LedId::MidiConnected, true);
+
+  isGenericGamepadMode = (mode == MidiOutputMode::GamepadUsb);
 
   origVendorId = UsbDevice::getVendorId();
   origProductId = UsbDevice::getProductId();
 
-  UsbDevice::setVendorId(usbVendorId);
-  UsbDevice::setProductId(usbProductId);
-  UsbDevice::enableHid(HID_NAME, HID_DESCRIPTOR, sizeof(HID_DESCRIPTOR), 1);
+  if (!isGenericGamepadMode) {
+    UsbDevice::setVendorId(usbVendorId);
+    UsbDevice::setProductId(usbProductId);
+  } else {
+    // use different product id as Windows caches USB device info
+    UsbDevice::setProductId(UsbDevice::getProductId() + 1);
+  }
+
+  const char* hidName = isGenericGamepadMode ? HID_NAME_GENERIC : HID_NAME_WII;
+  UsbDevice::enableHid(hidName, HID_DESCRIPTOR, sizeof(HID_DESCRIPTOR), 1);
   restartUsbDevice();
 
   hidReport.hat = HAT_CENTERED;
@@ -324,6 +338,7 @@ void MidiTransport_Rockband::stop() {
 
   UsbDevice::setVendorId(origVendorId);
   UsbDevice::setProductId(origProductId);
+
   UsbDevice::disableHid();
   restartUsbDevice();
 }
@@ -400,17 +415,29 @@ static void updateHidPadInfo(
     velocities.green = velocity;
     break;
   case RB_Yellow_Cymbal:
-    buttons.yellow = true;
-    hat = HAT_UP;
+    if (isGenericGamepadMode) {
+      buttons.genericYellowCymbal = true;
+    } else {
+      buttons.yellow = true;
+      hat = HAT_UP;
+    }
     updateHidCymbalVelocity(velocities.yellow, velocity, velocities);
     break;
   case RB_Blue_Cymbal:
-    buttons.blue = true;
-    hat = HAT_DOWN;
+    if (isGenericGamepadMode) {
+      buttons.genericBlueCymbal = true;
+    } else {
+      buttons.blue = true;
+      hat = HAT_DOWN;
+    }
     updateHidCymbalVelocity(velocities.blue, velocity, velocities);
     break;
   case RB_Green_Cymbal:
-    buttons.green = true;
+    if (isGenericGamepadMode) {
+      buttons.genericGreenCymbal = true;
+    } else {
+      buttons.green = true;
+    }
     updateHidCymbalVelocity(velocities.green, velocity, velocities);
     break;
   case RB_Kick:
@@ -440,10 +467,12 @@ static void updateHidReport() {
     PadHitState hitState = isPadHit(padId, currentTimeMs);
     if (hitState == PadHitState::Pressed) {
       updateHidPadInfo(padId, hitInfos[padId].velocity, buttons, hidReport.velocities, hat);
-      if (isPad(padId)) {
-        buttons.isPadHit = true;
-      } else if (isCymbal(padId)) {
-        buttons.isCymbalHit = true;
+      if (!isGenericGamepadMode) {
+        if (isPad(padId)) {
+          buttons.isPadHit = true;
+        } else if (isCymbal(padId)) {
+          buttons.isCymbalHit = true;
+        }
       }
       hasDrumEvent = true;
     } else if (hitState == PadHitState::Released) {

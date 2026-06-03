@@ -201,7 +201,7 @@ static bool wiimote_set_report(WiimoteReport* report) {
   return changed;
 }
 
-void MidiTransport_GuitarHero_Wii::start() {
+void MidiTransport_GuitarHero_Wii::start(MidiOutputMode mode) {
   DrumIO::led(LedId::MidiConnected, false);
 
   memset(&wii_report, 0, sizeof(wii_report));

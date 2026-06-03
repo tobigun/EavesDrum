@@ -87,7 +87,7 @@ static void updateScanStatus(uint32_t& clientScanStartTimeMs) {
   }
 }
 
-void MidiTransport_BleSimulation::start(){
+void MidiTransport_BleSimulation::start(MidiOutputMode mode){
   startClient();
 }
 

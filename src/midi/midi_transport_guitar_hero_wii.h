@@ -10,7 +10,7 @@
 
 class MidiTransport_GuitarHero_Wii : public MidiTransport {
 public:
-  void start() override;
+  void start(MidiOutputMode mode) override;
 
   void stop() override;
 

@@ -13,7 +13,7 @@
 
 class MidiTransport_ArduinoBleMidi : public MidiTransport {
 public:
-  void start() {
+  void start(MidiOutputMode mode) override;{
     //BLEMIDI_INSTANCE.setHandleConnected(onBluetoothConnected);
     //BLEMIDI_INSTANCE.setHandleDisconnected(onBluetoothDisconnected);
 
@@ -22,23 +22,23 @@ public:
     MIDI_INSTANCE.begin(MIDI_CHANNEL_OMNI);
   }
 
-  void sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) {
+  void sendNoteOn(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) override {
     MIDI_INSTANCE.sendNoteOn(inNoteNumber, inVelocity, inChannel);
   }
 
-  void sendNoteOff(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) {
+  void sendNoteOff(uint8_t inNoteNumber, uint8_t inVelocity, midi_channel_t inChannel) override {
     MIDI_INSTANCE.sendNoteOff(inNoteNumber, inVelocity, inChannel);
   }
 
-  void sendAfterTouch(uint8_t inPressure, midi_channel_t inChannel) {
+  void sendAfterTouch(uint8_t inPressure, midi_channel_t inChannel) override {
     MIDI_INSTANCE.sendAfterTouch(inPressure, inChannel);
   }
 
-  void sendAfterTouch(uint8_t inNoteNumber, uint8_t inPressure, midi_channel_t inChannel) {
+  void sendAfterTouch(uint8_t inNoteNumber, uint8_t inPressure, midi_channel_t inChannel) override {
     MIDI_INSTANCE.sendAfterTouch(inNoteNumber, inPressure, inChannel);
   }
 
-  void sendControlChange(uint8_t inControlNumber, uint8_t inControlValue, midi_channel_t inChannel) {
+  void sendControlChange(uint8_t inControlNumber, uint8_t inControlValue, midi_channel_t inChannel) override {
     MIDI_INSTANCE.sendControlChange(inControlNumber, inControlValue, inChannel);
   }
 };

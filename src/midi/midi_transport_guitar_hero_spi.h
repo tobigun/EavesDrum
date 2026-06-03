@@ -11,7 +11,7 @@
 
 class MidiTransport_GuitarHero_SPI : public MidiTransport {
 public:
-  void start() override;
+  void start(MidiOutputMode mode) override;
 
   void stop() override;
 

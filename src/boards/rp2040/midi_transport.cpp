@@ -40,5 +40,6 @@ MidiTransportInstances midiTransportInstances = {
 #endif
   .guitarHeroDrumSPI = &midiTransportGuitarHeroSPI,
   .rockbandDrum = &midiTransportRocksband,
+  .gamepad = &midiTransportRocksband
 };
 MidiTransportMultiplexer midiTransport(midiTransportInstances);
