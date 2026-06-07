@@ -40,8 +40,14 @@ export default tseslint.config(
           trailingNewlines: 2,
           source: "string",
           content:
-            "Copyright (c) 2025 Tobias Gunkel\n" +
-            "SPDX-License-Identifier: GPL-3.0-or-later"
+            "Copyright (c) (year) Tobias Gunkel\n" +
+            "SPDX-License-Identifier: GPL-3.0-or-later",
+          patterns: {
+            year: {
+              pattern: "\\d{4}",
+              defaultValue: "2026"
+            }
+          }
         }
       ]
     },
