@@ -64,7 +64,7 @@ public:
   }
 
   void triggerMonitor() {
-    isExternallyTriggered = true;
+    isTriggeredByUser = true;
   }
 
   void disableMonitor() {
@@ -109,7 +109,7 @@ private:
   bool checkAndSendMonitoredDrumHitInfo(const DrumPad& pad);
   bool checkAndSendMonitoredPedalHitInfo(const DrumPad& pedal);
   bool checkAndSendLatencyHitInfo(const DrumPad& pedal);
-  bool waitOrSendHitMessage(bool sendIfHistoryFull);
+  bool waitOrSendHitMessage(bool sendNow);
 
   MonitorHitInfo prepareDrumHitInfo(const DrumPad& pad);
   MonitorHitInfo prepareLatencyTestHitInfo(const DrumPad& pad);
@@ -133,7 +133,7 @@ private:
 
   MonitorMessage msgBuffer;
 
-  bool isExternallyTriggered = false;
+  bool isTriggeredByUser = false;
 
   LatencyTestInfo latencyTest;
 };

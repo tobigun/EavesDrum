@@ -52,29 +52,42 @@ void DrumMonitor::checkAndSendNonMonitoredPadHitInfo() {
 }
 
 bool DrumMonitor::checkAndSendMonitoredDrumHitInfo(const DrumPad& pad) {
-  if (pad.getSensingState() == SensingState::Scan) {
-    if (!history.isTriggerStartPosSet()) { // hit detected -> scan time started
+  static SensingState lastSensingState = SensingState::PeakDetect;
+
+  // update scan start and end time
+  SensingState sensingState = pad.getSensingState();
+  if (sensingState == SensingState::Scan) {
+    if (!history.isTriggerStartPosSet()) {
+      history.setTriggerStartPos();
+    } else if (lastSensingState != SensingState::Scan) {
+      // new hit found but nextHitSendTimeMs is not over yet. Send old hit now 
+      waitOrSendHitMessage(true);
       history.setTriggerStartPos();
     }
+
     // update scan index until State!=Scan. As a result, historyScanEndIndex will mark the end of the scan time
     history.setTriggerEndPos();
   }
 
-  bool isHit = pad.isHit();
-  if (isHit || pad.cymbal.isChoked || isExternallyTriggered) {
+  lastSensingState = sensingState;
+
+  // Note: isHit() and isChoke() is only true for one sensing period, i.e. one main loop iteration
+  if (pad.isHit() || pad.cymbal.isChoked || isTriggeredByUser) {
     if (!history.isTriggerStartPosSet()) {
+      // update start if there was no scan time, e.g. with hihat chick or when triggered by user
       history.setTriggerStartPos();
     }
 
     monitoredPadHitInfo = prepareDrumHitInfo(pad);
 
-    // wait until mask time is over to also show samples during mask time in UI
-    nextHitSendTimeMs = millis() + pad.getSettings().maskTimeMs;
-    isExternallyTriggered = false;
+    // wait until mask+decay time is over to show all samples of interest in UI
+    nextHitSendTimeMs = millis() + pad.getSettings().maskTimeMs + pad.getSettings().decayTimeMs;
+    isTriggeredByUser = false;
     return false;
   }
 
-  return waitOrSendHitMessage(false);
+  bool sendNow = history.isFull();
+  return waitOrSendHitMessage(sendNow);
 }
 
 bool DrumMonitor::checkAndSendMonitoredPedalHitInfo(const DrumPad& pedal) {
@@ -82,14 +95,14 @@ bool DrumMonitor::checkAndSendMonitoredPedalHitInfo(const DrumPad& pedal) {
   const time_ms_t waitTimeBeforeSendMs = 100;
 
   // Note that "writeIndex != HISTORY_INDEX_NONE" is always true as we immediately send when the buffer is full
-  if (pedal.isHit() || isExternallyTriggered) {
+  if (pedal.isHit() || isTriggeredByUser) {
     if (!history.isTriggerStartPosSet()) {
       history.setTriggerStartPos(); // no moving before -> mark hit as start
     }
     history.setTriggerEndPos(); // mark the chick or external trigger as the end of the move event
     monitoredPadHitInfo = preparePedalHitInfo(pedal);
     nextHitSendTimeMs = millis() + waitTimeBeforeSendMs;
-    isExternallyTriggered = false;
+    isTriggeredByUser = false;
   } else if (pedal.hihat.isMoving) {
     if (!nextHitSendTimeMs) { // no trigger event active -> mark beginning of move as start
       history.setTriggerStartPos();
@@ -100,7 +113,8 @@ bool DrumMonitor::checkAndSendMonitoredPedalHitInfo(const DrumPad& pedal) {
     }
   }
 
-  return waitOrSendHitMessage(true);
+  bool sendNow = history.isFull();
+  return waitOrSendHitMessage(sendNow);
 }
 
 bool DrumMonitor::checkAndSendLatencyHitInfo(const DrumPad& pad) {
@@ -117,10 +131,11 @@ bool DrumMonitor::checkAndSendLatencyHitInfo(const DrumPad& pad) {
   return waitOrSendHitMessage(false);
 }
 
-bool DrumMonitor::waitOrSendHitMessage(bool sendIfHistoryFull) {
-  bool sendPadHit = nextHitSendTimeMs && millis() >= nextHitSendTimeMs;
+bool DrumMonitor::waitOrSendHitMessage(bool sendNow) {
+  bool sendPadHit = sendNow ||
+    (nextHitSendTimeMs && millis() >= nextHitSendTimeMs);
 
-  if (sendPadHit || (sendIfHistoryFull && history.isFull())) {
+  if (sendPadHit) {
     sendHitMessage(monitoredPadHitInfo, true);
 
     nextHitSendTimeMs = 0;
@@ -168,6 +183,8 @@ static inline MonitorHitInfo createGenericHitInfo(const DrumPad& pad, const Drum
 MonitorHitInfo DrumMonitor::prepareDrumHitInfo(const DrumPad& pad) {
   const DrumSettings& settings = pad.getSettings();
   MonitorHitInfo hitInfo = createGenericHitInfo(pad, settings);
+  hitInfo.maskTimeMs = settings.maskTimeMs;
+  hitInfo.decayTimeMs = settings.decayTimeMs;
 
   for (int i = 0; i < pad.getActiveZoneCount(); ++i) {
     hitInfo.hits[i] = pad.hits[i];
