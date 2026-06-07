@@ -35,6 +35,8 @@ struct MonitorHitInfo {
   sensor_value_t zoneThresholdsMax[3];
   history_index_t triggerStartIndex;
   history_index_t triggerEndIndex;
+  uint8_t maskTimeMs;
+  uint8_t decayTimeMs;
   uint32_t latencyUs;
   enum_uint8_t padType;
   enum_uint8_t zonesType;

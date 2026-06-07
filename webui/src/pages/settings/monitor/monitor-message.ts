@@ -29,6 +29,8 @@ export class MonitorMessage {
   thresholdsMax: Uint16Array;
   triggerStartIndex?: number;
   triggerEndIndex?: number;
+  maskTimeMs?: number;
+  decayTimeMs?: number;
   latencyUs: number;
   isChoked: boolean;
   padType: PadType;
@@ -60,6 +62,10 @@ export class MonitorMessage {
     const scanEndIndex = view.getInt16(offset, true);
     this.triggerEndIndex = scanEndIndex !== -1 ? scanEndIndex : undefined;
     offset += uint16_size;
+    this.maskTimeMs = view.getUint8(offset);
+    offset += uint8_size;
+    this.decayTimeMs = view.getUint8(offset);
+    offset += uint8_size;
     this.latencyUs = view.getUint32(offset, true);
     offset += uint32_size;
 

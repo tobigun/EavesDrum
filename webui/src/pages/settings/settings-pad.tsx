@@ -9,12 +9,15 @@ import { chartColors, pedalThresholdColors } from "@theme";
 import { SettingCurveTypeEntry } from "./setting-curve";
 import { getZoneName } from "@/common";
 import { createFractionConverter, SettingsConverter } from "./converter";
+import { SettingDecayTypeEntry } from "./setting-decay";
 
 const settingIdsOrdered: (keyof DrumPadSettings)[] = [
   'zoneThresholds',
   'curveType',
   'scanTimeUs',
   'maskTimeMs',
+  'decayTimeMs',
+  'decayType',
   'moveDetectTolerance',
   'almostClosedThreshold',
   'closedThreshold',
@@ -36,6 +39,8 @@ const settingDisplayNames: SettingDisplayNames = {
   zoneThreshold: (padType, zone) => getZoneName(padType, zone) + ' Threshold (min) [%]',
   scanTimeUs: () => 'Scan-Time [ms]',
   maskTimeMs: () => 'Mask-Time [ms]',
+  decayTimeMs: () => 'Decay-Time [ms]',
+  decayType: () => 'Decay Type',
   curveType: () => 'Curve Type',
   almostClosedThreshold: () => 'Almost / Closed Threshold [%]',
   moveDetectTolerance: () => 'Move Detection Tolerance [%]',
@@ -129,6 +134,12 @@ function SettingsElement({padIndex, settingId, padType} : {
   
   case "maskTimeMs":
     return <SettingSliderEntry {...defaultProps} key={settingId} />;
+
+  case "decayTimeMs":
+    return <SettingSliderEntry {...defaultProps} key={settingId} />;
+
+  case "decayType":
+    return <SettingDecayTypeEntry {...defaultProps} key={settingId} />;
   
   case "curveType":
     return <SettingCurveTypeEntry {...defaultProps} key={settingId} />;

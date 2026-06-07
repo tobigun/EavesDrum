@@ -103,36 +103,76 @@ function getXAnnotations(
   }
 
   if (!isLatencyMode) {
-    const scanEndIndex = message.triggerEndIndex!;
-    xAxisAnnotations['maskAnnotationBox'] = {
-      type: 'box',
-      xMin: indexToTimestampMs(scanEndIndex, data),
-      xMax: indexToTimestampMs(-1, data), // mask end time
-      borderWidth: 0,
-      backgroundColor: alpha('rgb(255, 69, 96)', 0.2),
-      drawTime: drawTime,
-    };
-    xAxisAnnotations['maskAnnotationLine'] = {
-      type: 'line',
-      xMin: indexToTimestampMs(scanEndIndex, data),
-      xMax: indexToTimestampMs(scanEndIndex, data),
-      borderColor: 'rgb(179, 16, 16)',
-      borderWidth: borderWidth,
-      drawTime: drawTime,
-      label: {
-        backgroundColor: 'rgb(179, 16, 16)',
-        borderColor: 'rgb(119, 119, 119)',
+    const scanEndIndex = message.triggerEndIndex ?? 0;
+    const scanEndTimeMs = indexToTimestampMs(scanEndIndex, data) ?? 0;
+
+    const maskTimeMs = message.maskTimeMs ?? 0;
+    const maskEndTimeMs = scanEndTimeMs + maskTimeMs;
+    if (maskTimeMs > 0) {
+      xAxisAnnotations['maskAnnotationBox'] = {
+        type: 'box',
+        xMin: scanEndTimeMs,
+        xMax: maskEndTimeMs, // mask end time
+        borderWidth: 0,
+        backgroundColor: alpha('rgb(255, 69, 96)', 0.2),
+        drawTime: drawTime,
+      };
+      xAxisAnnotations['maskAnnotationLine'] = {
+        type: 'line',
+        xMin: scanEndTimeMs,
+        xMax: scanEndTimeMs,
+        borderColor: 'rgb(179, 16, 16)',
         borderWidth: borderWidth,
-        color: annotationTextColor,
-        content: 'Mask',
-        display: true,
-        position: labelPosition,
-        xAdjust: (ctx) => {
-          const width = ctx.element?.label?.width ?? 0;
-          return width / 2;
+        drawTime: drawTime,
+        label: {
+          backgroundColor: 'rgb(179, 16, 16)',
+          borderColor: 'rgb(119, 119, 119)',
+          borderWidth: borderWidth,
+          color: annotationTextColor,
+          content: 'Mask',
+          display: true,
+          position: labelPosition,
+          xAdjust: (ctx) => {
+            const width = ctx.element?.label?.width ?? 0;
+            return width / 2;
+          },
         },
-      },
-    };  
+      };
+    }
+
+    const decayTimeMs = message.decayTimeMs ?? 0;
+    if (decayTimeMs > 0) {
+      const decayEndTimeMs = maskEndTimeMs + decayTimeMs;
+      xAxisAnnotations['decayAnnotationBox'] = {
+        type: 'box',
+        xMin: maskEndTimeMs,
+        xMax: decayEndTimeMs,
+        borderWidth: 0,
+        backgroundColor: alpha('rgba(255, 224, 69, 0.8)', 0.2),
+        drawTime: drawTime,
+      };
+      xAxisAnnotations['decayAnnotationLine'] = {
+        type: 'line',
+        xMin: maskEndTimeMs,
+        xMax: maskEndTimeMs,
+        borderColor: 'rgba(255, 224, 69, 0.8)',
+        borderWidth: borderWidth,
+        drawTime: drawTime,
+        label: {
+          backgroundColor: 'rgb(150, 131, 35)',
+          borderColor: 'rgb(119, 119, 119)',
+          borderWidth: borderWidth,
+          color: annotationTextColor,
+          content: 'Decay',
+          display: true,
+          position: labelPosition,
+          xAdjust: (ctx) => {
+            const width = ctx.element?.label?.width ?? 0;
+            return width / 2;
+          },
+        },
+      };
+    }
   }
 
   return xAxisAnnotations;

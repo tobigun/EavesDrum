@@ -19,26 +19,39 @@ void PiezoSwitchSensing::sense(time_us_t senseTimeUs) {
   readInputValues();
 
   if (pad.sensingState == SensingState::PeakDetect) { // search for first peak
-    pad.sensingState = detectPeak(senseTimeUs);
+    pad.sensingState = detectPeak(senseTimeUs, pad.settings.zoneThresholdsMin[MAIN_PIEZO_INDEX])
+      ? SensingState::Scan : SensingState::PeakDetect;
   } else if (pad.sensingState == SensingState::Scan) { // search highest peak
     pad.sensingState = scan(senseTimeUs);
   } else if (pad.sensingState == SensingState::Mask) { // mask: ignore hits
     bool maskActive = senseTimeUs - pad.scanTimeEndUs < pad.settings.maskTimeMs * 1000;
     if (!maskActive) {
+      pad.sensingState = (pad.settings.decayTimeMs > 0) ? SensingState::Decay : SensingState::PeakDetect;
+    }
+  } else if (pad.sensingState == SensingState::Decay) {
+    time_us_t maskEndTimeUs = pad.scanTimeEndUs + pad.settings.maskTimeMs * 1000;
+    time_us_t timeSinceDecayBeginUs = senseTimeUs - maskEndTimeUs;
+    bool decayActive = timeSinceDecayBeginUs < pad.settings.decayTimeMs * 1000;
+    if (!decayActive) {
       pad.sensingState = SensingState::PeakDetect;
+    } else {
+      float decayProgress = (float) timeSinceDecayBeginUs / (pad.settings.decayTimeMs * 1000);
+      pad.sensingState = detectPeakWithDecay(senseTimeUs, decayProgress)
+      ? SensingState::Scan : SensingState::Decay;
     }
   }
 }
 
-SensingState PiezoSwitchSensing::detectPeak(time_us_t senseTimeUs) {
+// returns true if peak was detected
+bool PiezoSwitchSensing::detectPeak(time_us_t senseTimeUs, sensor_value_t zoneThresholdMin) {
   const zone_size_t activeZoneCount = pad.getActiveZoneCount();
 
-  bool isPeakDetected = pad.sensorValues[MAIN_PIEZO_INDEX] >= pad.settings.zoneThresholdsMin[MAIN_PIEZO_INDEX];
+  bool isPeakDetected = pad.sensorValues[MAIN_PIEZO_INDEX] >= zoneThresholdMin;
 
   bool isMaybeChoked = isChoked(activeZoneCount); // we cannot be sure the cymbal is choked as a hit might still be detected
 
   if (!isPeakDetected && !isMaybeChoked) { // no hit or choke detected -> keep current state
-    return SensingState::PeakDetect;
+    return false;
   }
 
   // peak detected or cymbal might be choked -> start scan time
@@ -49,7 +62,7 @@ SensingState PiezoSwitchSensing::detectPeak(time_us_t senseTimeUs) {
   }
   updateMaxSensorValue();
 
-  return SensingState::Scan;
+  return true;
 }
 
 SensingState PiezoSwitchSensing::scan(time_us_t senseTimeUs) {
@@ -78,6 +91,19 @@ SensingState PiezoSwitchSensing::scan(time_us_t senseTimeUs) {
   logHit(hitIndex, pad.getActiveZoneCount());
 
   return SensingState::Mask;
+}
+
+// decayProgress: progress of decay in p.u. (0.0 .. 1.0). 0: start of decay, 1: end of decay 
+// returns true if peak detected
+bool PiezoSwitchSensing::detectPeakWithDecay(time_us_t senseTimeUs, float decayProgress) {
+  sensor_value_t maxValue = pad.maxZoneValues[MAIN_PIEZO_INDEX];
+  sensor_value_t defaultThresholdMin = pad.settings.zoneThresholdsMin[MAIN_PIEZO_INDEX];
+  
+  sensor_value_t zoneThresholdMin = (maxValue > defaultThresholdMin)
+    ? maxValue - (maxValue - defaultThresholdMin) * decayProgress
+    : defaultThresholdMin;
+
+  return detectPeak(senseTimeUs, zoneThresholdMin);
 }
 
 inline void PiezoSwitchSensing::updateMaxSensorValue() {

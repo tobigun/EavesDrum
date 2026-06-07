@@ -45,10 +45,15 @@ enum class CurveType {
   Logarithmic2
 };
 
+enum class DecayType {
+  Linear
+};
+
 #define PAD_TYPE_DEFAULT PadType::Drum
 #define ZONES_TYPE_DEFAULT ZonesType::Zones1_Piezo
 #define CHOKE_TYPE_DEFAULT ChokeType::None
 #define CURVE_TYPE_DEFAULT CurveType::Linear
+#define DECAY_TYPE_DEFAULT DecayType::Linear
 
 #define THRESHOLD_MIN_DEFAULT (MAX_SENSOR_VALUE / 2)
 #define THRESHOLD_MAX_DEFAULT MAX_SENSOR_VALUE
@@ -64,6 +69,7 @@ struct DrumSettings {
   uint16_t scanTimeUs = 3; // drum, cymbal
   uint8_t maskTimeMs = 30; // drum, cymbal
   uint8_t decayTimeMs = 0; // drum, cymbal
+  DecayType decayType = DECAY_TYPE_DEFAULT;
 
   int8_t headRimBias = 0; // -100 .. 100
   bool crossNoteEnabled = false;

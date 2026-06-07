@@ -168,6 +168,8 @@ export interface DrumPadSettings {
   }[],
   scanTimeUs?: number;
   maskTimeMs?: number;
+  decayTimeMs?: number;
+  decayType?: keyof typeof DecayType;
   curveType: keyof typeof CurveType;
   almostClosedThreshold?: number; // %
   closedThreshold?: number; // %
@@ -207,6 +209,10 @@ export enum CurveType {
   Exp2 = "Exp2",
   Log1 = "Log1",
   Log2 = "Log2"
+}
+
+export enum DecayType {
+  Linear = "Linear"
 }
 
 export interface MonitorConfig {

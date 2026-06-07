@@ -12,6 +12,7 @@ import {
   PointElement,
   ChartData,
   ChartDataset,
+  ScatterDataPoint,
 } from 'chart.js';
 import ZoomPlugin from 'chartjs-plugin-zoom';
 import AnnotationPlugin from 'chartjs-plugin-annotation';
@@ -32,6 +33,7 @@ import { MonitorMode } from '../monitor-mode';
 
 export type SignalChartData = ChartData<'line', number[], number>;
 type SignalChartDataset = ChartDataset<'line', number[]>;
+type SignalChartXYDataset = ChartDataset<'line', ScatterDataPoint[]>;
 
 ChartJS.register([
   AnnotationPlugin,
@@ -88,12 +90,12 @@ function updateSignalGraphDatasets(scaleToSelectedRange: boolean, messageInfo: M
 
   const datasets = (message.getPadType() == PadType.Pedal)
     ? updatePedalSignalGraphDatasets(messageInfo)
-    : updatePadSignalGraphDatasets(scaleToSelectedRange, message);
+    : updatePadSignalGraphDatasets(scaleToSelectedRange, message, labels);
 
   return { labels, datasets };
 }
 
-function updatePadSignalGraphDatasets(scaleToSelectedRange: boolean, message: MonitorMessage): SignalChartDataset[] {
+function updatePadSignalGraphDatasets(scaleToSelectedRange: boolean, message: MonitorMessage, labels: number[]): SignalChartDataset[] {
   const zones = message.getZonesCount();
   const padType = message.getPadType();
   const numCurves = zones;
@@ -117,7 +119,44 @@ function updatePadSignalGraphDatasets(scaleToSelectedRange: boolean, message: Mo
       zoneDataset.data.push(sensorValuePerZone[zoneIndex]));
   };
 
+  if (message.decayTimeMs && message.triggerEndIndex !== undefined) {
+    const hitZone = getMaxHitZone(message);
+    const thresholdRangePercent = message.getThresholdMaxPercent(hitZone) - message.getThresholdMinPercent(hitZone);
+    const hitValue = (message.getHitValuePercent(hitZone) ?? 0) * thresholdRangePercent/ 100 + message.getThresholdMinPercent(hitZone);
+    const triggerEndTimeMs = labels?.[message.triggerEndIndex];
+    const decayStartTimeMs = triggerEndTimeMs + (message.maskTimeMs ?? 0);
+
+    const decayEndValue = message.getThresholdMinPercent(hitZone);
+    const decayStartValue = hitValue > decayEndValue ? hitValue : decayEndValue;
+
+    const decayDataset: SignalChartXYDataset = {
+      label: 'hidden', // Note: 'hidden...' labels are not shown in legend
+      borderWidth: 0,
+      yAxisID: scaleToSelectedRange ? YAXIS_MULTI_IDS[hitZone] : YAXIS_SINGLE_ID,
+      backgroundColor: 'rgba(104, 98, 39, 0.2)',
+      fill: true,
+      data: [
+        { x: decayStartTimeMs, y: decayStartValue },
+        { x: decayStartTimeMs + message.decayTimeMs, y: decayEndValue }
+      ]
+    };
+    datasets.push(decayDataset as unknown as SignalChartDataset);
+  }
+
   return datasets;
+}
+
+function getMaxHitZone(message: MonitorMessage): number {
+  let maxHit = 0;
+  let maxHitZone = 0;
+  for (let i = 0; i < message.getZonesCount(); i++) {
+    const hitValue = message.getHitValuePercent(i) ?? 0;
+    if (hitValue > maxHit) {
+      maxHit = hitValue;
+      maxHitZone = i;
+    }
+  }
+  return maxHitZone;
 }
 
 function updatePedalSignalGraphDatasets(messageInfo: MonitorMessageInfo): SignalChartDataset[] {

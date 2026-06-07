@@ -42,7 +42,8 @@ public:
   void sense(time_us_t senseTimeUs);
 
 private:
-  SensingState detectPeak(time_us_t senseTimeUs);
+  bool detectPeak(time_us_t senseTimeUs, sensor_value_t* zoneThresholdsMin);
+  bool detectPeakWithDecay(time_us_t senseTimeUs, float decayProgress);
   SensingState scan(time_us_t senseTimeUs);
 
   static zone_size_t determineHitZone(sensor_value_t* evaluationVelocities, zone_size_t zoneCount, int8_t headRimBias);
@@ -57,7 +58,8 @@ public:
   void sense(time_us_t senseTimeUs);
 
 private:
-  SensingState detectPeak(time_us_t senseTimeUs);
+  bool detectPeak(time_us_t senseTimeUs, sensor_value_t zoneThresholdMin);
+  bool detectPeakWithDecay(time_us_t senseTimeUs, float decayProgress);
   SensingState scan(time_us_t senseTimeUs);
 
   zone_size_t determineHitZone();

@@ -524,10 +524,26 @@ If you click on `Show All Pads` on the top, you can see hits on every pad, no ma
   - For cymbals with switches for edge and cup you will only have a **minimum threshold** for each switch instead of a range.
     - This determines at which level the switch is considered to be closed or opened.
 
-- **Scan Time** determines the time to search for a peak
-- **Mask Time** can be used to reduce false retriggers
-- **Curve Type** lets you change the trigger behavior for low or high intensity hits, i.e. you can shift the sensitivity more to the lower or higher intensities
-- **Head/Rim Bias** is only for drums (i.e. snares and toms) with at least two zones. If you move the bias more to the rim (i.e. to the right), the rim zone will more likely be triggered if both zones were hit at once. This is useful to assure that rimshots trigger the rim sound.
+- **Scan Time**: Determines the time to search for a peak (Scan phase).
+- **Mask Time**: Blocks hit detection for the given time (Mask phase).
+  - Can be used to reduce false retriggers.
+  - The Mask phase starts after the Scan phase.
+  - The Mask is applied to all zones of the pad.
+- **Decay Time**: Blocks hits with a hit velocity below the given decay curve (Decay phase).
+  - In contrast to the Mask phase that blocks all hits, this only blocks hits selectively.
+  - It can be used to define a longer decay phase where reverberations of the last hit can be blocked but new hits are still possible if they are strong enough.
+  - The Decay phase starts after the Mask phase.
+  - The Decay curve is applied to all zones of the pad.
+- **Decay Curve**: The curve that defines how the detection threshold decreases during the decay phase.
+  - **Linear**: The further the decay phase progresses, the lower the required hit strength becomes for a hit to be detected. 
+    - The phase begins with a detection threshold equal to the highest signal value detected during the scan phase (the peak).
+    - It ends with a detection threshold equal to the minimum detection threshold.
+    - Throughout the decay phase, the threshold is linearly reduced from the peak value down to the minimum threshold.
+- **Curve Type**: Lets you change the trigger behavior for low or high intensity hits, i.e. you can shift the sensitivity more to the lower or higher intensities.
+- **Head/Rim Bias**: Sets whether to prefer head or rim sound when the signals of both to not indicate a clear winner.
+  - This is useful to assure that rimshots trigger the rim sound.
+  - Move the bias more to the rim (i.e. to the right), the rim zone will more likely be triggered if both zones were hit at once.
+  - Only available for drums (i.e. snares and toms) with at least two zones.
 
 > [!IMPORTANT]
 > When you change settings they will be applied immediately but they will be reset to the old values when EavesDrum reboots or loses power. To keep the settings you have to save them with the "Save" Button (SD-Card icon) in the top Icon Bar.

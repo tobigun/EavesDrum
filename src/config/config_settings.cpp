@@ -7,6 +7,7 @@
 #define SETTINGS_ZONES_TYPE_PROP "zonesType"
 #define SETTINGS_CHOKE_TYPE_PROP "chokeType"
 #define SETTINGS_CURVETYPE_PROP "curveType"
+#define SETTINGS_DECAYTYPE_PROP "decayType"
 #define SETTINGS_PAD_TYPE_PROP "padType"
 
 ///////////////////////////// From JSON
@@ -54,6 +55,13 @@ static CurveType mapStringToCurveType(String value) {
   return CURVE_TYPE_DEFAULT;
 }
 
+static DecayType mapStringToDecayType(String value) {
+  using enum DecayType;
+  MAP_STRING_TO_ENUM(Linear);
+  eventLog.log(Level::Warn, String("Unknown decay type '") + value + "' -> using fallback");
+  return DECAY_TYPE_DEFAULT;
+}
+
 template <class T>
 static inline void SETTING_FROM_JSON(T& setting, JsonVariantConst settingsNode) {
   if (settingsNode.is<T>()) {
@@ -76,6 +84,9 @@ void DrumConfigMapper::applyPadSettings(DrumPad& pad, JsonObjectConst settingsNo
   }
   if (settingsNode[SETTINGS_CURVETYPE_PROP]) {
     settings.curveType = mapStringToCurveType(settingsNode[SETTINGS_CURVETYPE_PROP]);
+  }
+  if (settingsNode[SETTINGS_DECAYTYPE_PROP]) {
+    settings.decayType = mapStringToDecayType(settingsNode[SETTINGS_DECAYTYPE_PROP]);
   }
 
   JsonArrayConst zoneThresholdsNode = settingsNode["zoneThresholds"];
@@ -113,10 +124,11 @@ enum DrumSettingId {
   CHOKE_TYPE,
   ENABLED,
 
-  CURVETYPE,
+  CURVE_TYPE,
   SCAN_TIME_MS,
   MASK_TIME_MS,
   DECAY_TIME_MS,
+  DECAY_TYPE,
 
   ZONE_THRESHOLDS,
   THRESHOLD_MAX,
@@ -135,10 +147,11 @@ const int SETTING_ITEMS_FALLBACK_SIZE = sizeof(settingItemsFallback) / sizeof(Dr
 
 static const DrumSettingId settingItemsDrumOrCymbal[] = {
     SETTING_ITEMS_GENERIC,
-    CURVETYPE,
+    CURVE_TYPE,
     SCAN_TIME_MS,
     MASK_TIME_MS,
     DECAY_TIME_MS,
+    DECAY_TYPE,
     ZONE_THRESHOLDS};
 const int SETTING_ITEMS_DRUM_OR_CYMBAL_SIZE = sizeof(settingItemsDrumOrCymbal) / sizeof(DrumSettingId);
 
@@ -149,7 +162,7 @@ static const DrumSettingId settingItemsPedalControl[] = {
     CLOSED_THRESHOLD,
     MOVE_DETECT_TOLERANCE,
     CHICK_DETECT_TIMEOUT,
-    CURVETYPE,
+    CURVE_TYPE,
 };
 const int SETTING_ITEMS_PEDAL_CONTROL_SIZE = sizeof(settingItemsPedalControl) / sizeof(DrumSettingId);
 
@@ -208,6 +221,13 @@ static String mapCurveTypeToString(CurveType value) {
   return mapCurveTypeToString(CURVE_TYPE_DEFAULT);
 }
 
+static String mapDecayTypeToString(DecayType value) {
+  using enum DecayType;
+  MAP_ENUM_TO_STRING(Linear);
+  eventLog.log(Level::Warn, String("Unknown decay type '") + (uint8_t)value + "' -> using fallback");
+  return mapDecayTypeToString(DECAY_TYPE_DEFAULT);
+}
+
 static void convertPadSettingToJson(DrumSettingId settingId, JsonObject settingsNode, const DrumSettings& settings) {
   if (settingId == PAD_TYPE) {
     settingsNode[SETTINGS_PAD_TYPE_PROP] = mapPadTypeToString(settings.padType);
@@ -224,8 +244,13 @@ static void convertPadSettingToJson(DrumSettingId settingId, JsonObject settings
     return;
   }
 
-  if (settingId == CURVETYPE) {
+  if (settingId == CURVE_TYPE) {
     settingsNode[SETTINGS_CURVETYPE_PROP] = mapCurveTypeToString(settings.curveType);
+    return;
+  }
+
+  if (settingId == DECAY_TYPE) {
+    settingsNode[SETTINGS_DECAYTYPE_PROP] = mapDecayTypeToString(settings.decayType);
     return;
   }
 
@@ -243,7 +268,7 @@ static void convertPadSettingToJson(DrumSettingId settingId, JsonObject settings
 
   SETTING_TO_JSON(SCAN_TIME_MS, scanTimeUs)
   SETTING_TO_JSON(MASK_TIME_MS, maskTimeMs)
-  //SETTING_TO_JSON(DECAY_TIME_MS, decayTimeMs)
+  SETTING_TO_JSON(DECAY_TIME_MS, decayTimeMs)
   SETTING_TO_JSON(ALMOST_CLOSED_THRESHOLD, almostClosedThreshold)
   SETTING_TO_JSON(CLOSED_THRESHOLD, closedThreshold)
   SETTING_TO_JSON_THRESHOLD(MOVE_DETECT_TOLERANCE, moveDetectTolerance, moveDetectTolerance)
