@@ -119,10 +119,9 @@ function updatePadSignalGraphDatasets(scaleToSelectedRange: boolean, message: Mo
       zoneDataset.data.push(sensorValuePerZone[zoneIndex]));
   };
 
-  if (message.decayTimeMs && message.triggerEndIndex !== undefined) {
+  if (message.decayTimeMs && message.triggerStartIndex !== undefined && message.triggerEndIndex !== undefined) {
     const hitZone = getMaxHitZone(message);
-    const thresholdRangePercent = message.getThresholdMaxPercent(hitZone) - message.getThresholdMinPercent(hitZone);
-    const hitValue = (message.getHitValuePercent(hitZone) ?? 0) * thresholdRangePercent/ 100 + message.getThresholdMinPercent(hitZone);
+    const hitValue = getHitValue(hitZone, message, message.triggerStartIndex, message.triggerEndIndex);
     const triggerEndTimeMs = labels?.[message.triggerEndIndex];
     const decayStartTimeMs = triggerEndTimeMs + (message.maskTimeMs ?? 0);
 
@@ -144,6 +143,20 @@ function updatePadSignalGraphDatasets(scaleToSelectedRange: boolean, message: Mo
   }
 
   return datasets;
+}
+
+function getHitValue(hitZone: number, message: MonitorMessage, scanStartIndex: number, scanEndIndex: number): number {
+  let maxValue = 0;
+  for (let i = scanStartIndex; i < scanEndIndex; ++i) {
+    const entry = message.history[i];
+    if (entry.isGap) {
+      continue;
+    }
+    if (entry.values[hitZone] > maxValue) {
+      maxValue = entry.values[hitZone];
+    }
+  };
+  return maxValue * 100 / 255.;
 }
 
 function getMaxHitZone(message: MonitorMessage): number {
