@@ -155,7 +155,7 @@ void DrumKit::evaluateHiHat(const DrumPad& pad, const DrumPad& pedal) {
   const DrumMappings& pedalMappings = pedal.getMappings();
 
   bool isClosed = pedal.hihat.state == HiHatState::Closed;
-  if (isClosed && pedalMappings.closedNotesEnabled == true) {
+  if (isClosed && padMappings.closedNotesEnabled == true) {
     const midi_note_t notes[] = {padMappings.noteCloseMain, padMappings.noteCloseRim, padMappings.noteCloseCup};
     evaluateCymbalWithNotes(pad, notes);
   } else {
