@@ -122,6 +122,10 @@
               ]},
               "scanTimeUs": { "type": "integer" },
               "maskTimeMs": { "type": "integer" },
+              "decayTimeMs": { "type": "integer" },
+              "decayType": { "enum": [
+                "Linear"
+              ]},
               "chokeType": { "enum": [
                 "None",
                 "Switch_Edge",
