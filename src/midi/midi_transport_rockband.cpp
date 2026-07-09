@@ -102,7 +102,7 @@ static const uint8_t HID_DESCRIPTOR[] = {
     HID_COLLECTION_END,
 };
 
-#define HIT_HOLD_TIME_MS 20 // hold button active
+#define HIT_HOLD_TIME_MS 50 // hold button active
 
 enum HatPosition {
   HAT_UP = 0,
