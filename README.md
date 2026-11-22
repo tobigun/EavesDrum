@@ -769,7 +769,14 @@ There is also a simulation of a drum kit for PC in case you do not want to test 
 #### Windows 10 NCM device driver
 - **Question:** I cannot reach the EavesDrum WebUI. Why doesn't Windows 10 detect the board as an USB network device?
 - **Answer:** Windows 10 only supports legacy RNDIS USB network devices out-of-the-box. But RNDIS is not supported by macOS. That is why newer USB network devices like EavesDrum use NCM which is supported natively by all modern OS like macOS, Linux and Windows 11. Although Windows 10 comes with the drivers for NCM, they have to be installed manually. [See this issue to find instructions how to do this.](https://github.com/tobigun/EavesDrum/issues/4#issuecomment-3537404783)
-  
+
+#### LEDs
+- **Question:** What do the LEDs on the board mean?
+- **Answer:**
+  - The red (LED1) is the Network LED. If it lights up, the network (either USB or WiFi) is up. It blinks when data is transferred. Maybe a bit misleading but if you see a red light that is good.
+  - The LED next to it (LED2) is the hit indicator. It should blink whenever you hit a pad.
+  - Finally, the green LED on the Pico indicates that Midi is working (this is only useful if you use Bluetooth Midi).
+
 ## About This Project
 Originally I started EavesDrum as I wanted to improve my Guitar Hero Drum Kit and make it less noisy. So I built my own mesh drum for this kit out of tin cookie jars, some pollen screen (which is better suited than fly screen) and some piezos. Although it might not give you the feel and rebound of a real drum, it was at least very quiet ;-)
 
